@@ -1,0 +1,766 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/portrait.jpg">
+  <link rel="icon" href="/img/portrait.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lane Gong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="摘要：本篇博客主要是记载了在CentOS上搭建MPICH环境及运行MPI程序，同时由于学校实验课程的安排，这边还加入了一波NFS远程文件访问，不足之处，敬请指正！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS7下安装MPICH及运行并行程序">
+<meta property="og:url" content="https://lanegong.github.io/posts/bf862eab.html">
+<meta property="og:site_name" content="Lane&#39;s Blog">
+<meta property="og:description" content="摘要：本篇博客主要是记载了在CentOS上搭建MPICH环境及运行MPI程序，同时由于学校实验课程的安排，这边还加入了一波NFS远程文件访问，不足之处，敬请指正！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lanegong.github.io/images/postimage/fmpi.jpg">
+<meta property="article:published_time" content="2022-02-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-25T10:53:56.164Z">
+<meta property="article:author" content="Lane Gong">
+<meta property="article:tag" content="MPI">
+<meta property="article:tag" content="NFS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/fmpi.jpg">
+  
+  
+  <title>CentOS7下安装MPICH及运行并行程序 - Lane&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"lanegong.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":"0aae2bb9475d846643a0f05755d8a37b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"BQhkuiEuKDoNKUCuKndW69hb-MdYXbMMI","app_key":"rHe0dTOjfn4mDpT4f9RRkf4P","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Lane の Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="CentOS7下安装MPICH及运行并行程序">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-25 00:00" pubdate>
+        2022年2月25日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.6k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      30 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- LeanCloud 统计文章PV -->
+      <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="leancloud-page-views"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">CentOS7下安装MPICH及运行并行程序</h1>
+            
+            <div class="markdown-body">
+              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>本篇博客主要是记载了在CentOS上搭建MPICH环境及运行MPI程序，同时由于学校实验课程的安排，这边还加入了一波NFS远程文件访问，不足之处，敬请指正！</p>
+<span id="more"></span>
+
+<h2 id="CentOS下安装MPICH"><a href="#CentOS下安装MPICH" class="headerlink" title="CentOS下安装MPICH"></a>CentOS下安装MPICH</h2><ol>
+<li><p>更新yum库并下载相关依赖包</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">yum update #更新yum库
+#下载相关依赖包
+yum install wget -y 
+yum install gcc gcc-c++ gcc-fortran kernel-devel -y<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+<li><p>下载安装MPI安装包</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#根目录下新建一个文件夹存放下载包
+cd &#x2F;
+mkdir software
+cd &#x2F;software
+wget http:&#x2F;&#x2F;www.mpich.org&#x2F;static&#x2F;downloads&#x2F;3.4.1&#x2F;mpich-3.4.1.tar.gz
+
+tar -zxvf mpich-3.4.1.tar.gz#解压
+
+#根目录下新建mpich下载目录
+cd &#x2F;
+mkdir mpich-install
+
+#进入下载包所在文件夹，编译安装
+cd &#x2F;software&#x2F;mpich-3.4.1
+.&#x2F;configure --prefix&#x3D;&#x2F;mpich-install --with-device&#x3D;ch4:ofi 2&gt;&amp;1 | tee c.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p><strong>报错：</strong>缺少Fortran 77编译器</p>
+<p><img src="/images/postimage/mpi1.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>解决措施：</strong><code>yum install gcc-gfortran</code></p>
+<p><strong>再执行命令：</strong></p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">.&#x2F;configure --prefix&#x3D;&#x2F;mpich-install --with-device&#x3D;ch4:ofi 2&gt;&amp;1 | tee c.txt
+make
+make install<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></li>
+<li><p>配置环境</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">vi ~&#x2F;.bashrc
+#在最底部添加下面两句命令
+export MPICH&#x3D;&#x2F;mpich-install
+export PATH&#x3D;$MPICH&#x2F;bin:$PATH
+#更新使生效
+source ~&#x2F;.bashrc
+#检查
+mpirun --version#返回版本号则安装成功<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+</ol>
+<h2 id="运行MPI程序"><a href="#运行MPI程序" class="headerlink" title="运行MPI程序"></a>运行MPI程序</h2><ol>
+<li><p>Hello world</p>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;mpi.h></span></span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span> argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> myrank<span class="token punctuation">;</span>
+  <span class="token comment">//初始化MPI环境</span>
+  <span class="token comment">//从这里可以看到，一般MPI指令是MPI_跟一个大写字母</span>
+	<span class="token comment">//开始的单词，后面都是小写字母。</span>
+  <span class="token function">MPI_Init</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>argc<span class="token punctuation">,</span> <span class="token operator">&amp;</span>argv<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 获取当前进程在通信器MPI_COMM_WORLD中的进程号</span>
+  <span class="token function">MPI_Comm_rank</span><span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">,</span> <span class="token operator">&amp;</span>myrank<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"myrank = %d: Hello, world!\n"</span><span class="token punctuation">,</span> myrank<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">MPI_Finalize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>进入程序所在文件夹：</p>
+<ul>
+<li><p><code>mpicc mpi_test1.c -o mpi_test1</code>编译C程序</p>
+<blockquote>
+<p>C++程序：mpicxx name.cpp -o name</p>
+</blockquote>
+</li>
+<li><p><code>mpirun -np 4 ./mpi_test1</code>运行程序</p>
+<blockquote>
+<p>-np用来指定进程数，4代表给程序分配了4个进程</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>运行结果：</strong></p>
+<p><img src="/images/postimage/mpi2.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>MPI并行计算$\pi$</p>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;mpi.h></span></span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span><span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> myid<span class="token punctuation">,</span>np<span class="token punctuation">,</span>i<span class="token punctuation">,</span>j<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> tag<span class="token operator">=</span><span class="token number">666</span><span class="token punctuation">;</span>
+    <span class="token keyword">double</span> pi<span class="token operator">=</span><span class="token number">0.0</span><span class="token punctuation">;</span> 
+    <span class="token keyword">double</span> fVal<span class="token punctuation">;</span><span class="token comment">//fVal代表取Xi所对应的函数值   4/(1+x^2) 即每个矩形的高度</span>
+    <span class="token keyword">int</span> n<span class="token operator">=</span><span class="token number">100</span><span class="token punctuation">;</span><span class="token comment">//改变n的值，表示改变切分小矩形的个数，越多越接近极限思维</span>
+    MPI_Status status<span class="token punctuation">;</span>
+    <span class="token keyword">double</span> h<span class="token operator">=</span><span class="token punctuation">(</span><span class="token keyword">double</span><span class="token punctuation">)</span><span class="token number">1</span><span class="token operator">/</span>n<span class="token punctuation">;</span> <span class="token comment">//每个矩形的宽度</span>
+    <span class="token keyword">double</span> local<span class="token operator">=</span><span class="token number">0.0</span><span class="token punctuation">;</span><span class="token comment">//每个进程计算的面积和 </span>
+    <span class="token keyword">double</span> start<span class="token punctuation">,</span>end<span class="token punctuation">;</span>
+    <span class="token keyword">double</span> a<span class="token punctuation">;</span>
+    <span class="token function">MPI_Init</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>argc<span class="token punctuation">,</span><span class="token operator">&amp;</span>argv<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//启动并行程序    </span>
+    <span class="token function">MPI_Comm_size</span><span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">,</span><span class="token operator">&amp;</span>np<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取进程总数，np代表进程数，在运行时可以通过 -np设置</span>
+    <span class="token function">MPI_Comm_rank</span><span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">,</span><span class="token operator">&amp;</span>myid<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取当前进程号</span>
+    start<span class="token operator">=</span><span class="token function">MPI_Wtime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//记录开始时间</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span>myid<span class="token punctuation">;</span>i<span class="token operator">&lt;</span>n<span class="token punctuation">;</span>i<span class="token operator">+=</span>np<span class="token punctuation">)</span> <span class="token comment">//利用np个进程同时计算各部分矩形面积</span>
+    <span class="token punctuation">&#123;</span>
+            a<span class="token operator">=</span><span class="token punctuation">(</span>i<span class="token operator">+</span><span class="token number">0.5</span><span class="token punctuation">)</span><span class="token operator">*</span>h<span class="token punctuation">;</span>
+            fVal<span class="token operator">=</span><span class="token number">4.0</span><span class="token operator">/</span><span class="token punctuation">(</span><span class="token number">1.0</span><span class="token operator">+</span>a<span class="token operator">*</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//得到f(xi) </span>
+            local<span class="token operator">+=</span>fVal <span class="token punctuation">;</span> 
+    <span class="token punctuation">&#125;</span>
+    local<span class="token operator">=</span>local<span class="token operator">*</span>h<span class="token punctuation">;</span><span class="token comment">//得到该进程所计算的面积 </span>
+ 
+    <span class="token comment">//进程号！=0的进程计算的结果发送到进程0上面 </span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>myid<span class="token operator">!=</span><span class="token number">0</span><span class="token punctuation">)</span>
+   <span class="token punctuation">&#123;</span>   
+        <span class="token function">MPI_Send</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>local<span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span>MPI_DOUBLE<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>myid<span class="token punctuation">,</span>MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span> 
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>myid<span class="token operator">==</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment">//进程号为0就累加每个进程的计算结果 </span>
+    <span class="token punctuation">&#123;</span>
+        pi<span class="token operator">=</span>local<span class="token punctuation">;</span><span class="token comment">//得到进程0的值 后面接收就会覆盖这个值 </span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span>j<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span>j<span class="token operator">&lt;</span>np<span class="token punctuation">;</span>j<span class="token operator">++</span><span class="token punctuation">)</span>
+           <span class="token punctuation">&#123;</span>
+                <span class="token function">MPI_Recv</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>local<span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span>MPI_DOUBLE<span class="token punctuation">,</span>j<span class="token punctuation">,</span>j<span class="token punctuation">,</span>MPI_COMM_WORLD<span class="token punctuation">,</span><span class="token operator">&amp;</span>status<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//把其他进程的结果发送到local中 </span>
+                pi<span class="token operator">+=</span>local<span class="token punctuation">;</span><span class="token comment">//得到所有的面积和 </span>
+           <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    end<span class="token operator">=</span><span class="token function">MPI_Wtime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//结束计算时间 </span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>myid<span class="token operator">==</span><span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token punctuation">&#123;</span>
+          <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"PI = %.15f\n"</span><span class="token punctuation">,</span>pi<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Time = %lf\n"</span><span class="token punctuation">,</span>end<span class="token operator">-</span>start<span class="token punctuation">)</span><span class="token punctuation">;</span> 
+          <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"np = %d\n"</span><span class="token punctuation">,</span>np<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token punctuation">&#125;</span>
+    <span class="token function">MPI_Finalize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p><strong>运行程序所得结果：</strong></p>
+<p><img src="/images/postimage/mpi3.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+</ol>
+<h2 id="利用NFS访问其他主机上MPI程序文件并运行"><a href="#利用NFS访问其他主机上MPI程序文件并运行" class="headerlink" title="利用NFS访问其他主机上MPI程序文件并运行"></a>利用NFS访问其他主机上MPI程序文件并运行</h2><p>通过NFS去访问主要是……这是另一个实验哈哈哈，这样的话相当于是两者联动了。</p>
+<p>主体思想：建了两台虚拟机，分别被部署为NFS的服务端和客户端，使得两台机子可以共享文件，然后将MPI程序上传至一台机子的共享文件夹中，便可在另一台机子访问这个程序并运行。</p>
+<blockquote>
+<p>这样一来，既检验了NFS功能的实现，又实现了MPI的功能，一举两得。</p>
+</blockquote>
+<p>关于MPICH，在两台机子上首先都按照上述安装步骤安装过了。关于部署NFS，根据后面的参考资料做即可，还是比较方便的。</p>
+<ul>
+<li><p>客户端检查NFS是否挂载成功</p>
+<p><img src="/images/postimage/mpi4.png" srcset="/img/loading.gif" lazyload></p>
+<p>最后一条显示服务端的/public挂载在客户端的/mnt/public</p>
+</li>
+<li><p>MPI程序上传至服务端共享文件夹<code>/public</code></p>
+</li>
+<li><p>在客户机上进入共享文件夹<code>/mnt/public</code></p>
+<p><img src="/images/postimage/mpi5.png" srcset="/img/loading.gif" lazyload></p>
+<p>mpi2.c则是我们上传在服务端的MPI程序</p>
+</li>
+<li><p>客户端在该文件夹下编译运行即可</p>
+</li>
+</ul>
+<blockquote>
+<p>关于对MPI并行计算的性能分析，这边就不详细记录了，可以自行探索，欢迎评论或私信交流。</p>
+</blockquote>
+<h2 id="多节点上运行MPI程序"><a href="#多节点上运行MPI程序" class="headerlink" title="多节点上运行MPI程序"></a>多节点上运行MPI程序</h2><blockquote>
+<p>前提：SSH免密登录已经实现</p>
+</blockquote>
+<ul>
+<li><p>将例子程序(cpi.c)复制到当前目录</p>
+<p><code>cp /software/mpich-3.4.1/examples/cpi* .</code></p>
+</li>
+<li><p>编译<code>mpicc –o cpi cpi.c</code></p>
+</li>
+<li><p>由于想采用多节点运行即我还需要和slave1虚拟机共同工作，所以客户端这边需要修改一下NFS共享的文件夹，将原先的/mnt/public也修改成和master一样的/public，这样我在master发起的多节点并行计算就可以利用NFS直接搜索/public中的文件，否则文件夹路径不一样，容易出现找不到文件。</p>
+</li>
+<li><p>在当前文件夹新建编辑文件servers（可改），文件的每一行为一台节点机器名，其中第一行为本机名。节点名可重复出现，表示在节点上将启动若干个进程运行，节点名后面可说明进程数。</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">master:2
+slave1:2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></li>
+<li><p>关闭所有节点机器的防火墙</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">systemctl stop firewalld
+iptables -F<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+
+<p>原先客户端未关会出现如下报错</p>
+<p>master上运行：</p>
+<p><img src="/images/postimage/mpi6.png" srcset="/img/loading.gif" lazyload></p>
+<p>slave1上运行：</p>
+<p><img src="/images/postimage/mpi7.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>运行程序<code>mpiexec -np 4 -f servers ./cpi</code></p>
+<p><img src="/images/postimage/mpi8.jpg" srcset="/img/loading.gif" lazyload></p>
+</li>
+</ul>
+<p>同样，多节点可以进一步提升性能，这边就不详细记录了，可以自行探索，欢迎评论或私信交流。</p>
+<blockquote>
+<p><strong>MPI参考资料：</strong></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wangzhouf/article/details/108222704?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164569585216780274145051%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164569585216780274145051&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-108222704.pc_search_result_cache&utm_term=centos%E5%91%BD%E4%BB%A4%E8%A1%8CMPI%E5%AE%89%E8%A3%85&spm=1018.2226.3001.4187">在CentOS7系统上搭建MPI环境</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.sina.com.cn/s/blog_4af3f0d20100ilx6.html">centos安装R语言</a></li>
+<li><a target="_blank" rel="noopener" href="https://lusongno1.blog.csdn.net/article/details/67002545?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1.pc_relevant_paycolumn_v3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1.pc_relevant_paycolumn_v3&utm_relevant_index=2">MPI入门基础（程序欣赏）</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42711189/article/details/117664111?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164570852116780274196831%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164570852116780274196831&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-6-117664111.pc_search_result_cache&utm_term=centos%E8%BF%90%E8%A1%8CMPI%E7%A8%8B%E5%BA%8F&spm=1018.2226.3001.4187">水文日常~~Linux命令行下如何编译运行MPI程序(C/C++)</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42348424/article/details/111834336?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164571370316781685383418%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164571370316781685383418&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-13-111834336.nonecase&utm_term=mpi%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97&spm=1018.2226.3001.4187">MPI并行计算PI，并进行n值和并行进程个数影响探讨</a></li>
+</ol>
+<p><strong>NFS参考资料：</strong></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_38265137/article/details/83146421?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164557565316780271988693%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=164557565316780271988693&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-83146421.first_rank_v2_pc_rank_v29&utm_term=nfs&spm=1018.2226.3001.4187">NFS服务器搭建与配置</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/supergirlll/article/details/111992664?ops_request_misc=&request_id=&biz_id=102&utm_term=%E6%89%BE%E4%B8%8D%E5%88%B0nfs-secure-server&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-1-111992664.first_rank_v2_pc_rank_v29&spm=1018.2226.3001.4187">小记nfs遇到的问题及解决方法</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_34406061/article/details/93073010?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164558250616781683992242%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=164558250616781683992242&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-3-93073010.first_rank_v2_pc_rank_v29&utm_term=clnt_create&spm=1018.2226.3001.4187">NFS问题：clnt_create: RPC: Port mapper failure - Unable to receive: errno 113 (No route to host)</a></li>
+</ol>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/%E5%B9%B6%E8%A1%8C%E7%BC%96%E7%A8%8B/">并行编程</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/MPI/">MPI</a>
+                    
+                      <a class="hover-with-bg" href="/tags/NFS/">NFS</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/posts/a7a0edbb.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ARP攻击与防御</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/58625082.html">
+                        <span class="hidden-mobile">被动信息收集2</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="waline"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#waline', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/@waline/client@1/dist/Waline.min.js', function() {
+        var options = Object.assign(
+          {"serverURL":"https://blog-comment-eta.vercel.app/","path":"window.location.pathname","placeholder":null,"meta":["nick","mail","link"],"requiredMeta":["nick"],"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],"dark":"html[data-user-color-scheme=\"dark\"]","avatar":"retro","avatarCDN":"https://seccdn.libravatar.org/avatar/","avatarForce":false,"wordLimit":0,"pageSize":10,"highlight":true},
+          {
+            el: '#waline',
+            path: window.location.pathname
+          }
+        )
+        new Waline(options);
+        Fluid.utils.waitElementVisible('#waline .vcontent', () => {
+          Fluid.plugins.initFancyBox('#waline .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- LeanCloud 统计PV -->
+        <span id="leancloud-site-pv-container" style="display: none">
+            总访问量 
+            <span id="leancloud-site-pv"></span>
+             次
+          </span>
+      
+      
+        <!-- LeanCloud 统计UV -->
+        <span id="leancloud-site-uv-container" style="display: none">
+            总访客数 
+            <span id="leancloud-site-uv"></span>
+             人
+          </span>
+      
+
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0aae2bb9475d846643a0f05755d8a37b";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":"true#是否在手机端显示"},"log":false});</script></body>
+</html>

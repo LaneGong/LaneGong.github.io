@@ -1,0 +1,671 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/portrait.jpg">
+  <link rel="icon" href="/img/portrait.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lane Gong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="摘要：本篇主要是介绍了利用网络空间搜索引擎ZoomEye收集网络资产，并在Kali中利用Docker搭建了ARL资产侦查灯塔系统进行信息收集，对工具的理解还比较初步，未来实战继续提升，不足之处，敬请指正！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="被动信息收集2">
+<meta property="og:url" content="https://lanegong.github.io/posts/58625082.html">
+<meta property="og:site_name" content="Lane&#39;s Blog">
+<meta property="og:description" content="摘要：本篇主要是介绍了利用网络空间搜索引擎ZoomEye收集网络资产，并在Kali中利用Docker搭建了ARL资产侦查灯塔系统进行信息收集，对工具的理解还比较初步，未来实战继续提升，不足之处，敬请指正！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lanegong.github.io/images/postimage/bei13.jpeg">
+<meta property="article:published_time" content="2022-02-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-09T11:56:57.630Z">
+<meta property="article:author" content="Lane Gong">
+<meta property="article:tag" content="ZoomEye">
+<meta property="article:tag" content="ARL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/bei13.jpeg">
+  
+  
+  <title>被动信息收集2 - Lane&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"lanegong.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":"0aae2bb9475d846643a0f05755d8a37b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"BQhkuiEuKDoNKUCuKndW69hb-MdYXbMMI","app_key":"rHe0dTOjfn4mDpT4f9RRkf4P","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Lane の Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="被动信息收集2">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-09 00:00" pubdate>
+        2022年2月9日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.8k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      24 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- LeanCloud 统计文章PV -->
+      <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="leancloud-page-views"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">被动信息收集2</h1>
+            
+            <div class="markdown-body">
+              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>本篇主要是介绍了利用网络空间搜索引擎ZoomEye收集网络资产，并在Kali中利用Docker搭建了ARL资产侦查灯塔系统进行信息收集，对工具的理解还比较初步，未来实战继续提升，不足之处，敬请指正！</p>
+<span id="more"></span>
+
+<div class="note note-warning">
+            <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
+          </div>
+
+<h2 id="使用网络空间搜索引擎ZoomEye收集信息"><a href="#使用网络空间搜索引擎ZoomEye收集信息" class="headerlink" title="使用网络空间搜索引擎ZoomEye收集信息"></a>使用网络空间搜索引擎ZoomEye收集信息</h2><h3 id="ZoomEye介绍"><a href="#ZoomEye介绍" class="headerlink" title="ZoomEye介绍"></a>ZoomEye介绍</h3><p>全球网站都是由各种组件组成，比如用的哪种操作系统、哪种Web容器、什么服务端语言、什么Web应用等等。这些我们都认为是组件，这些组件构成了网站，形成了我们这个丰富多彩的网络世界。</p>
+<p>而现在很多攻击都是针对网站组件进行的，拿组件下手是因为组件被使用的很多，只要研究出某个组件的漏洞，就能让使用这个组件的一大批网站沦陷。同理到主机也是一样，主机设备的搜索目前可以使用<a target="_blank" rel="noopener" href="https://www.shodan.io/">撒旦</a>。</p>
+<p>网站+主机构成了这个网络空间，ZoomEye的目标是采集全球这些指纹，开放搜索引擎，推进这个安全领域的进展，让更多人意识到，你暴露在网络空间上的组件或设备，实际上并不安全，藏着掖着没用！只要你在公网，ZoomEye就会默认收录，不过我们尊重不愿意搜录的网站或设备。</p>
+<blockquote>
+<p>说明：ZoomEye和撒旦的区别是ZoomEye目前侧重于Web层面的资产发现而Shodan则侧重于主机层面。</p>
+<p>插曲：其实原先这一part是准备着重介绍网络空间资产检索系统FOFA的。它相对于shodan来说更加本土化，拥有更多域名数据，建立了全球最大的资产规则集，并且已经更新了识别蜜罐的功能。但是！！FOFA在2022-1-20号被工信部列入了黑名单，所以目前用不了了，不知道什么时候会重新上线。</p>
+</blockquote>
+<div class="note note-info">
+            <p>关于本网站的查询语法均可直接查看网站搜索助手文档，非常详细！（搜索前需先注册）</p><p>下文主要就实战简单展开用法和记录。网站地址：<a target="_blank" rel="noopener" href="https://www.zoomeye.org/">https://www.zoomeye.org</a></p>
+          </div>
+
+<h3 id="ZoomEye实战-根据地区搜索"><a href="#ZoomEye实战-根据地区搜索" class="headerlink" title="ZoomEye实战-根据地区搜索"></a>ZoomEye实战-根据地区搜索</h3><p><strong>以百度为例：</strong></p>
+<p>搜索：<code>site:baidu.com</code>进行域名查找➡️该方法也是查找匹配子域名的一种方式</p>
+<p><img src="/images/postimage/bei9.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以看到baidu.com这个域名在不同地区有很多资产，现在若我想要定位它在美国的资产，则可以利用如下组合条件筛选：<code>country:&quot;美国&quot;+site:baidu.com&quot;</code></p>
+<p><img src="/images/postimage/bei10.png" srcset="/img/loading.gif" lazyload></p>
+<p>这样就可以定位到其在美国资产，当然还可以根据更多的信息进一步定位，使用组合条件可以帮我们把搜索结果筛选的更加准确。</p>
+<h3 id="ZoomEye实战-根据icon图标搜索"><a href="#ZoomEye实战-根据icon图标搜索" class="headerlink" title="ZoomEye实战-根据icon图标搜索"></a>ZoomEye实战-根据icon图标搜索</h3><p><strong>以小米的icon为例：</strong></p>
+<p>icon是网站的图标也就是每个网站title上显示的图片，进入<a target="_blank" rel="noopener" href="https://www.mi.com/">小米官网</a>，可以利用检查元素找到icon的链接将其download。然后进入ZoomEye官网：</p>
+<p><img src="/images/postimage/bei11.png" srcset="/img/loading.gif" lazyload></p>
+<p>搜索后：</p>
+<p><img src="/images/postimage/bei12.png" srcset="/img/loading.gif" lazyload></p>
+<p>ZoomEye会计算icon的hash值，然后通过hash值进行资产搜索。</p>
+<blockquote>
+<p>注意：icon文件任何网站都可能获取并且使用，所以会存在的非小米官方的资产也被搜索到，同时小米前段时间换过logo，也可能存在旧资产没更新，故实际搜集信息时需把实际情境带入进行思考解决。</p>
+</blockquote>
+<p>当然ZoomEye还有更多的搜索情况，可以根据需求进一步探索，这边就不赘述了。</p>
+<h2 id="ARL资产侦查灯塔系统搭建及使用"><a href="#ARL资产侦查灯塔系统搭建及使用" class="headerlink" title="ARL资产侦查灯塔系统搭建及使用"></a>ARL资产侦查灯塔系统搭建及使用</h2><h3 id="资产侦察灯塔系统简介"><a href="#资产侦察灯塔系统简介" class="headerlink" title="资产侦察灯塔系统简介"></a>资产侦察灯塔系统简介</h3><p>ARL（Asset Reconnaissance Lighthouse）资产侦查灯塔旨在快速发现并整理企业外网资产并为资产构建基础数据库，无需登录凭证或特殊访问即可主动发现并识别资产，让甲方安全团队或者渗透测试人员快速寻找到指定企业资产中的脆弱点,降低资产被威胁利用的可能性并规避可能带来的不利影响。</p>
+<p><strong>ARL资产侦查灯塔系统的思路：</strong>资产梳理的路径会根据输入的数据进行变动与调整。如输入数据为基于域名时，采用的技术手段包括DNS 枚举、智能域名生成枚举、第三方 API 服务来获取子域名，随后将域名解析为 IP（当输入数据基于IP 时，可直接进入后续阶段），既是对 IP 进行端口扫描、服务识别、系统识别、站点识别和 WEB 指纹识别，同时爬取站点 URL，并对首页进行截图，完成资产发现。</p>
+<p><img src="/images/postimage/bei13.jpeg" srcset="/img/loading.gif" lazyload></p>
+<p>当通过域名或是 IP 识别出对应的安全应用后，便可将其与鱼鹰(Osprey)poc 漏洞检测框架、通用漏洞扫描（CRS）、漏洞预警系统（VAS）和漏洞盒子相关联，快速准确识别资产威胁，降低资产风险。</p>
+<h3 id="资产侦查灯塔系统搭建"><a href="#资产侦查灯塔系统搭建" class="headerlink" title="资产侦查灯塔系统搭建"></a>资产侦查灯塔系统搭建</h3><h4 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h4><p>目前暂不支持windows，Linux和Mac建议采用Docker运行，系统配置最低2核4G。由于自动资产发现过程中会有大量的的发包，建议采用云服务器可以带来更好的体验。</p>
+<p>系统：kali Linux 2021.4a</p>
+<h4 id="部署Docker容器虚拟化平台"><a href="#部署Docker容器虚拟化平台" class="headerlink" title="部署Docker容器虚拟化平台"></a>部署Docker容器虚拟化平台</h4><p>详见博客：<a href="https://lanegong.github.io/posts/c4265bce.html">Docker入门及kali部署Docker</a></p>
+<h4 id="ARL部署"><a href="#ARL部署" class="headerlink" title="ARL部署"></a>ARL部署</h4><ol>
+<li><p>拉取镜像</p>
+<p>命令：<code>docker pull tophant/arl</code></p>
+<p><img src="/images/postimage/bei14.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>启动 docker-compose</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">git clone https:&#x2F;&#x2F;github.com&#x2F;TophantTechnology&#x2F;ARL
+cd ARL&#x2F;docker&#x2F;
+docker-compose up -d<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div>
+
+<p>出现报错：</p>
+<p><img src="/images/postimage/bei15.png" srcset="/img/loading.gif" lazyload></p>
+<p>根据提示先使用命令：<code>docker volume create --name=arl_db</code></p>
+<p>再次执行：<code>docker-compose up -d</code>启动即可</p>
+<p>使用命令<code>docker-compose ps</code>查看运行是否正常：</p>
+<p><img src="/images/postimage/bei16.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>打开浏览器访问：<a target="_blank" rel="noopener" href="https://xx.xx.xx.xx:5003/">https://xx.xx.xx.xx:5003/</a> 中间为主机IP address</p>
+<p><img src="/images/postimage/bei17.png" srcset="/img/loading.gif" lazyload></p>
+<p>打不开的话关一下防火墙：Advanced➡️Accept the risk and continue</p>
+<p><img src="/images/postimage/bei18.png" srcset="/img/loading.gif" lazyload></p>
+<blockquote>
+<p>默认账号：admin</p>
+<p>密码：arlpass</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="资产侦查灯塔系统使用"><a href="#资产侦查灯塔系统使用" class="headerlink" title="资产侦查灯塔系统使用"></a>资产侦查灯塔系统使用</h3><blockquote>
+<p>相关可参考：<a target="_blank" rel="noopener" href="https://github.com/TophantTechnology/ARL/wiki">https://github.com/TophantTechnology/ARL/wiki</a></p>
+</blockquote>
+<p>以下仅作简单记录：</p>
+<h4 id="资产分组"><a href="#资产分组" class="headerlink" title="资产分组"></a>资产分组</h4><p>资产分组功能用于整合资产范围内的域名资产到资产组中，用户也可以对资产组范围内的资产进行监控，实时监控新增资产。</p>
+<ul>
+<li><p>新建资产组</p>
+<p><img src="/images/postimage/bei19.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>添加监控任务</p>
+<p>通过指定资产组，和添加监控任务操作，可以下发域名资产的监控任务到ARL中，后台将会根据运行间隔对监控任务内的资产进行扫描，用于发现监控新增的资产。</p>
+<p><img src="/images/postimage/bei20.png" srcset="/img/loading.gif" lazyload></p>
+<p>填写具体信息，运行间隔不能小于6小时：</p>
+<p><img src="/images/postimage/bei21.png" srcset="/img/loading.gif" lazyload></p>
+<p>在左侧资产监控和任务管理中都能看到监控任务信息。</p>
+</li>
+</ul>
+<h4 id="新建策略"><a href="#新建策略" class="headerlink" title="新建策略"></a>新建策略</h4><p>通过创建不同的策略，可以对资产进行不同方案的扫描，可以针对不同类型的资产，根据资产的功能创建指定的策略。</p>
+<ul>
+<li><p>更新PoC (Proof of Concept)</p>
+<p>这样有更新脚本可以让我们使用</p>
+<p>PoC信息 ➡️ 更新</p>
+</li>
+<li><p>策略配置</p>
+<p>左侧 “策略配置” ➡️ “新建策略”</p>
+<p><img src="/images/postimage/bei22.png" srcset="/img/loading.gif" lazyload></p>
+<p>后面各配置按需选取。</p>
+<p>完成后点击“任务下发”对资产进行扫描和探测：</p>
+<p><img src="/images/postimage/bei23.png" srcset="/img/loading.gif" lazyload></p>
+<p>可在“任务管理中查看”，等待任务执行完成之后，点击任务名或task_id就可以查看结果了。</p>
+</li>
+</ul>
+<h3 id="ARL系统升级"><a href="#ARL系统升级" class="headerlink" title="ARL系统升级"></a>ARL系统升级</h3><div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd ~
+cd ARL
+git pull
+cd docker
+docker-compose pull
+docker-compose up -d<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/Web%E5%AE%89%E5%85%A8/">Web安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/ZoomEye/">ZoomEye</a>
+                    
+                      <a class="hover-with-bg" href="/tags/ARL/">ARL</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/posts/bf862eab.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">CentOS7下安装MPICH及运行并行程序</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/c4265bce.html">
+                        <span class="hidden-mobile">Docker入门及kali部署Docker</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="waline"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#waline', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/@waline/client@1/dist/Waline.min.js', function() {
+        var options = Object.assign(
+          {"serverURL":"https://blog-comment-eta.vercel.app/","path":"window.location.pathname","placeholder":null,"meta":["nick","mail","link"],"requiredMeta":["nick"],"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],"dark":"html[data-user-color-scheme=\"dark\"]","avatar":"retro","avatarCDN":"https://seccdn.libravatar.org/avatar/","avatarForce":false,"wordLimit":0,"pageSize":10,"highlight":true},
+          {
+            el: '#waline',
+            path: window.location.pathname
+          }
+        )
+        new Waline(options);
+        Fluid.utils.waitElementVisible('#waline .vcontent', () => {
+          Fluid.plugins.initFancyBox('#waline .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- LeanCloud 统计PV -->
+        <span id="leancloud-site-pv-container" style="display: none">
+            总访问量 
+            <span id="leancloud-site-pv"></span>
+             次
+          </span>
+      
+      
+        <!-- LeanCloud 统计UV -->
+        <span id="leancloud-site-uv-container" style="display: none">
+            总访客数 
+            <span id="leancloud-site-uv"></span>
+             人
+          </span>
+      
+
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0aae2bb9475d846643a0f05755d8a37b";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":"true#是否在手机端显示"},"log":false});</script></body>
+</html>

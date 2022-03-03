@@ -1,0 +1,741 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/portrait.jpg">
+  <link rel="icon" href="/img/portrait.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lane Gong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="摘要：本篇主要是介绍了PD17上安装Kali linux后的一些相关设置，包括网卡配置、换源、安装Parallel Tools等，以及因为xshell只支持windows，故采用Royal TCX作为替代，建立远程连接。可作为一个简单的教程，如有不足或疑惑，也欢迎评论留言指正，交流学习！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kali Linux初始化及Royal TSX连接Kali">
+<meta property="og:url" content="https://lanegong.github.io/posts/97535b9f.html">
+<meta property="og:site_name" content="Lane&#39;s Blog">
+<meta property="og:description" content="摘要：本篇主要是介绍了PD17上安装Kali linux后的一些相关设置，包括网卡配置、换源、安装Parallel Tools等，以及因为xshell只支持windows，故采用Royal TCX作为替代，建立远程连接。可作为一个简单的教程，如有不足或疑惑，也欢迎评论留言指正，交流学习！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lanegong.github.io/img/postimg/fkali.jpeg">
+<meta property="article:published_time" content="2022-01-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-01-30T11:25:00.305Z">
+<meta property="article:author" content="Lane Gong">
+<meta property="article:tag" content="Kali Linux">
+<meta property="article:tag" content="SSH">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lanegong.github.io/img/postimg/fkali.jpeg">
+  
+  
+  <title>Kali Linux初始化及Royal TSX连接Kali - Lane&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"lanegong.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":"0aae2bb9475d846643a0f05755d8a37b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"BQhkuiEuKDoNKUCuKndW69hb-MdYXbMMI","app_key":"rHe0dTOjfn4mDpT4f9RRkf4P","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Lane の Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Kali Linux初始化及Royal TSX连接Kali">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-01-30 00:00" pubdate>
+        2022年1月30日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.1k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      35 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- LeanCloud 统计文章PV -->
+      <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="leancloud-page-views"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Kali Linux初始化及Royal TSX连接Kali</h1>
+            
+            <div class="markdown-body">
+              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>本篇主要是介绍了PD17上安装Kali linux后的一些相关设置，包括网卡配置、换源、安装Parallel Tools等，以及因为xshell只支持windows，故采用Royal TCX作为替代，建立远程连接。可作为一个简单的教程，如有不足或疑惑，也欢迎评论留言指正，交流学习！</p>
+<span id="more"></span>
+
+<h2 id="Kali-Linux安装及初始化设置"><a href="#Kali-Linux安装及初始化设置" class="headerlink" title="Kali Linux安装及初始化设置"></a>Kali Linux安装及初始化设置</h2><p>我是采用Parallel Desktop 17 + Kali Linux 2021.4a，前期安装kali虚拟机的过程还是比较常规，网上教程还是非常多且详细，这边就不多加赘述了，主要针对装好后遇到的问题和解决措施展开👇</p>
+<h3 id="1-网卡配置"><a href="#1-网卡配置" class="headerlink" title="1. 网卡配置"></a>1. 网卡配置</h3><p>发现这个问题主要是因为后面介绍的换源，起初是先打算换源，修改好sources.list后，准备update发现连接不上镜像源，才考虑到是不是连不上网，发现登了一下firefox也不行，ping <a target="_blank" rel="noopener" href="http://www.baidu.com发现也ping不通,根据之前配centos的经验,察觉到了问题所在./">www.baidu.com发现也ping不通，根据之前配CentOS的经验，察觉到了问题所在。</a></p>
+<p>原先还想跟之前一样,通过 <code>vi /etc/sysconfig/network-scripts/ifcfg-ethi</code>去配网卡文件，发现Kali都没这个文件夹，和CentOS的构造还是有点区别，故作个总结：</p>
+<blockquote>
+<p>所有修改均在root权限下</p>
+</blockquote>
+<h4 id="动态IP"><a href="#动态IP" class="headerlink" title="动态IP"></a>动态IP</h4><ul>
+<li><p>修改kali网卡配置文件interfaces</p>
+<p>​    <code>vim /etc/network/interfaces</code></p>
+<p>在该文件中添加：</p>
+<div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">auto eth0
+iface eth0 inet dhcp<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+
+<p><img src="/images/postimage/kali1.png" srcset="/img/loading.gif" lazyload></p>
+<p>本次网卡配置采取的是动态ip的形式，不是static的静态ip</p>
+</li>
+<li><p>重启网络 <code>systemctl restart networking</code></p>
+</li>
+<li><p>配置DNS服务器</p>
+<p>通过第二步重启网络之后，就可以尝试去ping了，会发现一个问题，我直接ping百度的ip是ok的，但是ping<a target="_blank" rel="noopener" href="http://www.baidu.com就出问题了,会报错**“ping/">www.baidu.com就出问题了，会报错**“ping</a>: <a target="_blank" rel="noopener" href="http://www.baidu.com/">www.baidu.com</a>: 域名解析暂时失败”**</p>
+<p>可以通过<code>cat /etc/resolv.conf</code>命令去查看自己的域名服务器情况，我的话内容是如下(我这是直接在文件里查看的，所以形式上有些不同)：</p>
+<p><img src="/images/postimage/kali2.png" srcset="/img/loading.gif" lazyload></p>
+<p>目前我这边是本地域名，不是很清楚为啥不行……</p>
+<p>通过查资料，改成了公用的DNS服务器地址，一个是114.114.114.114，另一个是谷歌提供的8.8.8.8，经测试可行。</p>
+<p><code>vim /etc/resolv.conf</code></p>
+<p>在该文件中写入上述两个地址：</p>
+<p><img src="/images/postimage/kali3.png" srcset="/img/loading.gif" lazyload></p>
+<p>随后再<code>cat /etc/resolv.conf</code>，可以看到就变为修改所得的服务器地址，此时再去ping <a target="_blank" rel="noopener" href="http://www.baidu.com就可以啦/">www.baidu.com就可以啦</a></p>
+<p><img src="/images/postimage/kali4.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>锁定resolv.conf文件</p>
+<p>上面这样的修改是即时有效的，但当你重启reboot或者是刷新网络<code>systemctl restart networking</code>时，resolv.conf文件又会恢复成原先未改时的状况，不想每次登录都要求修改resolv.conf文件，试错了很多种办法，下面这种方法测试可行：</p>
+<p>锁定文件：<code>chattr +i /etc/resolv.conf</code></p>
+<p>修改的话，解锁文件：<code>chattr -i /etc/resolv.conf</code></p>
+<blockquote>
+<p>参考文档：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_44657899/article/details/107130713?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3.pc_relevant_default&utm_relevant_index=6">kali 设置dns服务器(解析更快)</a></p>
+</blockquote>
+</li>
+</ul>
+<h4 id="静态IP"><a href="#静态IP" class="headerlink" title="静态IP"></a>静态IP</h4><p>静态IP的配置和动态IP的区别仅在于第一步网卡配置文件interfaces上的设置不同。</p>
+<p>将原先动态IP的设置</p>
+<div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">auto eth0
+iface eth0 inet dhcp<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+
+<p>改成如下：</p>
+<div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">auto eth0
+iface eth0 inet static<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+
+<p>同时因为是静态IP，需要自己配置ip地址，子网掩码以及网关：</p>
+<div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">auto eth0
+iface eth0 inet static
+#在该设置下继续添加
+
+address xxx.xxx.xxx.xxx #配置固定的ip地址，由于我使用的是虚拟机NAT模式网络，网段要和虚拟机该模式网段一致，且此ip没有被其他人使用
+netmask xxx.xxx.xxx.xxx #配置子网掩码，均参考虚拟机设置中提供的信息
+gateway xxx.xxx.xxx.xxx #配置网关，均参考虚拟机设置中提供的信息<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>若也是选择了NAT模式，还有一种比较快的方式去设置选择上述三样(address,netmask,gateway)：在前面动态ip的情况下利用<code>ifconfig</code>命令查看网络信息，eth0网卡(一般)中inet，netmask信息一般就可以被你用来设置成固定的ip地址。（网关还是建议查看虚拟机自身设置中情况）</p>
+<h3 id="2-换源"><a href="#2-换源" class="headerlink" title="2. 换源"></a>2. 换源</h3><h4 id="配置apt国内源"><a href="#配置apt国内源" class="headerlink" title="配置apt国内源"></a>配置apt国内源</h4><p>为了方便以后安装或更新软件包，所以采取换源成国内源，方便以后操作。</p>
+<ul>
+<li><p>终端输入<code>vim /etc/apt/sources.list</code>修改 源的文件</p>
+<p>将默认源注释掉后，可加入新的国内源，我采取的是中科大的源，如下：</p>
+<p>deb <a target="_blank" rel="noopener" href="http://mirrors.ustc.edu.cn/kali">http://mirrors.ustc.edu.cn/kali</a> kali-rolling main non-free contrib<br>deb-src <a target="_blank" rel="noopener" href="http://mirrors.ustc.edu.cn/kali">http://mirrors.ustc.edu.cn/kali</a> kali-rolling main non-free contrib</p>
+<p><img src="/images/postimage/kali5.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+</ul>
+<h4 id="更新Kali"><a href="#更新Kali" class="headerlink" title="更新Kali"></a>更新Kali</h4><ul>
+<li><p>终端输入<code>apt-get update &amp; apt-get upgrade</code></p>
+<p>中间遇到是否继续选择了Y，跳出蓝底提示都是直接回车了。</p>
+</li>
+<li><p>终端输入<code>apt-get dist-upgrade</code></p>
+</li>
+<li><p>终端输入<code>apt-get clean</code></p>
+</li>
+<li><p>终端输入<code>uname -a</code> 可查看内核信息</p>
+</li>
+<li><p>输入<code>reboot</code>重启</p>
+</li>
+</ul>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_54585112/article/details/119242798">Parallels Desktop 上 安装 kali及相关常规设置</a></p>
+<p><img src="/images/postimage/kali6.png" srcset="/img/loading.gif" lazyload></p>
+<p>对相关命令做出一个介绍：</p>
+<p><code>apt-get update</code>的作用：是从/etc/apt/sources.list文件中定义的源中获取最新的软件包列表。==》即运行apt update并没有更新软件，而是相当于windows下面的检查更新，获取的是软件的状态。</p>
+<p><code>apt-get upgrade</code>的作用：根据update命令获取的最新的软件包列表，去真正地更新软件。</p>
+<p><code>apt-get dist-upgrade</code>的作用：根据update命令获取的最新的软件包列表，去真正地更新软件。</p>
+<blockquote>
+<p><code>apt-get upgrade</code>和<code>apt-get dist-upgrade</code>的差别：</p>
+<p>upgrade:系统将现有的Package升级,如果有相依性的问题,而此相依性需要安装其它新的Package或影响到其它Package的相依性时,此Package就不会被升级,会保留下来。</p>
+<p>dist-upgrade:可以聪明的解决相依性的问题,如果有相依性问题,需要安装/移除新的Package,就会试着去安装/移除它.(所以通常dist-upgrade会被认为是有点风险的升级)</p>
+<p>例如软件包a原先依赖bcd，但是在源里面可能已经升级了，现在是a依赖bce。这种情况下，dist-upgrade会删除d安装e，并把a软件包升级，而upgrade会认为依赖关系改变而拒绝升级a软件包。</p>
+</blockquote>
+<p>‼️Attention：每回更新之前，我们需要先运行update，然后才能运行upgrade和dist-upgrade。因为若没有update命令去获取包的一些信息，比如大小和版本号，那么upgrade就无法下载包，也就是无效的。</p>
+<h3 id="3-安装Parallels-Tools"><a href="#3-安装Parallels-Tools" class="headerlink" title="3. 安装Parallels Tools"></a>3. 安装Parallels Tools</h3><p><strong>虚拟机版本：</strong>Parallel Desktop 17.1.1</p>
+<p><strong>Kali Linux：</strong>kali-linux-2021.4a-installer-arm64</p>
+<ul>
+<li><p>右上角“操作”-安装Parallels Tools-“继续”</p>
+<img src="/images/postimage/kali7.png" srcset="/img/loading.gif" lazyload alt="image-20220129203855411" style="zoom:67%;" />
+
+<p>桌面上会出现一个光盘图标：</p>
+<p><img src="/images/postimage/kali8.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>创建文件夹，拷贝里面文件</p>
+<p>由于里面的文件是只读模式，因此需要先拷贝出来，再运行。</p>
+<div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">#在终端中以root身份运行如下命令
+mkdir &#x2F;root&#x2F;pd #创建文件夹
+cp -r &#x2F;media&#x2F;cdrom0&#x2F;* &#x2F;root&#x2F;pd #拷贝文件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></li>
+<li><p>安装程序</p>
+<p>在pd文件夹下运行命令<code>./install</code> 一路next然后稍等一会儿，直接就安装成功了。</p>
+<p><img src="/images/postimage/kali9.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+</ul>
+<blockquote>
+<p>有了parallel tools，咱就可以直接在主机和虚拟机之间复制粘贴文件啦✌️</p>
+</blockquote>
+<h2 id="Royal-TSX连接Kali-Linux"><a href="#Royal-TSX连接Kali-Linux" class="headerlink" title="Royal TSX连接Kali Linux"></a>Royal TSX连接Kali Linux</h2><p><strong>Introduction：</strong>这一步主要是想要实现远程控制，即我在mac界面访问远端不同系统下的服务器（这边的话我是远程连接我的Kali虚拟机），从而实现较好的远程控制terminal的目的。查了网上很多介绍，都说xshell(强大的安全终端模拟软件)非常滴好用，结果一看只提供windows，拜拜了。网上查了mac下有没有什么xshell的替代软件，最终看到了这一款<strong>Royal TSX</strong>。</p>
+<blockquote>
+<p>注：其实直接利用mac的terminal也可以实现这个功能，个人喜好了。</p>
+</blockquote>
+<ul>
+<li><p><strong>下载Royal TSX</strong></p>
+<p>Royal TSX有免费版和付费版，一般情况下，免费版其实已经够用啦。</p>
+<p>官网地址：<a target="_blank" rel="noopener" href="https://www.royalapps.com/ts/mac/features">https://www.royalapps.com/ts/mac/features</a></p>
+<p>直接从官网下载Mac版本并安装就可了</p>
+</li>
+<li><p><strong>配置sshd服务</strong></p>
+<p>建立远程控制依托的是ssh服务，故我们先需要配置kali linux的sshd服务。</p>
+<ul>
+<li><p><code>vim /etc/ssh/sshd_config</code>修改配置文件内容</p>
+<p><img src="/images/postimage/kali10.png" srcset="/img/loading.gif" lazyload></p>
+<p>将上述两个红框内容改成如下：</p>
+<p><img src="/images/postimage/kali11.png" srcset="/img/loading.gif" lazyload></p>
+<blockquote>
+<p>prohibit-password：禁止密码</p>
+<p>PubkeyAuthentication：公钥身份验证，开启此项允许Royal TSX配置SSH秘钥登录</p>
+</blockquote>
+</li>
+<li><p>重启ssh服务</p>
+<p>命令：<code>/etc/init.d/ssh restart</code></p>
+</li>
+<li><p>配置sshd服务开机自动启动</p>
+<p>命令：<code>update-rc.d ssh enable</code></p>
+</li>
+</ul>
+</li>
+<li><p>Royal TSX连接Kali</p>
+<ul>
+<li><p>打开Royal TSX，Install Plugins (安装插件)</p>
+<p>SSH➡️Terminal</p>
+<p>FTP、SFTP➡️File Transfer</p>
+<p>还装了个Remote Desktop</p>
+</li>
+<li><p>Create a document</p>
+<p>“File” ➡️ “New Document” ➡️ 记得Save</p>
+</li>
+<li><p>Add your first connection</p>
+<ol>
+<li><p>添加SSH连接，页面底部“+”号，选择Terminal</p>
+</li>
+<li><p>完成Display Name，Compute Name填写</p>
+<p><img src="/images/postimage/kali12.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>点击Credentials,按下图操作</p>
+<p><img src="/images/postimage/kali13.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>“Apply &amp; Close” 并且保存一下，就可以双击首页Connection下新建的连接，就可以连上远程服务器啦。</p>
+<blockquote>
+<p>第一次连接，问你是否继续连接可选择“yes”。</p>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/Web%E5%AE%89%E5%85%A8/">Web安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Kali-Linux/">Kali Linux</a>
+                    
+                      <a class="hover-with-bg" href="/tags/SSH/">SSH</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/posts/c16b0138.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">被动信息收集1</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/cc926504.html">
+                        <span class="hidden-mobile">HTTP协议及抓包分析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="waline"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#waline', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/@waline/client@1/dist/Waline.min.js', function() {
+        var options = Object.assign(
+          {"serverURL":"https://blog-comment-eta.vercel.app/","path":"window.location.pathname","placeholder":null,"meta":["nick","mail","link"],"requiredMeta":["nick"],"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],"dark":"html[data-user-color-scheme=\"dark\"]","avatar":"retro","avatarCDN":"https://seccdn.libravatar.org/avatar/","avatarForce":false,"wordLimit":0,"pageSize":10,"highlight":true},
+          {
+            el: '#waline',
+            path: window.location.pathname
+          }
+        )
+        new Waline(options);
+        Fluid.utils.waitElementVisible('#waline .vcontent', () => {
+          Fluid.plugins.initFancyBox('#waline .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- LeanCloud 统计PV -->
+        <span id="leancloud-site-pv-container" style="display: none">
+            总访问量 
+            <span id="leancloud-site-pv"></span>
+             次
+          </span>
+      
+      
+        <!-- LeanCloud 统计UV -->
+        <span id="leancloud-site-uv-container" style="display: none">
+            总访客数 
+            <span id="leancloud-site-uv"></span>
+             人
+          </span>
+      
+
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0aae2bb9475d846643a0f05755d8a37b";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":"true#是否在手机端显示"},"log":false});</script></body>
+</html>

