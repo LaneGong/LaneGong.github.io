@@ -1,0 +1,778 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/portrait.jpg">
+  <link rel="icon" href="/img/portrait.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lane Gong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="摘要：本篇博客主要是记载了主动信息收集的一些方式，包括ping命令和nmap扫描，但本章中nmap只演示了最最基本的操作，还有很多高级用法值得探索，不足之处，敬请指正！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="主动信息收集1">
+<meta property="og:url" content="https://lanegong.github.io/posts/ad511b5.html">
+<meta property="og:site_name" content="Lane&#39;s Blog">
+<meta property="og:description" content="摘要：本篇博客主要是记载了主动信息收集的一些方式，包括ping命令和nmap扫描，但本章中nmap只演示了最最基本的操作，还有很多高级用法值得探索，不足之处，敬请指正！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lanegong.github.io/images/postimage/zhu1.png">
+<meta property="article:published_time" content="2022-03-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-03-05T05:38:57.541Z">
+<meta property="article:author" content="Lane Gong">
+<meta property="article:tag" content="ping">
+<meta property="article:tag" content="nmap">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/zhu1.png">
+  
+  
+  <title>主动信息收集1 - Lane&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"lanegong.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":"0aae2bb9475d846643a0f05755d8a37b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"BQhkuiEuKDoNKUCuKndW69hb-MdYXbMMI","app_key":"rHe0dTOjfn4mDpT4f9RRkf4P","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Lane の Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="主动信息收集1">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-05 00:00" pubdate>
+        2022年3月5日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      6.1k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      51 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- LeanCloud 统计文章PV -->
+      <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="leancloud-page-views"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">主动信息收集1</h1>
+            
+            <div class="markdown-body">
+              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>本篇博客主要是记载了主动信息收集的一些方式，包括ping命令和nmap扫描，但本章中nmap只演示了最最基本的操作，还有很多高级用法值得探索，不足之处，敬请指正！</p>
+<span id="more"></span>
+
+<div class="note note-warning">
+            <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
+          </div>
+
+<h2 id="Ping命令探测"><a href="#Ping命令探测" class="headerlink" title="Ping命令探测"></a>Ping命令探测</h2><h3 id="Ping命令"><a href="#Ping命令" class="headerlink" title="Ping命令"></a>Ping命令</h3><p>PING 命令是我们常用的判断主机之间网络是否畅通，同样也是能判断我们的目标主机是否存活。</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─$ ping www.baidu.com     
+PING www.a.shifen.com (36.152.44.96) 56(84) bytes of data.
+64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;7 ttl&#x3D;128 time&#x3D;18.9 ms
+64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;8 ttl&#x3D;128 time&#x3D;18.0 ms
+64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;9 ttl&#x3D;128 time&#x3D;23.2 ms
+64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;10 ttl&#x3D;128 time&#x3D;16.8 ms
+64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;11 ttl&#x3D;128 time&#x3D;34.9 ms
+64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;12 ttl&#x3D;128 time&#x3D;20.3 ms
+64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;13 ttl&#x3D;128 time&#x3D;35.8 ms<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<h3 id="Traceroute-命令"><a href="#Traceroute-命令" class="headerlink" title="Traceroute 命令"></a>Traceroute 命令</h3><p>我们从当前主机到目标主机之间肯定要经过很多网络设备，通过traceroute可以对路由进行跟踪。</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">[root@localhost ~]# traceroute www.baidu.com
+traceroute to www.baidu.com (61.135.169.125), 30 hops max, 40 byte packets
+ 1  192.168.74.2 (192.168.74.2)  2.606 ms  2.771 ms  2.950 ms
+ 2  211.151.56.57 (211.151.56.57)  0.596 ms  0.598 ms  0.591 ms
+ 3  211.151.227.206 (211.151.227.206)  0.546 ms  0.544 ms  0.538 ms
+ 4  210.77.139.145 (210.77.139.145)  0.710 ms  0.748 ms  0.801 ms
+ 5  202.106.42.101 (202.106.42.101)  6.759 ms  6.945 ms  7.107 ms
+ 6  61.148.154.97 (61.148.154.97)  718.908 ms * bt-228-025.bta.net.cn (202.106.228.25)  5.177 ms
+ 7  124.65.58.213 (124.65.58.213)  4.343 ms  4.336 ms  4.367 ms
+ 8  202.106.35.190 (202.106.35.190)  1.795 ms 61.148.156.138 (61.148.156.138)  1.899 ms  1.951 ms
+ 9  * * *
+30  * * *
+[root@localhost ~]#<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<blockquote>
+<p>注：这边在NAT模式下虚拟机上使用traceroute命令得到的全是*号，可能存在被防火墙，网关等拦截的情况，将虚拟机网络模式改为桥接模式便可追踪到相关信息，具体可参见博文：</p>
+</blockquote>
+<h3 id="ARPING命令"><a href="#ARPING命令" class="headerlink" title="ARPING命令"></a>ARPING命令</h3><blockquote>
+<p>本部分可参考之前博文：<a href="https://lanegong.github.io/posts/a7a0edbb.html">ARP攻击与防御</a></p>
+</blockquote>
+<p>ARP 协议是“Address Resolution Protocol”（地址解析协议）的缩写。计算机通过 ARP 协议将 IP 地址转换成 MAC 地址。</p>
+<p><strong>工作原理：</strong>在以太网中，数据传输的目标地址是 MAC 地址，一个主机要和另一个主机进行直接通信，必须要知道目标主机的 MAC 地址。计算机使用者通常只知道目标机器的 IP 信息，“地址解析”就是主机在发送帧前将目标 IP 地址转换成目标 MAC 地址的过程。简单地说，ARP 协议主要负责将局域网中的 32 位 IP 地址转换为对应的 48 位物理地址，即网卡的MAC 地址，保障通信顺利进行。 </p>
+<p><img src="/images/postimage/zhu1.png" srcset="/img/loading.gif" lazyload></p>
+<p>PC1想要ping IP2，首先对数据包进行封装，封装到MAC地址的时候，PC1会查询自己的ARP缓存表，发现没有IP2和其MAC地址的映射，这样的话，MAC数据帧封装失败（设备通信需要对方的MAC地址，但现在没有）。故为了获取PC2的MAC地址，PC1要发送询问信息，询问PC2的MAC地址。</p>
+<blockquote>
+<p>Question:询问信息也需要对Mac地址封装，那现在没有，应该填什么？</p>
+</blockquote>
+<p>规定当目的MAC地址为ff-ff-ff-ff-ff-ff时，就代表这是一个询问信息。PC2收到这个询问信息后，将这里面的IP1和MAC1添加到本地的ARP缓存表中，然后PC2发送应答信息给PC1（因为缓存表里已经有PC1的IP和MAC的映射了），这个应答信息包含PC2的IP2和MAC2。PC1收到这个应答信息，就获取了PC2的MAC地址，并添加到自己的缓存表中。</p>
+<blockquote>
+<p>注意:目的主机先完成ARP缓存，然后才是源主机完成ARP缓存。</p>
+</blockquote>
+<h4 id="使用-arping-命令查看局域网中的-IP-是否有冲突"><a href="#使用-arping-命令查看局域网中的-IP-是否有冲突" class="headerlink" title="使用 arping 命令查看局域网中的 IP 是否有冲突"></a>使用 arping 命令查看局域网中的 IP 是否有冲突</h4><div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# arping 10.211.55.13 -c 1
+ARPING 10.211.55.13
+42 bytes from 00:1c:42:bc:89:0f (10.211.55.13): index&#x3D;0 time&#x3D;493.408 usec
+
+--- 10.211.55.13 statistics ---
+1 packets transmitted, 1 packets received,   0% unanswered (0 extra)
+rtt min&#x2F;avg&#x2F;max&#x2F;std-dev &#x3D; 0.493&#x2F;0.493&#x2F;0.493&#x2F;0.000 ms
+#-c 参数表示发送的次数，我们只需要 1 次即可<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>对返回的结果进行一定的筛选，只取IP：</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# arping -c 1 10.211.55.13 | grep &quot;bytes from&quot; | cut -d&quot; &quot; -f 5 | cut -d&quot;(&quot; -f 2 |cut -d&quot;)&quot; -f 1
+10.211.55.13<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+
+<p>这边需要注意的是，若arping本机IP，会出现timeout问题。涉及原因：arping命令是以广播地址发送arp packets，以太网内所有的主机都会收到这个arp packets，但是本机收到之后不会Reply任何信息。因此不能在本机arping检验自己的ip。</p>
+<p>同时arping命令只能对一个IP进行判断，若想实现网络自动扫描，需要借助脚本。</p>
+<p><strong>脚本内容：</strong></p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash
+if [ &quot;$#&quot; -ne 1 ];then #判断用户是否输入了至少一个参数如果没有输入参数，输出提示信息并退出
+	echo &quot;Usage - .&#x2F;arping.sh [interface]&quot;
+	echo &quot;Excample - .&#x2F;arping.sh eth0&quot;
+	echo &quot;Example will perform an ARP scan of the local subnet to which eth0 is assigned&quot;
+	exit
+fi
+interface&#x3D;$1 #将用户输入的参数传递给 interface 变量
+prefix&#x3D;$(ifconfig $interface | grep &quot;inet &quot; | cut -d &#39;t&#39; -f 2 | cut -d &#39;.&#39; -f 1-3) #获取本机 IP地址网段
+
+#对整个网段进行 arping
+for addr in $(seq 1 254);do 
+	arping -c 1 $prefix.$addr | grep &quot;bytes from&quot; | cut -d&quot; &quot; -f 5 | cut -d &quot;(&quot; -f 2 | cut -d&quot;)&quot; -f 1 
+done<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<ul>
+<li><p>在home目录新建脚本文件arping1.sh</p>
+</li>
+<li><p>脚本文件加权限（linux中可执行程序需要拥有执行权限才可以直接执行）</p>
+<p><code>chmod +x arping1.sh</code></p>
+</li>
+<li><p>执行脚本，对局域网中IP进行扫描</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# .&#x2F;arping1.sh eth0 
+10.211.55.1
+10.211.55.2
+10.211.55.13<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+</ul>
+<p><strong>模拟IP地址冲突</strong></p>
+<p>在开一台虚拟机，并将两台虚拟机的IP设为一样，均为10.211.55.10</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#使用脚本扫描，查看局域网中是否存在ARP攻击
+└─# .&#x2F;arping1.sh eth0
+10.211.55.1
+10.211.55.2
+10.211.55.10
+10.211.55.10#如果出现两个一样的IP地址，就是有ARP攻击<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<h4 id="使用Netdiscover进行被动方式探测局域网中存活的机器"><a href="#使用Netdiscover进行被动方式探测局域网中存活的机器" class="headerlink" title="使用Netdiscover进行被动方式探测局域网中存活的机器"></a>使用Netdiscover进行被动方式探测局域网中存活的机器</h4><p>Netdiscover是一个主动/被动的 ARP 侦查工具。使用 Netdiscover 工具可以在网络上扫描 IP地址，检查在线主机或搜索为它们发送的 ARP 请求。</p>
+<ul>
+<li><p><strong>主动模式：</strong>主动的探测发现网络内主机，但是这种方式往往会引起网络管理员的注意。</p>
+<p><strong>命令：</strong><code>netdiscover -i eth0 -r 10.211.55.1/24</code></p>
+<p><strong>参数：</strong></p>
+<ul>
+<li><p>-i device: your network device</p>
+</li>
+<li><p>-r range: scan a given range instead of auto scan. 10.211.55.1/24或/16或/8</p>
+</li>
+</ul>
+<p><img src="/images/postimage/zhu2.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p><strong>被动模式：</strong>被动模式的方法更加隐蔽，但是速度会比较慢，网卡被设置为混杂模式来侦听网络内的 arp 数据包进行被动式探测，这种方式就需要网络内设备发送 arp 包才能被探测到。</p>
+<p>命令：<code>netdiscover -p</code></p>
+<p>参数：-p 被动模式:不发送任何东西，只进行嗅探</p>
+</li>
+</ul>
+<h3 id="Hping3命令"><a href="#Hping3命令" class="headerlink" title="Hping3命令"></a>Hping3命令</h3><p>Hping3 是一个命令行下使用的 TCP/IP 数据包组装/分析工具，通常 web 服务会用来做<strong>压力测试</strong>使用，也可以进行 DOS 攻击的实验。同样 Hping 只能每次扫描一个目标。</p>
+<p><strong>使用 HPING 进行压力测试：</strong></p>
+<p>正常网站：<a target="_blank" rel="noopener" href="http://www.xuegod.cn/">http://www.xuegod.cn/</a></p>
+<p><strong>对其进行压力测试：</strong><code>hping3 -c 1000 -d 120 -S -w 64 -p 80 --flood --rand-source xuegod.cn</code></p>
+<p><strong>参数解释：</strong></p>
+<ul>
+<li><p>-c 1000 ==&gt;发送的数据包的数量。</p>
+</li>
+<li><p>-d 120 ==&gt; 发送到目标机器的每个数据包的大小。单位是字节</p>
+</li>
+<li><p>-S ==&gt; 只发送 SYN 数据包。</p>
+</li>
+<li><p>-w 64 ==&gt; TCP 窗口大小。</p>
+</li>
+<li><p>-p 80 ==&gt; 目的地端口(80 是 WEB 端口)。你在这里可以使用任何端口。</p>
+</li>
+<li><p>–flood ==&gt; 尽可能快地发送数据包，不需要考虑显示入站回复。洪水攻击模式。</p>
+</li>
+<li><p>–rand-source ==&gt; 使用随机性的源头 IP 地址。这里的伪造的 IP 地址，只是在局域中伪造。通过路由器后，还会还原成真实的 IP 地址。</p>
+</li>
+<li><p>xuegod.cn ==&gt;目标地址</p>
+</li>
+</ul>
+<p>执行命令后可以发现网站会打不开，ctrl+C停止后即可恢复访问。</p>
+<h3 id="FPING命令"><a href="#FPING命令" class="headerlink" title="FPING命令"></a>FPING命令</h3><p>Fping 就是 ping 命令的加强版他可以对一个 IP 段进行 ping 扫描，而 ping 命令本身是不可以对网段进行扫描的。因此我们可以使用 FPING 查看局域中运行了哪些机器。</p>
+<p><strong>命令：</strong> <code>fping -g 10.211.55.1/24 -c 1 &gt; fping.txt</code></p>
+<p><strong>参数：</strong></p>
+<ul>
+<li><p>-g 表示对地址段进行扫描如果不加可以对某个 IP 进行扫描</p>
+</li>
+<li><p>-c 表示 ping 的次数</p>
+</li>
+<li><p>&gt;fping.txt 表示将扫描的结果重定向到 fping.txt ，原因是如果扫描一个网段的话输出结果是非常多的，我们输出重定向到文件中只会获得存活的主机信息。</p>
+</li>
+</ul>
+<p><strong>查看：</strong><code>cat fping.txt</code></p>
+<p><img src="/images/postimage/zhu3.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="基于Nmap的扫描方式"><a href="#基于Nmap的扫描方式" class="headerlink" title="基于Nmap的扫描方式"></a>基于Nmap的扫描方式</h2><p>Nmap，也就是 Network Mapper，最早是 Linux 下的网络扫描和嗅探工具包。</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# nmap -sn 10.211.55.1&#x2F;24
+Starting Nmap 7.92 ( https:&#x2F;&#x2F;nmap.org ) at 2022-03-05 11:17 CST
+Nmap scan report for 10.211.55.1
+Host is up (0.00059s latency).
+MAC Address: 00:1C:42:00:00:18 (Parallels)
+Nmap scan report for 10.211.55.2
+Host is up (0.00042s latency).
+MAC Address: 3E:06:30:10:D4:64 (Unknown)
+Nmap scan report for 10.211.55.12
+Host is up.
+Nmap done: 256 IP addresses (3 hosts up) scanned in 15.40 seconds
+#或者也可以使用 nmap -sn 10.211.55.1-254命令
+#-sn 参数说明：表示只 ping 扫描，不进行端口扫描<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<h3 id="半连接扫描"><a href="#半连接扫描" class="headerlink" title="半连接扫描"></a>半连接扫描</h3><p><strong>nmap扫描类型：</strong></p>
+<ul>
+<li><p>全连接扫描，会在被扫描机器留下记录</p>
+<p><img src="/images/postimage/zhu4.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>半连接扫描，不会留下记录</p>
+<p><img src="/images/postimage/zhu5.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+</ul>
+<p><strong>使用nmap进行半连接扫描：</strong></p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# nmap -sS 10.211.55.1 -p 80,81,21,25,110,443
+Starting Nmap 7.92 ( https:&#x2F;&#x2F;nmap.org ) at 2022-03-05 11:41 CST
+Nmap scan report for 10.211.55.1
+Host is up (0.00051s latency).
+
+PORT    STATE  SERVICE
+21&#x2F;tcp  closed ftp
+25&#x2F;tcp  closed smtp
+80&#x2F;tcp  closed http
+81&#x2F;tcp  closed hosts2-ns
+110&#x2F;tcp closed pop3
+443&#x2F;tcp closed https
+MAC Address: 00:1C:42:00:00:18 (Parallels)
+
+Nmap done: 1 IP address (1 host up) scanned in 6.94 seconds
+#-sS 表示使用 SYN 进行半连接扫描<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<h3 id="使用nc扫描端口"><a href="#使用nc扫描端口" class="headerlink" title="使用nc扫描端口"></a>使用nc扫描端口</h3><p><strong>nc 参数：</strong></p>
+<ul>
+<li><p>-nv 表示我们扫描的目标是个 IP 地址不做域名解析</p>
+</li>
+<li><p>-w 表示超时时间</p>
+</li>
+<li><p>-z 表示进行端口扫描</p>
+</li>
+</ul>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# nc -nv -w 1 -z 10.211.55.1 1-100           
+(UNKNOWN) [10.211.55.1] 53 (domain) open<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+
+
+
+<blockquote>
+<p>参考资料：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://blog.51cto.com/u_13570193/2083332">ARP原理和ARP攻击</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_52297942/article/details/122606172?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164636577716781685316870%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164636577716781685316870&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-2-122606172.pc_search_result_cache&utm_term=arping+timeout&spm=1018.2226.3001.4187">arping 本机出现 timeout 问题</a></li>
+</ol>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/Web%E5%AE%89%E5%85%A8/">Web安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/ping/">ping</a>
+                    
+                      <a class="hover-with-bg" href="/tags/nmap/">nmap</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/a7a0edbb.html">
+                        <span class="hidden-mobile">ARP攻击与防御</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="waline"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#waline', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/@waline/client@1/dist/Waline.min.js', function() {
+        var options = Object.assign(
+          {"serverURL":"https://blog-comment-eta.vercel.app/","path":"window.location.pathname","placeholder":null,"meta":["nick","mail","link"],"requiredMeta":["nick"],"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],"dark":"html[data-user-color-scheme=\"dark\"]","avatar":"retro","avatarCDN":"https://seccdn.libravatar.org/avatar/","avatarForce":false,"wordLimit":0,"pageSize":10,"highlight":true},
+          {
+            el: '#waline',
+            path: window.location.pathname
+          }
+        )
+        new Waline(options);
+        Fluid.utils.waitElementVisible('#waline .vcontent', () => {
+          Fluid.plugins.initFancyBox('#waline .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- LeanCloud 统计PV -->
+        <span id="leancloud-site-pv-container" style="display: none">
+            总访问量 
+            <span id="leancloud-site-pv"></span>
+             次
+          </span>
+      
+      
+        <!-- LeanCloud 统计UV -->
+        <span id="leancloud-site-uv-container" style="display: none">
+            总访客数 
+            <span id="leancloud-site-uv"></span>
+             人
+          </span>
+      
+
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0aae2bb9475d846643a0f05755d8a37b";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":"true#是否在手机端显示"},"log":false});</script></body>
+</html>
