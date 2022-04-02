@@ -1,0 +1,693 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/portrait.jpg">
+  <link rel="icon" href="/img/portrait.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lane Gong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="摘要：听说生日悖论是来源于python计算的一道实验题，这道实验题主要也是对birthday paradox的一个感受和验证，故对其进行了一个简洁但又略深入的学习梳理。从问题的背景，理论解释，数学推导以及计算机验证层层递进，进而对生日悖论的一个很著名的应用，涉及计算机安全的生日攻击做了一个了解，当然对于哈希表等知识还值得继续深入，这边只是浅浅学习，不足之处欢迎指正！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Birthday Paradox">
+<meta property="og:url" content="https://lanegong.github.io/posts/46f5d77b.html">
+<meta property="og:site_name" content="Lane&#39;s Blog">
+<meta property="og:description" content="摘要：听说生日悖论是来源于python计算的一道实验题，这道实验题主要也是对birthday paradox的一个感受和验证，故对其进行了一个简洁但又略深入的学习梳理。从问题的背景，理论解释，数学推导以及计算机验证层层递进，进而对生日悖论的一个很著名的应用，涉及计算机安全的生日攻击做了一个了解，当然对于哈希表等知识还值得继续深入，这边只是浅浅学习，不足之处欢迎指正！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lanegong.github.io/img/postimg/fbirth.png">
+<meta property="article:published_time" content="2022-04-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-04-02T15:28:24.415Z">
+<meta property="article:author" content="Lane Gong">
+<meta property="article:tag" content="hash">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lanegong.github.io/img/postimg/fbirth.png">
+  
+  
+  <title>Birthday Paradox - Lane&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"lanegong.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":"0aae2bb9475d846643a0f05755d8a37b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"BQhkuiEuKDoNKUCuKndW69hb-MdYXbMMI","app_key":"rHe0dTOjfn4mDpT4f9RRkf4P","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Lane の Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Birthday Paradox">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-04-02 00:00" pubdate>
+        2022年4月2日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.5k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      38 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- LeanCloud 统计文章PV -->
+      <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="leancloud-page-views"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Birthday Paradox</h1>
+            
+            <div class="markdown-body">
+              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>听说生日悖论是来源于python计算的一道实验题，这道实验题主要也是对birthday paradox的一个感受和验证，故对其进行了一个简洁但又略深入的学习梳理。从问题的背景，理论解释，数学推导以及计算机验证层层递进，进而对生日悖论的一个很著名的应用，涉及计算机安全的生日攻击做了一个了解，当然对于哈希表等知识还值得继续深入，这边只是浅浅学习，不足之处欢迎指正！</p>
+<span id="more"></span>
+
+<div class="note note-warning">
+            <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动，后果自负！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
+          </div>
+
+<h2 id="Birthday-Paradox"><a href="#Birthday-Paradox" class="headerlink" title="Birthday Paradox"></a>Birthday Paradox</h2><p><strong>Q：</strong>在一个房间里，至少有多少人，才能使其中两个人的生日是同一天的可能性超过50%？</p>
+<p><strong>A：</strong>答案是23人。</p>
+<blockquote>
+<p>这就意味着在一个典型的标准小学班级（30人）中，存在两人生日相同的可能性更高。对于60或者更多的人，这种概率会大于99%。</p>
+</blockquote>
+<p>👉🏻听上去非常不可思议，这样的一个现象被称为生日悖论。</p>
+<p>从引起逻辑矛盾的角度来说生日悖论并不是一种悖论，它被称作悖论只是因为这个数学事实与一般直觉相抵触而已。计算与此相关的概率被称为<strong>生日问题</strong>，在这个问题之后的数学理论已被用于设计著名的密码攻击方法：<strong>生日攻击</strong>。</p>
+<h2 id="悖论的理论解释"><a href="#悖论的理论解释" class="headerlink" title="悖论的理论解释"></a>悖论的理论解释</h2><p><strong>通俗的理解：</strong>生日悖论会令人感到难以置信，因为人类倾向于从自己的角度看待问题。人们通常这样想，如果一个房间里加上自己共有23人，你会觉得在这22人里跟你同一天生日的可能性太低了。365天，现在却只有22个人，你可能会想概率只有22/365，所以很难在这22个人中遇上跟自己同一天生日的。其实，这是一种错误的思考方式——只是站在你自己的角度来思考有谁与你生日是一样的。</p>
+<p><strong>事实上：</strong>生日问题指的是在任何23个人中，两人生日相同的概率是多少，而不是你进入了一个有着22个人的房间，房间里有人会和你有相同生日的概率。</p>
+<p><strong>维基百科：</strong>可以把生日悖论理解成一个盲射打靶的问题。对于一个23人的房间，先考虑问题的补集：23人生日两两不同的概率是多少？为此，可以让23个人依次进入，那么每个人生日都与其他人不同的概率依次是1，364/365，363/365，362/365，361/365，等等。先进入房间的这些人生日两两不同的概率是很大的，比如说前面5个是1×364/365×363/365×362/365×361/365=97.3%。而对于最后进入房间的几个人情况就完全不同。最后几个人进入房间并且找不到同生日者的概率是… 345/365，344/365，343/365。可以把这种概率看成对一张靶的盲射：靶上有365个小格，其中有17个左右是黑格，其余是白格。假设每枪必中靶并且分布符合几何概型的话，那么连续射12枪左右任何一发都没有击中黑格的概率（投射于房间里的人生日都两两不同）是多少呢？想必大家立即会感觉到这个概率十分微小。</p>
+<p><strong>理解生日悖论的关键：</strong>在于考虑上述“依次进入房间”模型中最后几个进入房间的人“全部都没碰到相同生日的人”概率有多大这件事情。</p>
+<blockquote>
+<p>简而言之，大多数人之所以会认为23人中有2人生日相同的概率应该远远小于50%，是因为将问题理解为“其他22人与你的生日相同的概率”，而非问题本意“23人之中两两之间存在生日相同”。如果考虑到这一点，直觉上会将原来的概率乘以23<em>（注意：此算法并不正确）</em>，则会意识到概率很大了。</p>
+</blockquote>
+<h2 id="数学推导"><a href="#数学推导" class="headerlink" title="数学推导"></a>数学推导</h2><p>假设有<em>n</em>个人在同一房间内，如果要计算有两个人在同一日出生的概率，在不考虑特殊因素的前提下，例如闰年，双胞胎等假设一年365日出生概率是平均分布的（现实生活中，出生概率不是平均分布的）。计算概率的方法是，首先找出$\overline{p(n)}$表示n个人中，每个人的生日日期都不同的概率。</p>
+<p>假如n &gt; 365，根据鸽巢原理其概率为0，假设<em>n</em> ≤ 365，则概率为</p>
+<p>$\overline{p(n)}=1\times\frac{364}{365}\times\frac{363}{365}\times…\times\frac{365-n+1}{365}=\frac{365!}{365^n(365-n)!}$</p>
+<p>==》n个人中至少2人生日相同的概率$p(n)=1-\overline{p(n)}$</p>
+<p>通过迭代，n=23发生的概率大约是0.507。</p>
+<blockquote>
+<p>作对比：q(n)表示房间中有<em>n+1</em>个人，当中与特定人（比如你）有相同生日的概率：$q(n)=1-(\frac{364}{365})^n$。当<em>n</em> = 22时概率只有大约0.059，约高于十七分之一。</p>
+</blockquote>
+<h2 id="计算机代码验证"><a href="#计算机代码验证" class="headerlink" title="计算机代码验证"></a>计算机代码验证</h2><div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> random
+<span class="token comment">#step1:数据读入及差错判断</span>
+<span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span>
+	m<span class="token operator">=</span><span class="token builtin">int</span><span class="token punctuation">(</span><span class="token builtin">input</span><span class="token punctuation">(</span><span class="token string">"请输入班级数m(m>=1000)："</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> m<span class="token operator">&lt;</span><span class="token number">1000</span><span class="token punctuation">:</span>
+		<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"班级数不符合要求，请重新输入！"</span><span class="token punctuation">)</span>
+	<span class="token keyword">else</span><span class="token punctuation">:</span>
+		<span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span>
+			n<span class="token operator">=</span><span class="token builtin">int</span><span class="token punctuation">(</span><span class="token builtin">input</span><span class="token punctuation">(</span><span class="token string">"请输入每个班级同学的人数n："</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token keyword">if</span> n<span class="token operator">&lt;=</span><span class="token number">0</span><span class="token punctuation">:</span>
+				<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"人数不符合要求，请重新输入！"</span><span class="token punctuation">)</span>
+			<span class="token keyword">else</span><span class="token punctuation">:</span>
+				<span class="token keyword">break</span>
+		<span class="token keyword">break</span>
+
+<span class="token comment">#step2:利用random模块生成每个班级同学的生日并计算m个班级中存在相同生日情况的班级数 Q</span>
+Q<span class="token operator">=</span><span class="token number">0</span>
+<span class="token keyword">for</span> Class <span class="token class-name">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>m<span class="token punctuation">)</span><span class="token punctuation">:</span>
+	birth<span class="token operator">=</span><span class="token punctuation">[</span>random<span class="token punctuation">.</span>randint<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">365</span><span class="token punctuation">)</span><span class="token keyword">for</span> member <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span><span class="token punctuation">]</span>
+	<span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>birth<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token builtin">len</span><span class="token punctuation">(</span><span class="token builtin">set</span><span class="token punctuation">(</span>birth<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+		Q<span class="token operator">+=</span><span class="token number">1</span>
+
+<span class="token comment">#step3:用 P=Q/M 作为对相同生日概率的估计</span>
+P<span class="token operator">=</span>Q<span class="token operator">/</span>m
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"&#123;&#125;个班级、每个班级&#123;&#125;人，相同生日的概率是&#123;&#125;"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>m<span class="token punctuation">,</span>n<span class="token punctuation">,</span>P<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p>通过控制台输入班级数(可类比为实验次数，这边要求大于等于1000)及班级人数，通过random模块随机生成一个班级同学的生日，利用集合判断是否存在相同值，并对其计数，从而得到m个班级中存在相同生日情况的班级数 Q，和总数之比便得到了存在相同生日情况的发生概率。</p>
+<p><img src="/images/postimage/birth1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/birth2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/birth3.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以发现：在大量试验的背景下(均为1000组)，随着班级人数的改变，存在相同生日的概率也在发生变化，且概率和平常自认为的还是有很大差距的。可以观察到生日悖论的结论，在上述结果中，当班级人数为23的时候可以发现概率已经达到49.9%了。</p>
+<h3 id="可视化分析"><a href="#可视化分析" class="headerlink" title="可视化分析"></a>可视化分析</h3><p>单个班级（m=1即试验次数为1），观察n和至少存在2人生日相同的概率p。</p>
+<p><strong>目的：</strong>找到概率达到50%的点</p>
+<p><strong>代码：</strong></p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> random
+<span class="token keyword">import</span> matplotlib<span class="token punctuation">.</span>pyplot <span class="token keyword">as</span> plt
+<span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+<span class="token keyword">from</span> pandas <span class="token keyword">import</span> Series<span class="token punctuation">,</span>DataFrame
+<span class="token keyword">import</span> math
+Q<span class="token operator">=</span><span class="token number">0</span>
+plist<span class="token operator">=</span><span class="token punctuation">[</span><span class="token punctuation">]</span>
+<span class="token keyword">for</span> n <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+	p<span class="token operator">=</span><span class="token number">1</span><span class="token operator">-</span>math<span class="token punctuation">.</span>factorial<span class="token punctuation">(</span><span class="token number">365</span><span class="token punctuation">)</span><span class="token operator">/</span><span class="token punctuation">(</span><span class="token number">365</span><span class="token operator">**</span>n<span class="token operator">*</span>math<span class="token punctuation">.</span>factorial<span class="token punctuation">(</span><span class="token number">365</span><span class="token operator">-</span>n<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	plist<span class="token punctuation">.</span>append<span class="token punctuation">(</span>p<span class="token punctuation">)</span>
+
+data<span class="token operator">=</span>DataFrame<span class="token punctuation">(</span>plist<span class="token punctuation">,</span>columns<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">"probability"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+data<span class="token punctuation">[</span><span class="token string">'number'</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span>
+data<span class="token punctuation">.</span>plot<span class="token punctuation">(</span>kind<span class="token operator">=</span><span class="token string">"scatter"</span><span class="token punctuation">,</span>x<span class="token operator">=</span><span class="token string">"number"</span><span class="token punctuation">,</span>y<span class="token operator">=</span><span class="token string">"probability"</span><span class="token punctuation">,</span>marker<span class="token operator">=</span><span class="token string">"o"</span><span class="token punctuation">,</span>color<span class="token operator">=</span><span class="token string">"b"</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>axhline<span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">,</span> linestyle<span class="token operator">=</span><span class="token string">'--'</span><span class="token punctuation">,</span> color<span class="token operator">=</span><span class="token string">'red'</span><span class="token punctuation">,</span> label<span class="token operator">=</span><span class="token string">'50% prob'</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p><strong>结果：</strong></p>
+<p><img src="/images/postimage/birth4.png" srcset="/img/loading.gif" lazyload></p>
+<p>由此，通过数学理论推导并结合代码可视化我们可以找到概率达到50%时人数差不多在23人。</p>
+<p>进一步，对23这个结论进行<strong>经验性验证</strong>：</p>
+<p>大量试验统计性分析(n=23)，生日悖论的验证，m和p的关系。</p>
+<p><strong>目的：</strong>以23人作约束，进行大量随机试验观察概率是否稳定在50%左右</p>
+<p>代码：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> random
+<span class="token keyword">import</span> matplotlib<span class="token punctuation">.</span>pyplot <span class="token keyword">as</span> plt
+<span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+<span class="token keyword">from</span> pandas <span class="token keyword">import</span> Series<span class="token punctuation">,</span>DataFrame
+<span class="token keyword">import</span> math
+analysis<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">for</span> num <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+	Q<span class="token operator">=</span><span class="token number">0</span>
+	<span class="token keyword">for</span> Class <span class="token class-name">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token punctuation">:</span>
+		birth<span class="token operator">=</span><span class="token punctuation">[</span>random<span class="token punctuation">.</span>randint<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">365</span><span class="token punctuation">)</span><span class="token keyword">for</span> member <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">23</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+		<span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>birth<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token builtin">len</span><span class="token punctuation">(</span><span class="token builtin">set</span><span class="token punctuation">(</span>birth<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+			Q<span class="token operator">+=</span><span class="token number">1</span>
+	P<span class="token operator">=</span>Q<span class="token operator">/</span>num
+	analysis<span class="token punctuation">[</span>num<span class="token punctuation">]</span><span class="token operator">=</span>P
+data1<span class="token operator">=</span>DataFrame<span class="token punctuation">(</span><span class="token builtin">list</span><span class="token punctuation">(</span>analysis<span class="token punctuation">.</span>values<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>columns<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">"probability"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+data1<span class="token punctuation">[</span><span class="token string">'classes'</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token builtin">list</span><span class="token punctuation">(</span>analysis<span class="token punctuation">.</span>keys<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+data1<span class="token punctuation">.</span>plot<span class="token punctuation">(</span>kind<span class="token operator">=</span><span class="token string">"scatter"</span><span class="token punctuation">,</span>x<span class="token operator">=</span><span class="token string">"classes"</span><span class="token punctuation">,</span>y<span class="token operator">=</span><span class="token string">"probability"</span><span class="token punctuation">,</span>marker<span class="token operator">=</span><span class="token string">"o"</span><span class="token punctuation">,</span>color<span class="token operator">=</span><span class="token string">"b"</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>axhline<span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">,</span> linestyle<span class="token operator">=</span><span class="token string">'--'</span><span class="token punctuation">,</span> color<span class="token operator">=</span><span class="token string">'red'</span><span class="token punctuation">,</span> label<span class="token operator">=</span><span class="token string">'50% prob'</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+
+<p><strong>结果：</strong></p>
+<p><img src="/images/postimage/birth5.png" srcset="/img/loading.gif" lazyload></p>
+<p>通过这一步，可以清晰观察到当实验次数较少时，波动很大，不确定程度高，不具有代表性。随着实验的次数增加，存在两人生日相同情况的概率便逐渐趋向50%并保持稳定。</p>
+<h2 id="生日攻击"><a href="#生日攻击" class="headerlink" title="生日攻击"></a>生日攻击</h2><blockquote>
+<p>生日悖论的应用之一：生日攻击(破解密码学散列函数)</p>
+</blockquote>
+<p><strong>维基百科定义：</strong>是一种密码学攻击手段，所利用的是概率论中生日问题的数学原理。这种攻击手段可用于滥用两个或多个集团之间的通信。此攻击依赖于在随机攻击中的高碰撞概率和固定置换次数（鸽巢原理）。使用生日攻击，攻击者可在$\sqrt{2^n}=2^{n/2}$中找到散列函数碰撞，$2^n$为原像抗性安全性。</p>
+<p>有点难理解👆🏻拆分开一点点看：</p>
+<h3 id="哈希碰撞"><a href="#哈希碰撞" class="headerlink" title="哈希碰撞"></a>哈希碰撞</h3><p>哈希（hash），就是将不同的输入(key)通过散列函数映射成独一无二的、固定长度的值（又称”哈希值”）。如果不同的输入得到了同一个哈希值，就发生了”哈希碰撞”（collision）。</p>
+<p><strong>隐患：</strong>很多网络服务通过哈希值来产生token标记用户。若两个不同用户发生了哈希碰撞，产生了相同的token，网络服务就会标记成同一个人，相当于不同的两者拥有相同的权限==》hacker attack：制造哈希碰撞，入侵系统。</p>
+<h3 id="生日攻击-1"><a href="#生日攻击-1" class="headerlink" title="生日攻击"></a>生日攻击</h3><p>哈希碰撞的概率取决于两个因素（假设哈希函数是可靠的，每个值的生成概率都相同）：</p>
+<ul>
+<li>取值空间的大小（即哈希值的长度）</li>
+<li>整个生命周期中，哈希值的计算次数</li>
+</ul>
+<p>这里就要运用到生日悖论的原理了==》如果哈希值的取值空间是365，只要计算23个哈希值，就有50%的可能产生碰撞。50% 的哈希碰撞概率所需要的计算次数<strong>近似公式：</strong>$\sqrt{\frac{\pi}{2}N}$（N代表哈希的取值空间）</p>
+<p>这种利用哈希空间不足够大，而制造碰撞的攻击方法，就被称为<strong>生日攻击（birthday attack）</strong>。</p>
+<p>利用泰勒公式和近似结合生日悖论的数学推导便可推导出哈希碰撞概率的一般式：<br>$$<br>p(n,d)\approx1-e^{\frac{-n(n-1)}{2d}}<br>$$<br>其中，d为取值空间，n为计算次数。</p>
+<blockquote>
+<p><strong>参考资料：</strong></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://news.mydrivers.com/1/524/524357.htm">奇妙的生日悖论：这就是数学的魔力</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%94%9F%E6%97%A5%E5%95%8F%E9%A1%8C">生日问题</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2018/09/hash-collision-and-birthday-attack.html">哈希碰撞与生日攻击</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%94%9F%E6%97%A5%E6%94%BB%E5%87%BB">生日攻击</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%93%88%E5%B8%8C%E8%A1%A8">散列表</a></li>
+</ol>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/Crypto/">Crypto</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/hash/">hash</a>
+                    
+                      <a class="hover-with-bg" href="/tags/python/">python</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/a32751c8.html">
+                        <span class="hidden-mobile">HTML5小记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="waline"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#waline', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/@waline/client@1/dist/Waline.min.js', function() {
+        var options = Object.assign(
+          {"serverURL":"https://blog-comment-eta.vercel.app/","path":"window.location.pathname","placeholder":null,"meta":["nick","mail","link"],"requiredMeta":["nick"],"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],"dark":"html[data-user-color-scheme=\"dark\"]","avatar":"retro","avatarCDN":"https://seccdn.libravatar.org/avatar/","avatarForce":false,"wordLimit":0,"pageSize":10,"highlight":true},
+          {
+            el: '#waline',
+            path: window.location.pathname
+          }
+        )
+        new Waline(options);
+        Fluid.utils.waitElementVisible('#waline .vcontent', () => {
+          Fluid.plugins.initFancyBox('#waline .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- LeanCloud 统计PV -->
+        <span id="leancloud-site-pv-container" style="display: none">
+            总访问量 
+            <span id="leancloud-site-pv"></span>
+             次
+          </span>
+      
+      
+        <!-- LeanCloud 统计UV -->
+        <span id="leancloud-site-uv-container" style="display: none">
+            总访客数 
+            <span id="leancloud-site-uv"></span>
+             人
+          </span>
+      
+
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0aae2bb9475d846643a0f05755d8a37b";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":"true#是否在手机端显示"},"log":false});</script></body>
+</html>
