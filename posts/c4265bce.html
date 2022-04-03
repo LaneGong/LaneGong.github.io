@@ -16,12 +16,12 @@
   <meta name="author" content="Lane Gong">
   <meta name="keywords" content="">
   
-    <meta name="description" content="摘要：本篇主要是对Docker作了一个入门了解，简单探索了Docker的原理架构，以及对Docker四种网络模式中的Bridge模式进行了深入学习和阐述，最后是介绍了如何在Kali Linux上部署Docker容器虚拟化平台，不足之处，敬请指正！">
+    <meta name="description" content="摘要： 本篇主要是对Docker作了一个入门了解，简单探索了Docker的原理架构，以及对Docker四种网络模式中的Bridge模式进行了深入学习和阐述，最后是介绍了如何在Kali Linux上部署Docker容器虚拟化平台，不足之处，敬请指正！">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Docker入门及kali部署Docker">
 <meta property="og:url" content="https://lanegong.github.io/posts/c4265bce.html">
 <meta property="og:site_name" content="Lane&#39;s Blog">
-<meta property="og:description" content="摘要：本篇主要是对Docker作了一个入门了解，简单探索了Docker的原理架构，以及对Docker四种网络模式中的Bridge模式进行了深入学习和阐述，最后是介绍了如何在Kali Linux上部署Docker容器虚拟化平台，不足之处，敬请指正！">
+<meta property="og:description" content="摘要： 本篇主要是对Docker作了一个入门了解，简单探索了Docker的原理架构，以及对Docker四种网络模式中的Bridge模式进行了深入学习和阐述，最后是介绍了如何在Kali Linux上部署Docker容器虚拟化平台，不足之处，敬请指正！">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lanegong.github.io/images/postimage/docker2.jpeg">
 <meta property="article:published_time" content="2022-02-07T16:00:00.000Z">
@@ -268,23 +268,26 @@
             <h1 style="display: none">Docker入门及kali部署Docker</h1>
             
             <div class="markdown-body">
-              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>本篇主要是对Docker作了一个入门了解，简单探索了Docker的原理架构，以及对Docker四种网络模式中的Bridge模式进行了深入学习和阐述，最后是介绍了如何在Kali Linux上部署Docker容器虚拟化平台，不足之处，敬请指正！</p>
+              <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要：</h2>
+<p>本篇主要是对Docker作了一个入门了解，简单探索了Docker的原理架构，以及对Docker四种网络模式中的Bridge模式进行了深入学习和阐述，最后是介绍了如何在Kali Linux上部署Docker容器虚拟化平台，不足之处，敬请指正！</p>
 <span id="more"></span>
-
 <div class="note note-warning">
             <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
           </div>
-
-<h2 id="Docker介绍"><a href="#Docker介绍" class="headerlink" title="Docker介绍"></a>Docker介绍</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Docker 是一个开源的应用容器引擎，基于Go 语言并遵从 Apache2.0 协议开源。Docker 可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。Docker是一个能够建立、运行和分享程序、系统容器的平台，允许开发者和系统管理员轻松地运行和管理各种容器。</p>
-<p><strong>容器：</strong>容器化，就是将程序或系统（也可看作是一个程序）置于一个容器中，开发者在容器中放置特定功能的程序并通过接口进行标准化。使用者在部署容器时，不需要考虑容器中的应用机理，只需要专注于使用其功能，他们使用一套工具来管理（生成、配置、运行、运输、分享）这些容器（Docker就是这样一个管理平台），从而大大减少了部署单元的数量和配置难度以及资源占用。</p>
+<h2 id="docker介绍"><a class="markdownIt-Anchor" href="#docker介绍"></a> Docker介绍</h2>
+<h3 id="简介"><a class="markdownIt-Anchor" href="#简介"></a> 简介</h3>
+<p>Docker 是一个开源的应用容器引擎，基于Go 语言并遵从 Apache2.0 协议开源。Docker 可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。Docker是一个能够建立、运行和分享程序、系统容器的平台，允许开发者和系统管理员轻松地运行和管理各种容器。</p>
+<p>**容器：**容器化，就是将程序或系统（也可看作是一个程序）置于一个容器中，开发者在容器中放置特定功能的程序并通过接口进行标准化。使用者在部署容器时，不需要考虑容器中的应用机理，只需要专注于使用其功能，他们使用一套工具来管理（生成、配置、运行、运输、分享）这些容器（Docker就是这样一个管理平台），从而大大减少了部署单元的数量和配置难度以及资源占用。</p>
 <p>容器是完全使用沙箱机制，相互之间不会有任何接口（类似 iPhone 的 app）,更重要的是容器性能开销极低。Docker 从 17.03 版本之后分为 CE（Community Edition: 社区版） 和 EE（Enterprise Edition: 企业版），我们用社区版就可以了。</p>
-<h3 id="Docker的优点"><a href="#Docker的优点" class="headerlink" title="Docker的优点"></a>Docker的优点</h3><p>Docker 是一个用于开发，交付和运行应用程序的开放平台。Docker 使您能够将应用程序与基础架构分开，从而可以快速交付软件。借助 Docker，您可以与管理应用程序相同的方式来管理基础架构。通过利用 Docker 的方法来快速交付，测试和部署代码，您可以大大减少编写代码和在生产环境中运行代码之间的延迟。</p>
+<h3 id="docker的优点"><a class="markdownIt-Anchor" href="#docker的优点"></a> Docker的优点</h3>
+<p>Docker 是一个用于开发，交付和运行应用程序的开放平台。Docker 使您能够将应用程序与基础架构分开，从而可以快速交付软件。借助 Docker，您可以与管理应用程序相同的方式来管理基础架构。通过利用 Docker 的方法来快速交付，测试和部署代码，您可以大大减少编写代码和在生产环境中运行代码之间的延迟。</p>
 <ul>
 <li>快速，一致地交付您的应用程序</li>
 <li>响应式部署和扩展</li>
 <li>在同一硬件上运行更多工作负载</li>
 </ul>
-<h3 id="Docker架构"><a href="#Docker架构" class="headerlink" title="Docker架构"></a>Docker架构</h3><p>Docker 包括三个基本概念:</p>
+<h3 id="docker架构"><a class="markdownIt-Anchor" href="#docker架构"></a> Docker架构</h3>
+<p>Docker 包括三个基本概念:</p>
 <ul>
 <li>镜像（Image）：在Docker社区中，所有的应用都以镜像方式存在，包含了运行程序所需要的一切，用户需要下载并使用镜像生成容器</li>
 <li>容器（Container）：容器是独立运行的一个或一组应用，是镜像运行时的实体，它是运行应用程序的基本单元。容器可以被创建、启动、停止、删除、暂停等。</li>
@@ -294,112 +297,142 @@
 <p>容器和镜像的关系类比面向对象中对象与类：</p>
 <p>容器➡️对象</p>
 <p>镜像➡️类</p>
-<p><img src="/images/postimage/docker1.jpg" srcset="/img/loading.gif" lazyload alt="架构示意图"></p>
+<p><img src="/images/postimage/docker1.jpg" srcset="/img/loading.gif" lazyload alt="架构示意图" /></p>
 <blockquote>
 <p>Registry和Repository的区别：</p>
 <p>Repository：镜像仓库，用于存储具体的docker镜像，起到的是仓库存储作用，我们可以通过tag来区分镜像版本</p>
 <p>Registry：注册服务器，管理镜像仓库，起到的是服务器的作用，比如官方公开公共的是Docker Hub，它是开源的。当然我们也可以自己部署一个私有Registry，获得私有仓库镜像：私有仓库IP+端口+镜像名+（标签）</p>
 <p>eg. <code>docker pull IP:port/imagename:tag</code></p>
 </blockquote>
-<h3 id="Docker实战用途"><a href="#Docker实战用途" class="headerlink" title="Docker实战用途"></a>Docker实战用途</h3><p>在学习Web安全的过程中，我们往往会搭建一些靶场以供测试。但靶场如果直接搭建在物理机中可能会引起稳定性问题甚至导致物理机损坏；如果搭建在虚拟机中，就多了配置虚拟机的麻烦和运行虚拟机带来的系统资源占用问题。在这种情况下，<code>Docker</code>容器就可以很好地满足我们所有需求。</p>
+<h3 id="docker实战用途"><a class="markdownIt-Anchor" href="#docker实战用途"></a> Docker实战用途</h3>
+<p>在学习Web安全的过程中，我们往往会搭建一些靶场以供测试。但靶场如果直接搭建在物理机中可能会引起稳定性问题甚至导致物理机损坏；如果搭建在虚拟机中，就多了配置虚拟机的麻烦和运行虚拟机带来的系统资源占用问题。在这种情况下，<code>Docker</code>容器就可以很好地满足我们所有需求。</p>
 <blockquote>
 <p>注：用途很多，只是从当下要用到的角度出发。</p>
 </blockquote>
-<h3 id="Docker网络管理"><a href="#Docker网络管理" class="headerlink" title="Docker网络管理"></a>Docker网络管理</h3><p>Docker自身的4种网络工作方式:</p>
+<h3 id="docker网络管理"><a class="markdownIt-Anchor" href="#docker网络管理"></a> Docker网络管理</h3>
+<p>Docker自身的4种网络工作方式:</p>
 <table>
 <thead>
 <tr>
 <th>网络模式</th>
-<th align="left">简介</th>
+<th style="text-align:left">简介</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Host</td>
-<td align="left">容器将不会虚拟出自己的网卡，配置自己的IP等，而是使用宿主机的IP和端口</td>
+<td style="text-align:left">容器将不会虚拟出自己的网卡，配置自己的IP等，而是使用宿主机的IP和端口</td>
 </tr>
 <tr>
 <td>Bridge</td>
-<td align="left">此模式会为每一个容器分配、设置IP等，并将容器连接到一个docker0虚拟网桥，通过docker0网桥以及Iptables nat表配置与宿主机通信</td>
+<td style="text-align:left">此模式会为每一个容器分配、设置IP等，并将容器连接到一个docker0虚拟网桥，通过docker0网桥以及Iptables nat表配置与宿主机通信</td>
 </tr>
 <tr>
 <td>None</td>
-<td align="left">该模式关闭了容器的网络功能</td>
+<td style="text-align:left">该模式关闭了容器的网络功能</td>
 </tr>
 <tr>
 <td>Container</td>
-<td align="left">创建的容器不会创建自己的网卡，配置自己的IP，而是和一个指定的容器共享IP、端口范围</td>
+<td style="text-align:left">创建的容器不会创建自己的网卡，配置自己的IP，而是和一个指定的容器共享IP、端口范围</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>安装Docker时，它会自动创建三个网络，bridge（创建容器默认连接到此网络）、 none 、host，下面重点介绍Bridge模式。</p>
-<h4 id="Bridge模式"><a href="#Bridge模式" class="headerlink" title="Bridge模式"></a>Bridge模式</h4><p>相当于Nat模式，容器使用独立network Namespace，并连接到docker0虚拟网卡，通过docker0网桥以及Iptables nat表配置与宿主机通信。</p>
+<h4 id="bridge模式"><a class="markdownIt-Anchor" href="#bridge模式"></a> Bridge模式</h4>
+<p>相当于Nat模式，容器使用独立network Namespace，并连接到docker0虚拟网卡，通过docker0网桥以及Iptables nat表配置与宿主机通信。</p>
 <p><strong>docker0:</strong> 当Docker server启动时，会在主机上创建一个名为docker0的虚拟网桥，此主机上启动的Docker容器会连接到这个虚拟网桥上。虚拟网桥的工作方式和物理交换机类似，这样主机上的所有容器就通过交换机连在了一个二层网络中。</p>
-<p><strong>为容器分配IP：</strong>Docker会从RFC1918所定义的私有IP网段中，选择一个和宿主机不同的IP地址和子网分配给docker0，连接到docker0的容器就从这个子网中选择一个未占用的IP使用。</p>
+<p>**为容器分配IP：**Docker会从RFC1918所定义的私有IP网段中，选择一个和宿主机不同的IP地址和子网分配给docker0，连接到docker0的容器就从这个子网中选择一个未占用的IP使用。</p>
 <p><strong>Docker Bridge网络模式创建过程：</strong></p>
-<p><img src="/images/postimage/docker2.jpeg" srcset="/img/loading.gif" lazyload alt="Bridge网络拓扑"></p>
-<h4 id="Bridge模式容器通信"><a href="#Bridge模式容器通信" class="headerlink" title="Bridge模式容器通信"></a>Bridge模式容器通信</h4><ol>
-<li><p>在bridge模式下，连在同一网桥上的容器可以相互通信。也就是说，宿主机上的所有容器可以不受任何限制地相互通信，这可能导致<strong>拒绝服务攻击</strong>。</p>
+<p><img src="/images/postimage/docker2.jpeg" srcset="/img/loading.gif" lazyload alt="Bridge网络拓扑" /></p>
+<h4 id="bridge模式容器通信"><a class="markdownIt-Anchor" href="#bridge模式容器通信"></a> Bridge模式容器通信</h4>
+<ol>
+<li>
+<p>在bridge模式下，连在同一网桥上的容器可以相互通信。也就是说，宿主机上的所有容器可以不受任何限制地相互通信，这可能导致<strong>拒绝服务攻击</strong>。</p>
 </li>
-<li><p>容器与外部通信，容器➡️外部：</p>
+<li>
+<p>容器与外部通信，容器➡️外部：</p>
 <blockquote>
-<p>根据主机上的Iptable规则中的一条:<br>-A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE</p>
+<p>根据主机上的Iptable规则中的一条:<br />
+-A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE</p>
 </blockquote>
 <p>根据主机上的Iptable规则会将源地址为172.17.0.0/16的包（也就是从Docker容器产生的包），并且不是从docker0网卡发出的，进行源地址转换，转换成主机网卡的地址。这样，在外界看来，这个包就是从主机上发出来的，Docker容器对外是不可见的。</p>
-<p><img src="/images/postimage/docker3.jpeg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/docker3.jpeg" srcset="/img/loading.gif" lazyload alt="" /></p>
 </li>
-<li><p>外面的机器访问Docker容器的服务，外部➡️容器：</p>
-<p><img src="/images/postimage/docker4.jpeg" srcset="/img/loading.gif" lazyload></p>
+<li>
+<p>外面的机器访问Docker容器的服务，外部➡️容器：</p>
+<p><img src="/images/postimage/docker4.jpeg" srcset="/img/loading.gif" lazyload alt="" /></p>
 <blockquote>
-<p>Iptable规则新增：<br>-A DOCKER ! -i docker0 -p tcp -m tcp –dport 80 -j DNAT –to-destination 172.17.0.2:80</p>
+<p>Iptable规则新增：<br />
+-A DOCKER ! -i docker0 -p tcp -m tcp --dport 80 -j DNAT --to-destination 172.17.0.2:80</p>
 </blockquote>
 <p>创建了相应容器+端口映射➡️Iptable规则新增➡️橘黄色对应这条规则的应用</p>
 <p>==》因此，外界只需访问主机xx.xx.xx.xx:80端口就可以访问到容器中的服务。</p>
 </li>
 </ol>
-<h2 id="Kali-Linux-部署docker容器虚拟化平台"><a href="#Kali-Linux-部署docker容器虚拟化平台" class="headerlink" title="Kali Linux 部署docker容器虚拟化平台"></a>Kali Linux 部署docker容器虚拟化平台</h2><blockquote>
+<h2 id="kali-linux-部署docker容器虚拟化平台"><a class="markdownIt-Anchor" href="#kali-linux-部署docker容器虚拟化平台"></a> Kali Linux 部署docker容器虚拟化平台</h2>
+<blockquote>
 <p>kali原生没有安装Docker，并且在更新源中也没有。所以在正式安装之前，我们需要对更新源进行配置。</p>
 </blockquote>
-<p><strong>安装方式：</strong>通过设置 Docker 的存储库并从中安装Docker Engine，以便于安装和升级任务。</p>
+<p>**安装方式：**通过设置 Docker 的存储库并从中安装Docker Engine，以便于安装和升级任务。</p>
 <ul>
-<li><p>添加 Docker 的GPG 密钥</p>
-<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">curl -fsSL https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;debian&#x2F;gpg | sudo apt-key add -<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></li>
-<li><p>将Docker的源加入apt源列表中(将Docker存储库添加到Kali Linux系统中)</p>
-<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">echo &#39;deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;debian&#x2F; buster stable&#39; | sudo tee &#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;docker.list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></li>
-<li><p>更新apt包索引，安装<em>最新版本</em>的Docker Engine和containerd</p>
+<li>
+<p>添加 Docker 的GPG 密钥</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">curl -fsSL https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;debian&#x2F;gpg | sudo apt-key add -<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+</li>
+<li>
+<p>将Docker的源加入apt源列表中(将Docker存储库添加到Kali Linux系统中)</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">echo &#39;deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;debian&#x2F; buster stable&#39; | sudo tee &#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;docker.list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+</li>
+<li>
+<p>更新apt包索引，安装<em>最新版本</em>的Docker Engine和containerd</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">apt update #更新apt源，可以看到docker的清华镜像源已经在列表中
 apt-get install docker-ce docker-ce-cli containerd.io docker-compose -y
-#安装最新版本，docker-ce指的是Docker Community Edition，docker-ce-cli作用是docker命令行工具包，containerd.io作用是容器接口相关包，Compose是用于定义和运行多容器Docker应用程序的工具。通过Compose，您可以使用YML文件来配置应用程序需要的所有服务。然后，使用一个命令，就可以从YML文件配置中创建并启动所有服务。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></li>
-<li><p>通过version查看是否安装成功</p>
+#安装最新版本，docker-ce指的是Docker Community Edition，docker-ce-cli作用是docker命令行工具包，containerd.io作用是容器接口相关包，Compose是用于定义和运行多容器Docker应用程序的工具。通过Compose，您可以使用YML文件来配置应用程序需要的所有服务。然后，使用一个命令，就可以从YML文件配置中创建并启动所有服务。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>通过version查看是否安装成功</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">docker version #查看docker是否安装成功
-docker-compose version #查看docker-compose是否安装成功<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></li>
-<li><p>使用<code>systemctl</code>命令查看Docker服务状态</p>
+docker-compose version #查看docker-compose是否安装成功<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>使用<code>systemctl</code>命令查看Docker服务状态</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">systemctl status docker
 
 #如果未显示active，则说明服务未启动，需要手动开启
 
 systemctl start docker<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-<p><img src="/images/postimage/docker5.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/docker5.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 </li>
-<li><p>将服务设置为开机自启动</p>
-<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">systemctl enable docker # 开机自启服务<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></li>
-<li><p>更换docker源</p>
+<li>
+<p>将服务设置为开机自启动</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">systemctl enable docker # 开机自启服务<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+</li>
+<li>
+<p>更换docker源</p>
 <p>由于Docker官方源在国外无法连接或极慢，故需要更换国内源，提升速度。</p>
 <ol>
-<li><p>关闭docker服务</p>
-<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">systemctl stop docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></li>
-<li><p>手动创建配置文件daemon.json。写入以下内容：</p>
+<li>
+<p>关闭docker服务</p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">systemctl stop docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+</li>
+<li>
+<p>手动创建配置文件daemon.json。写入以下内容：</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#创建
 vim &#x2F;etc&#x2F;docker&#x2F;daemon.json
 #内容
 &#123;
 &quot;registry-mirrors&quot;: [&quot;https:&#x2F;&#x2F;e9yneuy4.mirror.aliyuncs.com&quot;]
 &#125;
-#使用阿里云docker镜像加速器<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li>
-<li><p>启动docker服务</p>
+#使用阿里云docker镜像加速器<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>启动docker服务</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">systemctl daemon-reload
-systemctl start docker<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></li>
-<li><p>使用<code>docker info</code> 命令查看docker配置信息</p>
-<p><img src="/images/postimage/docker6.png" srcset="/img/loading.gif" lazyload></p>
+systemctl start docker<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>使用<code>docker info</code> 命令查看docker配置信息</p>
+<p><img src="/images/postimage/docker6.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 </li>
 </ol>
 </li>
@@ -408,8 +441,8 @@ systemctl start docker<span aria-hidden="true" class="line-numbers-rows"><span><
 <p><strong>参考资料：</strong></p>
 <ol>
 <li><a target="_blank" rel="noopener" href="https://www.runoob.com/docker/docker-tutorial.html">Docker教程</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Zheng__Huang/article/details/109476909?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164396269916780265420345%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164396269916780265420345&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-109476909.first_rank_v2_pc_rank_v29&utm_term=kali+linux%E9%83%A8%E7%BD%B2docker%E5%AE%B9%E5%99%A8%E8%99%9A%E6%8B%9F%E5%8C%96%E5%B9%B3%E5%8F%B0&spm=1018.2226.3001.4187">Docker入门详解：简介、kali安装Docker、配置与管理容器（实战）</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ymeng9527/article/details/98471442?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0.pc_relevant_default&spm=1001.2101.3001.4242.1&utm_relevant_index=3">Docker学习（10）——Docker网络详解:主要是原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Zheng__Huang/article/details/109476909?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164396269916780265420345%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&amp;request_id=164396269916780265420345&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-109476909.first_rank_v2_pc_rank_v29&amp;utm_term=kali+linux%E9%83%A8%E7%BD%B2docker%E5%AE%B9%E5%99%A8%E8%99%9A%E6%8B%9F%E5%8C%96%E5%B9%B3%E5%8F%B0&amp;spm=1018.2226.3001.4187">Docker入门详解：简介、kali安装Docker、配置与管理容器（实战）</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ymeng9527/article/details/98471442?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0.pc_relevant_default&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=3">Docker学习（10）——Docker网络详解:主要是原理</a></li>
 <li><a target="_blank" rel="noopener" href="https://docs.docker.com/">docker docs</a></li>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/X_sweelg/article/details/120564994">在Kali 2021中安装docker和docker-compose</a></li>
 </ol>
@@ -664,6 +697,13 @@ systemctl start docker<span aria-hidden="true" class="line-numbers-rows"><span><
 
 
 
+
+  
+
+  
+    <!-- KaTeX -->
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css" />
+  
 
 
 

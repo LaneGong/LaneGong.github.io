@@ -16,12 +16,12 @@
   <meta name="author" content="Lane Gong">
   <meta name="keywords" content="">
   
-    <meta name="description" content="摘要：本篇博客主要是记载了主动信息收集的一些方式，包括ping命令和nmap扫描，但本章中nmap只演示了最最基本的操作，还有很多高级用法值得探索，不足之处，敬请指正！">
+    <meta name="description" content="摘要： 本篇博客主要是记载了主动信息收集的一些方式，包括ping命令和nmap扫描，但本章中nmap只演示了最最基本的操作，还有很多高级用法值得探索，不足之处，敬请指正！">
 <meta property="og:type" content="article">
 <meta property="og:title" content="主动信息收集1">
 <meta property="og:url" content="https://lanegong.github.io/posts/ad511b5.html">
 <meta property="og:site_name" content="Lane&#39;s Blog">
-<meta property="og:description" content="摘要：本篇博客主要是记载了主动信息收集的一些方式，包括ping命令和nmap扫描，但本章中nmap只演示了最最基本的操作，还有很多高级用法值得探索，不足之处，敬请指正！">
+<meta property="og:description" content="摘要： 本篇博客主要是记载了主动信息收集的一些方式，包括ping命令和nmap扫描，但本章中nmap只演示了最最基本的操作，还有很多高级用法值得探索，不足之处，敬请指正！">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lanegong.github.io/images/postimage/zhu1.png">
 <meta property="article:published_time" content="2022-03-04T16:00:00.000Z">
@@ -269,14 +269,15 @@
             <h1 style="display: none">主动信息收集1</h1>
             
             <div class="markdown-body">
-              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>本篇博客主要是记载了主动信息收集的一些方式，包括ping命令和nmap扫描，但本章中nmap只演示了最最基本的操作，还有很多高级用法值得探索，不足之处，敬请指正！</p>
+              <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要：</h2>
+<p>本篇博客主要是记载了主动信息收集的一些方式，包括ping命令和nmap扫描，但本章中nmap只演示了最最基本的操作，还有很多高级用法值得探索，不足之处，敬请指正！</p>
 <span id="more"></span>
-
 <div class="note note-warning">
             <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
           </div>
-
-<h2 id="Ping命令探测"><a href="#Ping命令探测" class="headerlink" title="Ping命令探测"></a>Ping命令探测</h2><h3 id="Ping命令"><a href="#Ping命令" class="headerlink" title="Ping命令"></a>Ping命令</h3><p>PING 命令是我们常用的判断主机之间网络是否畅通，同样也是能判断我们的目标主机是否存活。</p>
+<h2 id="ping命令探测"><a class="markdownIt-Anchor" href="#ping命令探测"></a> Ping命令探测</h2>
+<h3 id="ping命令"><a class="markdownIt-Anchor" href="#ping命令"></a> Ping命令</h3>
+<p>PING 命令是我们常用的判断主机之间网络是否畅通，同样也是能判断我们的目标主机是否存活。</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─$ ping www.baidu.com     
 PING www.a.shifen.com (36.152.44.96) 56(84) bytes of data.
 64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;7 ttl&#x3D;128 time&#x3D;18.9 ms
@@ -286,8 +287,8 @@ PING www.a.shifen.com (36.152.44.96) 56(84) bytes of data.
 64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;11 ttl&#x3D;128 time&#x3D;34.9 ms
 64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;12 ttl&#x3D;128 time&#x3D;20.3 ms
 64 bytes from 36.152.44.96 (36.152.44.96): icmp_seq&#x3D;13 ttl&#x3D;128 time&#x3D;35.8 ms<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-<h3 id="Traceroute-命令"><a href="#Traceroute-命令" class="headerlink" title="Traceroute 命令"></a>Traceroute 命令</h3><p>我们从当前主机到目标主机之间肯定要经过很多网络设备，通过traceroute可以对路由进行跟踪。</p>
+<h3 id="traceroute-命令"><a class="markdownIt-Anchor" href="#traceroute-命令"></a> Traceroute 命令</h3>
+<p>我们从当前主机到目标主机之间肯定要经过很多网络设备，通过traceroute可以对路由进行跟踪。</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">[root@localhost ~]# traceroute www.baidu.com
 traceroute to www.baidu.com (61.135.169.125), 30 hops max, 40 byte packets
  1  192.168.74.2 (192.168.74.2)  2.606 ms  2.771 ms  2.950 ms
@@ -301,16 +302,16 @@ traceroute to www.baidu.com (61.135.169.125), 30 hops max, 40 byte packets
  9  * * *
 30  * * *
 [root@localhost ~]#<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
 <blockquote>
 <p>注：这边在NAT模式下虚拟机上使用traceroute命令得到的全是*号，可能存在被防火墙，网关等拦截的情况，将虚拟机网络模式改为桥接模式便可追踪到相关信息，具体可参见博文：</p>
 </blockquote>
-<h3 id="ARPING命令"><a href="#ARPING命令" class="headerlink" title="ARPING命令"></a>ARPING命令</h3><blockquote>
+<h3 id="arping命令"><a class="markdownIt-Anchor" href="#arping命令"></a> ARPING命令</h3>
+<blockquote>
 <p>本部分可参考之前博文：<a href="https://lanegong.github.io/posts/a7a0edbb.html">ARP攻击与防御</a></p>
 </blockquote>
 <p>ARP 协议是“Address Resolution Protocol”（地址解析协议）的缩写。计算机通过 ARP 协议将 IP 地址转换成 MAC 地址。</p>
-<p><strong>工作原理：</strong>在以太网中，数据传输的目标地址是 MAC 地址，一个主机要和另一个主机进行直接通信，必须要知道目标主机的 MAC 地址。计算机使用者通常只知道目标机器的 IP 信息，“地址解析”就是主机在发送帧前将目标 IP 地址转换成目标 MAC 地址的过程。简单地说，ARP 协议主要负责将局域网中的 32 位 IP 地址转换为对应的 48 位物理地址，即网卡的MAC 地址，保障通信顺利进行。 </p>
-<p><img src="/images/postimage/zhu1.png" srcset="/img/loading.gif" lazyload></p>
+<p>**工作原理：**在以太网中，数据传输的目标地址是 MAC 地址，一个主机要和另一个主机进行直接通信，必须要知道目标主机的 MAC 地址。计算机使用者通常只知道目标机器的 IP 信息，“地址解析”就是主机在发送帧前将目标 IP 地址转换成目标 MAC 地址的过程。简单地说，ARP 协议主要负责将局域网中的 32 位 IP 地址转换为对应的 48 位物理地址，即网卡的MAC 地址，保障通信顺利进行。</p>
+<p><img src="/images/postimage/zhu1.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 <p>PC1想要ping IP2，首先对数据包进行封装，封装到MAC地址的时候，PC1会查询自己的ARP缓存表，发现没有IP2和其MAC地址的映射，这样的话，MAC数据帧封装失败（设备通信需要对方的MAC地址，但现在没有）。故为了获取PC2的MAC地址，PC1要发送询问信息，询问PC2的MAC地址。</p>
 <blockquote>
 <p>Question:询问信息也需要对Mac地址封装，那现在没有，应该填什么？</p>
@@ -319,7 +320,8 @@ traceroute to www.baidu.com (61.135.169.125), 30 hops max, 40 byte packets
 <blockquote>
 <p>注意:目的主机先完成ARP缓存，然后才是源主机完成ARP缓存。</p>
 </blockquote>
-<h4 id="使用-arping-命令查看局域网中的-IP-是否有冲突"><a href="#使用-arping-命令查看局域网中的-IP-是否有冲突" class="headerlink" title="使用 arping 命令查看局域网中的 IP 是否有冲突"></a>使用 arping 命令查看局域网中的 IP 是否有冲突</h4><div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# arping 10.211.55.13 -c 1
+<h4 id="使用-arping-命令查看局域网中的-ip-是否有冲突"><a class="markdownIt-Anchor" href="#使用-arping-命令查看局域网中的-ip-是否有冲突"></a> 使用 arping 命令查看局域网中的 IP 是否有冲突</h4>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# arping 10.211.55.13 -c 1
 ARPING 10.211.55.13
 42 bytes from 00:1c:42:bc:89:0f (10.211.55.13): index&#x3D;0 time&#x3D;493.408 usec
 
@@ -327,11 +329,9 @@ ARPING 10.211.55.13
 1 packets transmitted, 1 packets received,   0% unanswered (0 extra)
 rtt min&#x2F;avg&#x2F;max&#x2F;std-dev &#x3D; 0.493&#x2F;0.493&#x2F;0.493&#x2F;0.000 ms
 #-c 参数表示发送的次数，我们只需要 1 次即可<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
 <p>对返回的结果进行一定的筛选，只取IP：</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# arping -c 1 10.211.55.13 | grep &quot;bytes from&quot; | cut -d&quot; &quot; -f 5 | cut -d&quot;(&quot; -f 2 |cut -d&quot;)&quot; -f 1
 10.211.55.13<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
-
 <p>这边需要注意的是，若arping本机IP，会出现timeout问题。涉及原因：arping命令是以广播地址发送arp packets，以太网内所有的主机都会收到这个arp packets，但是本机收到之后不会Reply任何信息。因此不能在本机arping检验自己的ip。</p>
 <p>同时arping命令只能对一个IP进行判断，若想实现网络自动扫描，需要借助脚本。</p>
 <p><strong>脚本内容：</strong></p>
@@ -349,18 +349,21 @@ prefix&#x3D;$(ifconfig $interface | grep &quot;inet &quot; | cut -d &#39;t&#39; 
 for addr in $(seq 1 254);do 
 	arping -c 1 $prefix.$addr | grep &quot;bytes from&quot; | cut -d&quot; &quot; -f 5 | cut -d &quot;(&quot; -f 2 | cut -d&quot;)&quot; -f 1 
 done<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
 <ul>
-<li><p>在home目录新建脚本文件arping1.sh</p>
+<li>
+<p><a target="_blank" rel="noopener" href="http://xn--homearping1-000rf66f6iy8fbc32d4taz7s157fds0b.sh">在home目录新建脚本文件arping1.sh</a></p>
 </li>
-<li><p>脚本文件加权限（linux中可执行程序需要拥有执行权限才可以直接执行）</p>
+<li>
+<p>脚本文件加权限（linux中可执行程序需要拥有执行权限才可以直接执行）</p>
 <p><code>chmod +x arping1.sh</code></p>
 </li>
-<li><p>执行脚本，对局域网中IP进行扫描</p>
+<li>
+<p>执行脚本，对局域网中IP进行扫描</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# .&#x2F;arping1.sh eth0 
 10.211.55.1
 10.211.55.2
-10.211.55.13<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+10.211.55.13<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
 </ul>
 <p><strong>模拟IP地址冲突</strong></p>
 <p>在开一台虚拟机，并将两台虚拟机的IP设为一样，均为10.211.55.10</p>
@@ -370,63 +373,81 @@ done<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span
 10.211.55.2
 10.211.55.10
 10.211.55.10#如果出现两个一样的IP地址，就是有ARP攻击<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-<h4 id="使用Netdiscover进行被动方式探测局域网中存活的机器"><a href="#使用Netdiscover进行被动方式探测局域网中存活的机器" class="headerlink" title="使用Netdiscover进行被动方式探测局域网中存活的机器"></a>使用Netdiscover进行被动方式探测局域网中存活的机器</h4><p>Netdiscover是一个主动/被动的 ARP 侦查工具。使用 Netdiscover 工具可以在网络上扫描 IP地址，检查在线主机或搜索为它们发送的 ARP 请求。</p>
+<h4 id="使用netdiscover进行被动方式探测局域网中存活的机器"><a class="markdownIt-Anchor" href="#使用netdiscover进行被动方式探测局域网中存活的机器"></a> 使用Netdiscover进行被动方式探测局域网中存活的机器</h4>
+<p>Netdiscover是一个主动/被动的 ARP 侦查工具。使用 Netdiscover 工具可以在网络上扫描 IP地址，检查在线主机或搜索为它们发送的 ARP 请求。</p>
 <ul>
-<li><p><strong>主动模式：</strong>主动的探测发现网络内主机，但是这种方式往往会引起网络管理员的注意。</p>
+<li>
+<p>**主动模式：**主动的探测发现网络内主机，但是这种方式往往会引起网络管理员的注意。</p>
 <p><strong>命令：</strong><code>netdiscover -i eth0 -r 10.211.55.1/24</code></p>
 <p><strong>参数：</strong></p>
 <ul>
-<li><p>-i device: your network device</p>
+<li>
+<p>-i device: your network device</p>
 </li>
-<li><p>-r range: scan a given range instead of auto scan. 10.211.55.1/24或/16或/8</p>
+<li>
+<p>-r range: scan a given range instead of auto scan. 10.211.55.1/24或/16或/8</p>
 </li>
 </ul>
-<p><img src="/images/postimage/zhu2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/zhu2.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 </li>
-<li><p><strong>被动模式：</strong>被动模式的方法更加隐蔽，但是速度会比较慢，网卡被设置为混杂模式来侦听网络内的 arp 数据包进行被动式探测，这种方式就需要网络内设备发送 arp 包才能被探测到。</p>
+<li>
+<p>**被动模式：**被动模式的方法更加隐蔽，但是速度会比较慢，网卡被设置为混杂模式来侦听网络内的 arp 数据包进行被动式探测，这种方式就需要网络内设备发送 arp 包才能被探测到。</p>
 <p>命令：<code>netdiscover -p</code></p>
 <p>参数：-p 被动模式:不发送任何东西，只进行嗅探</p>
 </li>
 </ul>
-<h3 id="Hping3命令"><a href="#Hping3命令" class="headerlink" title="Hping3命令"></a>Hping3命令</h3><p>Hping3 是一个命令行下使用的 TCP/IP 数据包组装/分析工具，通常 web 服务会用来做<strong>压力测试</strong>使用，也可以进行 DOS 攻击的实验。同样 Hping 只能每次扫描一个目标。</p>
+<h3 id="hping3命令"><a class="markdownIt-Anchor" href="#hping3命令"></a> Hping3命令</h3>
+<p>Hping3 是一个命令行下使用的 TCP/IP 数据包组装/分析工具，通常 web 服务会用来做<strong>压力测试</strong>使用，也可以进行 DOS 攻击的实验。同样 Hping 只能每次扫描一个目标。</p>
 <p><strong>使用 HPING 进行压力测试：</strong></p>
 <p>正常网站：<a target="_blank" rel="noopener" href="http://www.xuegod.cn/">http://www.xuegod.cn/</a></p>
 <p><strong>对其进行压力测试：</strong><code>hping3 -c 1000 -d 120 -S -w 64 -p 80 --flood --rand-source xuegod.cn</code></p>
 <p><strong>参数解释：</strong></p>
 <ul>
-<li><p>-c 1000 ==&gt;发送的数据包的数量。</p>
+<li>
+<p>-c 1000 ==&gt;发送的数据包的数量。</p>
 </li>
-<li><p>-d 120 ==&gt; 发送到目标机器的每个数据包的大小。单位是字节</p>
+<li>
+<p>-d 120 ==&gt; 发送到目标机器的每个数据包的大小。单位是字节</p>
 </li>
-<li><p>-S ==&gt; 只发送 SYN 数据包。</p>
+<li>
+<p>-S ==&gt; 只发送 SYN 数据包。</p>
 </li>
-<li><p>-w 64 ==&gt; TCP 窗口大小。</p>
+<li>
+<p>-w 64 ==&gt; TCP 窗口大小。</p>
 </li>
-<li><p>-p 80 ==&gt; 目的地端口(80 是 WEB 端口)。你在这里可以使用任何端口。</p>
+<li>
+<p>-p 80 ==&gt; 目的地端口(80 是 WEB 端口)。你在这里可以使用任何端口。</p>
 </li>
-<li><p>–flood ==&gt; 尽可能快地发送数据包，不需要考虑显示入站回复。洪水攻击模式。</p>
+<li>
+<p>–flood ==&gt; 尽可能快地发送数据包，不需要考虑显示入站回复。洪水攻击模式。</p>
 </li>
-<li><p>–rand-source ==&gt; 使用随机性的源头 IP 地址。这里的伪造的 IP 地址，只是在局域中伪造。通过路由器后，还会还原成真实的 IP 地址。</p>
+<li>
+<p>–rand-source ==&gt; 使用随机性的源头 IP 地址。这里的伪造的 IP 地址，只是在局域中伪造。通过路由器后，还会还原成真实的 IP 地址。</p>
 </li>
-<li><p>xuegod.cn ==&gt;目标地址</p>
+<li>
+<p><a target="_blank" rel="noopener" href="http://xuegod.cn">xuegod.cn</a> ==&gt;目标地址</p>
 </li>
 </ul>
 <p>执行命令后可以发现网站会打不开，ctrl+C停止后即可恢复访问。</p>
-<h3 id="FPING命令"><a href="#FPING命令" class="headerlink" title="FPING命令"></a>FPING命令</h3><p>Fping 就是 ping 命令的加强版他可以对一个 IP 段进行 ping 扫描，而 ping 命令本身是不可以对网段进行扫描的。因此我们可以使用 FPING 查看局域中运行了哪些机器。</p>
+<h3 id="fping命令"><a class="markdownIt-Anchor" href="#fping命令"></a> FPING命令</h3>
+<p>Fping 就是 ping 命令的加强版他可以对一个 IP 段进行 ping 扫描，而 ping 命令本身是不可以对网段进行扫描的。因此我们可以使用 FPING 查看局域中运行了哪些机器。</p>
 <p><strong>命令：</strong> <code>fping -g 10.211.55.1/24 -c 1 &gt; fping.txt</code></p>
 <p><strong>参数：</strong></p>
 <ul>
-<li><p>-g 表示对地址段进行扫描如果不加可以对某个 IP 进行扫描</p>
+<li>
+<p>-g 表示对地址段进行扫描如果不加可以对某个 IP 进行扫描</p>
 </li>
-<li><p>-c 表示 ping 的次数</p>
+<li>
+<p>-c 表示 ping 的次数</p>
 </li>
-<li><p>&gt;fping.txt 表示将扫描的结果重定向到 fping.txt ，原因是如果扫描一个网段的话输出结果是非常多的，我们输出重定向到文件中只会获得存活的主机信息。</p>
+<li>
+<p>&gt;fping.txt 表示将扫描的结果重定向到 fping.txt ，原因是如果扫描一个网段的话输出结果是非常多的，我们输出重定向到文件中只会获得存活的主机信息。</p>
 </li>
 </ul>
 <p><strong>查看：</strong><code>cat fping.txt</code></p>
-<p><img src="/images/postimage/zhu3.png" srcset="/img/loading.gif" lazyload></p>
-<h2 id="基于Nmap的扫描方式"><a href="#基于Nmap的扫描方式" class="headerlink" title="基于Nmap的扫描方式"></a>基于Nmap的扫描方式</h2><p>Nmap，也就是 Network Mapper，最早是 Linux 下的网络扫描和嗅探工具包。</p>
+<p><img src="/images/postimage/zhu3.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<h2 id="基于nmap的扫描方式"><a class="markdownIt-Anchor" href="#基于nmap的扫描方式"></a> 基于Nmap的扫描方式</h2>
+<p>Nmap，也就是 Network Mapper，最早是 Linux 下的网络扫描和嗅探工具包。</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# nmap -sn 10.211.55.1&#x2F;24
 Starting Nmap 7.92 ( https:&#x2F;&#x2F;nmap.org ) at 2022-03-05 11:17 CST
 Nmap scan report for 10.211.55.1
@@ -440,14 +461,16 @@ Host is up.
 Nmap done: 256 IP addresses (3 hosts up) scanned in 15.40 seconds
 #或者也可以使用 nmap -sn 10.211.55.1-254命令
 #-sn 参数说明：表示只 ping 扫描，不进行端口扫描<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-<h3 id="半连接扫描"><a href="#半连接扫描" class="headerlink" title="半连接扫描"></a>半连接扫描</h3><p><strong>nmap扫描类型：</strong></p>
+<h3 id="半连接扫描"><a class="markdownIt-Anchor" href="#半连接扫描"></a> 半连接扫描</h3>
+<p><strong>nmap扫描类型：</strong></p>
 <ul>
-<li><p>全连接扫描，会在被扫描机器留下记录</p>
-<p><img src="/images/postimage/zhu4.png" srcset="/img/loading.gif" lazyload></p>
+<li>
+<p>全连接扫描，会在被扫描机器留下记录</p>
+<p><img src="/images/postimage/zhu4.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 </li>
-<li><p>半连接扫描，不会留下记录</p>
-<p><img src="/images/postimage/zhu5.png" srcset="/img/loading.gif" lazyload></p>
+<li>
+<p>半连接扫描，不会留下记录</p>
+<p><img src="/images/postimage/zhu5.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 </li>
 </ul>
 <p><strong>使用nmap进行半连接扫描：</strong></p>
@@ -467,26 +490,26 @@ MAC Address: 00:1C:42:00:00:18 (Parallels)
 
 Nmap done: 1 IP address (1 host up) scanned in 6.94 seconds
 #-sS 表示使用 SYN 进行半连接扫描<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-<h3 id="使用nc扫描端口"><a href="#使用nc扫描端口" class="headerlink" title="使用nc扫描端口"></a>使用nc扫描端口</h3><p><strong>nc 参数：</strong></p>
+<h3 id="使用nc扫描端口"><a class="markdownIt-Anchor" href="#使用nc扫描端口"></a> 使用nc扫描端口</h3>
+<p><strong>nc 参数：</strong></p>
 <ul>
-<li><p>-nv 表示我们扫描的目标是个 IP 地址不做域名解析</p>
+<li>
+<p>-nv 表示我们扫描的目标是个 IP 地址不做域名解析</p>
 </li>
-<li><p>-w 表示超时时间</p>
+<li>
+<p>-w 表示超时时间</p>
 </li>
-<li><p>-z 表示进行端口扫描</p>
+<li>
+<p>-z 表示进行端口扫描</p>
 </li>
 </ul>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">└─# nc -nv -w 1 -z 10.211.55.1 1-100           
 (UNKNOWN) [10.211.55.1] 53 (domain) open<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
-
-
-
 <blockquote>
 <p>参考资料：</p>
 <ol>
 <li><a target="_blank" rel="noopener" href="https://blog.51cto.com/u_13570193/2083332">ARP原理和ARP攻击</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_52297942/article/details/122606172?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164636577716781685316870%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164636577716781685316870&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-2-122606172.pc_search_result_cache&utm_term=arping+timeout&spm=1018.2226.3001.4187">arping 本机出现 timeout 问题</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_52297942/article/details/122606172?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164636577716781685316870%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&amp;request_id=164636577716781685316870&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-2-122606172.pc_search_result_cache&amp;utm_term=arping+timeout&amp;spm=1018.2226.3001.4187">arping 本机出现 timeout 问题</a></li>
 </ol>
 </blockquote>
 
@@ -741,6 +764,13 @@ Nmap done: 1 IP address (1 host up) scanned in 6.94 seconds
 
 
 
+
+  
+
+  
+    <!-- KaTeX -->
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css" />
+  
 
 
 

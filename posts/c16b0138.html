@@ -16,12 +16,12 @@
   <meta name="author" content="Lane Gong">
   <meta name="keywords" content="">
   
-    <meta name="description" content="摘要：本篇主要是介绍了被动信息收集的概念，以及介绍了DNS域名解析原理和收集域名、子域名信息的方法及途径，不足之处欢迎留言指正！">
+    <meta name="description" content="摘要： 本篇主要是介绍了被动信息收集的概念，以及介绍了DNS域名解析原理和收集域名、子域名信息的方法及途径，不足之处欢迎留言指正！">
 <meta property="og:type" content="article">
 <meta property="og:title" content="被动信息收集1">
 <meta property="og:url" content="https://lanegong.github.io/posts/c16b0138.html">
 <meta property="og:site_name" content="Lane&#39;s Blog">
-<meta property="og:description" content="摘要：本篇主要是介绍了被动信息收集的概念，以及介绍了DNS域名解析原理和收集域名、子域名信息的方法及途径，不足之处欢迎留言指正！">
+<meta property="og:description" content="摘要： 本篇主要是介绍了被动信息收集的概念，以及介绍了DNS域名解析原理和收集域名、子域名信息的方法及途径，不足之处欢迎留言指正！">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lanegong.github.io/images/postimage/bei8.png">
 <meta property="article:published_time" content="2022-01-30T16:00:00.000Z">
@@ -228,7 +228,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      42 分钟
+      43 分钟
     </span>
   
 
@@ -268,66 +268,78 @@
             <h1 style="display: none">被动信息收集1</h1>
             
             <div class="markdown-body">
-              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>本篇主要是介绍了被动信息收集的概念，以及介绍了DNS域名解析原理和收集域名、子域名信息的方法及途径，不足之处欢迎留言指正！</p>
+              <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要：</h2>
+<p>本篇主要是介绍了被动信息收集的概念，以及介绍了DNS域名解析原理和收集域名、子域名信息的方法及途径，不足之处欢迎留言指正！</p>
 <span id="more"></span>
-
 <div class="note note-warning">
             <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
           </div>
-
-<h2 id="被动信息收集"><a href="#被动信息收集" class="headerlink" title="被动信息收集"></a>被动信息收集</h2><h3 id="什么是被动信息收集和其目的"><a href="#什么是被动信息收集和其目的" class="headerlink" title="什么是被动信息收集和其目的"></a>什么是被动信息收集和其目的</h3><p>信息收集的方式可以分为两种：</p>
+<h2 id="被动信息收集"><a class="markdownIt-Anchor" href="#被动信息收集"></a> 被动信息收集</h2>
+<h3 id="什么是被动信息收集和其目的"><a class="markdownIt-Anchor" href="#什么是被动信息收集和其目的"></a> 什么是被动信息收集和其目的</h3>
+<p>信息收集的方式可以分为两种：</p>
 <ul>
-<li><p>被动</p>
+<li>
+<p>被动</p>
 <p>被动信息收集是指利用第三方的服务对目标进行访问了解，比例：Google搜索。</p>
 </li>
-<li><p>主动</p>
+<li>
+<p>主动</p>
 <p>主动信息收集方式：通过直接访问、扫描网站，这种将流量流经网站的行为。比如：nmap扫描端口。</p>
 </li>
 </ul>
 <p>被动信息收集的目的：通过公开渠道，去获得目标主机的信息，从而不与目标系统直接交互，<strong>避免留下痕迹</strong>。</p>
-<h3 id="信息收集内容"><a href="#信息收集内容" class="headerlink" title="信息收集内容"></a>信息收集内容</h3><table>
+<h3 id="信息收集内容"><a class="markdownIt-Anchor" href="#信息收集内容"></a> 信息收集内容</h3>
+<table>
 <thead>
 <tr>
 <th><strong>1. IP地址段</strong></th>
-<th align="left"><strong>2. 域名信息</strong></th>
+<th style="text-align:left"><strong>2. 域名信息</strong></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>3. 邮件地址</strong></td>
-<td align="left"><strong>4. 文档图片数据</strong></td>
+<td style="text-align:left"><strong>4. 文档图片数据</strong></td>
 </tr>
 <tr>
 <td><strong>5. 公司地址</strong></td>
-<td align="left"><strong>6. 公司组织架构</strong></td>
+<td style="text-align:left"><strong>6. 公司组织架构</strong></td>
 </tr>
 <tr>
 <td><strong>7. 联系电话/传真号码</strong></td>
-<td align="left"><strong>8. 人员姓名/职务</strong></td>
+<td style="text-align:left"><strong>8. 人员姓名/职务</strong></td>
 </tr>
 <tr>
 <td><strong>9. 目标系统使⽤的技术架构</strong></td>
-<td align="left"><strong>10. 公开的商业信息</strong></td>
+<td style="text-align:left"><strong>10. 公开的商业信息</strong></td>
 </tr>
-</tbody></table>
-<h3 id="信息用途"><a href="#信息用途" class="headerlink" title="信息用途"></a>信息用途</h3><ul>
+</tbody>
+</table>
+<h3 id="信息用途"><a class="markdownIt-Anchor" href="#信息用途"></a> 信息用途</h3>
+<ul>
 <li>信息描述目标</li>
 <li>发现目标</li>
 <li>Social Engineering Attack</li>
 <li>物理缺口</li>
 </ul>
-<h2 id="DNS域名解析原理"><a href="#DNS域名解析原理" class="headerlink" title="DNS域名解析原理"></a>DNS域名解析原理</h2><p><strong>目的：</strong>收集网站域名解析记录</p>
-<h3 id="DNS服务器"><a href="#DNS服务器" class="headerlink" title="DNS服务器"></a>DNS服务器</h3><p>DNS（Domain Name Server，域名服务器）：是进行域名(domain name)和与之相对应的IP地址(IPaddress)转换的服务器，DNS中保存了一张域名(domain name)和与之相对应的IP地址 (IP address)的表，以解析消息的域名。</p>
+<h2 id="dns域名解析原理"><a class="markdownIt-Anchor" href="#dns域名解析原理"></a> DNS域名解析原理</h2>
+<p>**目的：**收集网站域名解析记录</p>
+<h3 id="dns服务器"><a class="markdownIt-Anchor" href="#dns服务器"></a> DNS服务器</h3>
+<p>DNS（Domain Name Server，域名服务器）：是进行域名(domain name)和与之相对应的IP地址(IPaddress)转换的服务器，DNS中保存了一张域名(domain name)和与之相对应的IP地址 (IP address)的表，以解析消息的域名。</p>
 <p>域名：是Internet上某一台计算机或计算机组的名称，用于在数据传输时标识计算机的电子方位（有时也指地理位置）。域名是由一串用点分隔的名字组成的，通常包含组织名，而且始终包括两到三个字母的后缀，以指明组织的类型或该域所在的国家或地区。</p>
 <p>DNS服务器分为：</p>
 <ul>
-<li><p>根域DNS服务器</p>
+<li>
+<p>根域DNS服务器</p>
 <p>根域DNS服务器有13个，存储了全部的顶级域名服务器的所在地址</p>
 </li>
-<li><p>顶级域名DNS服务器</p>
+<li>
+<p>顶级域名DNS服务器</p>
 </li>
 </ul>
-<h3 id="DNS查询过程"><a href="#DNS查询过程" class="headerlink" title="DNS查询过程"></a>DNS查询过程</h3><p>一个DNS查询过程，通过8个步骤的解析过程就使得客户端可以顺利访问<a target="_blank" rel="noopener" href="http://www.163.com这个域名,但实际应用中,通常这个过程是非常迅速的./">www.163.com这个域名，但实际应用中，通常这个过程是非常迅速的。</a></p>
-<p><img src="/images/postimage/bei1.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="dns查询过程"><a class="markdownIt-Anchor" href="#dns查询过程"></a> DNS查询过程</h3>
+<p>一个DNS查询过程，通过8个步骤的解析过程就使得客户端可以顺利访问www.163.com这个域名，但实际应用中，通常这个过程是非常迅速的。</p>
+<p><img src="/images/postimage/bei1.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 <p>客户端发起访问请求时，首先会经历如下几步：</p>
 <ul>
 <li>浏览器缓存。当用户通过浏览器访问某域名时，浏览器首先会在自己的缓存中查找是否有该域名对应的 IP 地址（若曾经访问过该域名且没有清空缓存便存在）</li>
@@ -338,25 +350,32 @@
 <p>若都没有则会进入下述环节：</p>
 <ul>
 <li>ISP（Internet Service Provider，互联网服务提供商）DNS 缓存(一般就是本地 DNS 服务器)：当在用户客户端查找不到域名对应 IP 地址，则将进入 ISP DNS 缓存中（本地DNS服务器）进行查询。比如你用的是电信的网络，则会进入电信的 DNS 缓存服务器中进行查找</li>
-<li>根域名服务器：当以上均未完成，则进入根服务器进行查询。全球仅有 13 台根域名服务器，1 个主根域名服务器，其余 12 为辅根域名服务器。根域名收到请求后会查看区域文件记录，若无则将其管辖范围内顶级域名（如.com）服务器 IP 告诉本地 DNS 服务器；本地DNS服务器在向顶级域名服务器发起请求</li>
-<li>顶级域名服务器：顶级域名服务器收到请求后查看区域文件记录，若无则将其管辖范围内主域名服务器的 IP 地址（163.com）告诉本地 DNS 服务器；本地DNS服务器在向主域名服务器发起请求</li>
+<li>根域名服务器：当以上均未完成，则进入根服务器进行查询。全球仅有 13 台根域名服务器，1 个主根域名服务器，其余 12 为辅根域名服务器。根域名收到请求后会查看区域文件记录，若无则将其管辖范围内顶级域名（<a target="_blank" rel="noopener" href="http://xn--bvs.com">如.com</a>）服务器 IP 告诉本地 DNS 服务器；本地DNS服务器在向顶级域名服务器发起请求</li>
+<li>顶级域名服务器：顶级域名服务器收到请求后查看区域文件记录，若无则将其管辖范围内主域名服务器的 IP 地址（<a target="_blank" rel="noopener" href="http://163.com">163.com</a>）告诉本地 DNS 服务器；本地DNS服务器在向主域名服务器发起请求</li>
 <li>主域名服务器：主域名服务器接受到请求后查询自己的缓存，如果没有则进入下一级域名服务器进行查找，并重复该步骤直至找到正确纪录；</li>
 <li>保存结果至缓存：本地域名服务器把返回的结果保存到缓存，以备下一次使用，同时将该结果反馈给客户端，客户端通过这个 IP 地址与 web 服务器建立链接。</li>
 </ul>
-<h3 id="DNS查询方式"><a href="#DNS查询方式" class="headerlink" title="DNS查询方式"></a>DNS查询方式</h3><ul>
-<li><p>递归查询：客户端只发一次请求，要求对方给出最终结果。</p>
+<h3 id="dns查询方式"><a class="markdownIt-Anchor" href="#dns查询方式"></a> DNS查询方式</h3>
+<ul>
+<li>
+<p>递归查询：客户端只发一次请求，要求对方给出最终结果。</p>
 <p>主机向本地域名服务器的查询一般采取递归查询。</p>
 </li>
-<li><p>迭代查询：客户端发出一次请求，对方如果没有授权回答，它就会返回一个能解答这个查询的其它名称服务器列表，客户端会再向返回的列表中发出请求，直到找到最终负责所查域名的名称服务器，从它得到最终结果。</p>
+<li>
+<p>迭代查询：客户端发出一次请求，对方如果没有授权回答，它就会返回一个能解答这个查询的其它名称服务器列表，客户端会再向返回的列表中发出请求，直到找到最终负责所查域名的名称服务器，从它得到最终结果。</p>
 <p>本地域名服务器向根域名服务器的查询一般采取迭代查询。</p>
 </li>
 </ul>
-<h2 id="DNS收集信息"><a href="#DNS收集信息" class="headerlink" title="DNS收集信息"></a>DNS收集信息</h2><h3 id="将域名解析为IP地址"><a href="#将域名解析为IP地址" class="headerlink" title="将域名解析为IP地址"></a>将域名解析为IP地址</h3><p><strong>命令：</strong><code>ping</code></p>
+<h2 id="dns收集信息"><a class="markdownIt-Anchor" href="#dns收集信息"></a> DNS收集信息</h2>
+<h3 id="将域名解析为ip地址"><a class="markdownIt-Anchor" href="#将域名解析为ip地址"></a> 将域名解析为IP地址</h3>
+<p><strong>命令：</strong><code>ping</code></p>
 <p>以百度为例：</p>
-<p><img src="/images/postimage/bei2.png" srcset="/img/loading.gif" lazyload></p>
-<h3 id="使用nslookup查看域名"><a href="#使用nslookup查看域名" class="headerlink" title="使用nslookup查看域名"></a>使用nslookup查看域名</h3><p><strong>命令：</strong>nslookup xxx(域名)</p>
-<p><img src="/images/postimage/bei3.png" srcset="/img/loading.gif" lazyload></p>
-<h3 id="DIG命令"><a href="#DIG命令" class="headerlink" title="DIG命令"></a>DIG命令</h3><p>Dig是一个在类Unix命令行模式下查询DNS包括NS记录，A记录，TXT（文本注释），MX记录，NS记录，或者任意综合查询等相关信息的工具。</p>
+<p><img src="/images/postimage/bei2.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<h3 id="使用nslookup查看域名"><a class="markdownIt-Anchor" href="#使用nslookup查看域名"></a> 使用nslookup查看域名</h3>
+<p>**命令：**nslookup xxx(域名)</p>
+<p><img src="/images/postimage/bei3.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<h3 id="dig命令"><a class="markdownIt-Anchor" href="#dig命令"></a> DIG命令</h3>
+<p>Dig是一个在类Unix命令行模式下查询DNS包括NS记录，A记录，TXT（文本注释），MX记录，NS记录，或者任意综合查询等相关信息的工具。</p>
 <p>命令：<code>dig &lt;选项1&gt; 需要查询的域名 &lt;选项2&gt;</code></p>
 <p>&lt;选项1&gt;：@DNS服务器地址：指定进行域名解析的域名服务器</p>
 <p>&lt;选项2&gt;：any：显示所有类型的域名记录。默认只显示A记录</p>
@@ -385,20 +404,24 @@ www.a.shifen.com.       152     IN      A       36.152.44.96
 ;; WHEN: Mon Jan 31 12:51:22 CST 2022
 ;; MSG SIZE  rcvd: 101  
 ##最后一段默认输出包含了查询的统计数据，可以用+[no]stats保留。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-<p><img src="/images/postimage/bei4.png" srcset="/img/loading.gif" lazyload></p>
-<h4 id="使用-x参数反查域名"><a href="#使用-x参数反查域名" class="headerlink" title="使用-x参数反查域名"></a>使用-x参数反查域名</h4><p>命令：<code>dig -x IP address</code></p>
-<p><img src="/images/postimage/bei5.png" srcset="/img/loading.gif" lazyload></p>
-<p>➡️114.114.114.114反向解析为public1.114dns.com</p>
+<p><img src="/images/postimage/bei4.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<h4 id="使用-x参数反查域名"><a class="markdownIt-Anchor" href="#使用-x参数反查域名"></a> 使用-x参数反查域名</h4>
+<p>命令：<code>dig -x IP address</code></p>
+<p><img src="/images/postimage/bei5.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p><a href="http://xn--114-2y6a8640j.114.114.xn--114public1-0x2p984cjzao01r3u6f.114dns.com">➡️114.114.114.114反向解析为public1.114dns.com</a></p>
 <p>得到了该域名服务器IP地址的域名，可以通过ping 域名验证。</p>
-<h3 id="查询网站的域名注册信息和备案信息"><a href="#查询网站的域名注册信息和备案信息" class="headerlink" title="查询网站的域名注册信息和备案信息"></a>查询网站的域名注册信息和备案信息</h3><ol>
-<li><p>域名注册信息</p>
+<h3 id="查询网站的域名注册信息和备案信息"><a class="markdownIt-Anchor" href="#查询网站的域名注册信息和备案信息"></a> 查询网站的域名注册信息和备案信息</h3>
+<ol>
+<li>
+<p>域名注册信息</p>
 <ul>
-<li><p>Web接口查询</p>
+<li>
+<p>Web接口查询</p>
 <p>阿里云：<a target="_blank" rel="noopener" href="https://whois.aliyun.com/">https://whois.aliyun.com/</a></p>
 <p>站长之家：<a target="_blank" rel="noopener" href="http://whois.chinaz.com/">http://whois.chinaz.com/</a></p>
 </li>
-<li><p>Whois命令查询</p>
+<li>
+<p>Whois命令查询</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">┌──(root㉿kali)-[~]
 └─$ whois 12306.cn
 Domain Name: 12306.cn
@@ -416,41 +439,49 @@ Name Server: vns1.zdnscloud.biz
 Registration Time: 2003-03-10 18:50:16
 Expiration Time: 2029-01-13 14:16:31
 DNSSEC: unsigned
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
 </ul>
 </li>
-<li><p>备案信息</p>
+<li>
+<p>备案信息</p>
 <ul>
-<li><p>Web接口查询</p>
+<li>
+<p>Web接口查询</p>
 <p><a target="_blank" rel="noopener" href="http://icp.chinaz.com/">http://icp.chinaz.com/</a></p>
 <p><a target="_blank" rel="noopener" href="https://icp.aizhan.com/">https://icp.aizhan.com/</a>  (当下该网站Service Unavailable)</p>
 <p><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/">https://beian.miit.gov.cn/</a></p>
 </li>
-<li><p>天眼查</p>
+<li>
+<p>天眼查</p>
 <p><a target="_blank" rel="noopener" href="https://www.tianyancha.com/">https://www.tianyancha.com/</a> 进一步查看企业的一些信息</p>
 </li>
 </ul>
 <p>以查找12306.cn备案信息为例：</p>
 <p>使用网站：<a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/">https://beian.miit.gov.cn/</a></p>
-<p><img src="/images/postimage/bei6.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/bei6.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 <p>获取备案号号后利用备案号查询，发现就是12306网站。接着将备案号中的-4删掉，直接用删掉后备案号搜索以及利用主办单位名称搜索，得到了同样的结果：</p>
-<p><img src="/images/postimage/bei7.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/bei7.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 <p>➡️该企业一共注册了4个域名，接下去就可以继续去挖掘对应的子域名资产</p>
 </li>
 </ol>
-<h2 id="子域名信息收集"><a href="#子域名信息收集" class="headerlink" title="子域名信息收集"></a>子域名信息收集</h2><h3 id="子域名及其重要性"><a href="#子域名及其重要性" class="headerlink" title="子域名及其重要性"></a>子域名及其重要性</h3><p>顶级域名是域名的最后一个部分，即是域名最后一点之后的字母，例如在 <a target="_blank" rel="noopener" href="http://www.baidu.com/">http://www.baidu.com</a> 这个域名中，顶级域是.com。</p>
-<p><strong>常见的顶级域主要分 2 类：</strong> </p>
+<h2 id="子域名信息收集"><a class="markdownIt-Anchor" href="#子域名信息收集"></a> 子域名信息收集</h2>
+<h3 id="子域名及其重要性"><a class="markdownIt-Anchor" href="#子域名及其重要性"></a> 子域名及其重要性</h3>
+<p>顶级域名是域名的最后一个部分，即是域名最后一点之后的字母，例如在 <a target="_blank" rel="noopener" href="http://www.baidu.com">http://www.baidu.com</a> 这个域名中，<a target="_blank" rel="noopener" href="http://xn--cjsy64a46sctx.com">顶级域是.com</a>。</p>
+<p><strong>常见的顶级域主要分 2 类：</strong></p>
 <ul>
-<li><p>通用顶级类别域名常见的有：</p>
+<li>
+<p>通用顶级类别域名常见的有：</p>
 <ul>
-<li>用于工商金融企业的.com；</li>
-<li>用于教育机构的.edu；</li>
-<li>用于政府部门的.gov；</li>
-<li>用于互联网络信息中心和运行中心的.net；</li>
-<li>用于非盈利组织的.org</li>
+<li><a target="_blank" rel="noopener" href="http://xn--vhqvk0l37sjsl288a08bzy8c0kt.com">用于工商金融企业的.com</a>；</li>
+<li><a target="_blank" rel="noopener" href="http://xn--6kqp96cikbqi151d12be23a.edu">用于教育机构的.edu</a>；</li>
+<li><a target="_blank" rel="noopener" href="http://xn--6kq440bv3epps2sbf79e9kh.gov">用于政府部门的.gov</a>；</li>
+<li><a target="_blank" rel="noopener" href="http://xn--fiqa30aqa98n5ymg8uca75mv78iwedes8aplbuzgr84bsez.net">用于互联网络信息中心和运行中心的.net</a>；</li>
+<li><a target="_blank" rel="noopener" href="http://xn--6kqt1g435b3ebxjz22bva0741c.org">用于非盈利组织的.org</a></li>
 </ul>
 </li>
-<li><p>国家及地区顶级域（地理顶级域名一般由各个国家或地区负责管理）：</p>
+<li>
+<p>国家及地区顶级域（地理顶级域名一般由各个国家或地区负责管理）：</p>
 <ul>
 <li>.cn 代表中国</li>
 <li>.uk 代表英国</li>
@@ -458,34 +489,41 @@ DNSSEC: unsigned
 </ul>
 </li>
 </ul>
-<p><strong>子域名（Subdomain Name）：</strong>凡顶级域名前加前缀的都是该顶级域名的子域名，而子域名根据技术的多少分为二级子域名，三级子域名以及多级子域名。</p>
-<p><strong>挖掘子域名的重要性：</strong>子域名是某个主域的二级域名或者多级域名，在防御措施严密情况下无法直接拿下主域，那么就可以采用迂回战术拿下子域名，然后无限靠近主域。</p>
+<p>**子域名（Subdomain Name）：**凡顶级域名前加前缀的都是该顶级域名的子域名，而子域名根据技术的多少分为二级子域名，三级子域名以及多级子域名。</p>
+<p>**挖掘子域名的重要性：**子域名是某个主域的二级域名或者多级域名，在防御措施严密情况下无法直接拿下主域，那么就可以采用迂回战术拿下子域名，然后无限靠近主域。</p>
 <blockquote>
-<p>例如：<a target="_blank" rel="noopener" href="http://www.xxxxx.com/">www.xxxxx.com</a> 主域不存在漏洞，并且防护措施严密。而二级域名 net.xxxxx.com 存在漏洞，并且防护措施松散。 </p>
+<p>例如：<a target="_blank" rel="noopener" href="http://www.xxxxx.com">www.xxxxx.com</a> 主域不存在漏洞，并且防护措施严密。而二级域名 <a target="_blank" rel="noopener" href="http://net.xxxxx.com">net.xxxxx.com</a> 存在漏洞，并且防护措施松散。</p>
 </blockquote>
-<h3 id="挖掘子域名"><a href="#挖掘子域名" class="headerlink" title="挖掘子域名"></a>挖掘子域名</h3><ol>
-<li><p>搜索引擎挖掘 如： 在 Google 中输入 site:qq.com </p>
+<h3 id="挖掘子域名"><a class="markdownIt-Anchor" href="#挖掘子域名"></a> 挖掘子域名</h3>
+<ol>
+<li>
+<p>搜索引擎挖掘 如： 在 Google 中输入 site:qq.com</p>
 </li>
-<li><p>第三方网站查询：<a target="_blank" rel="noopener" href="http://tool.chinaz.com/subdomain%E3%80%81https://dnsdumpster.com/">http://tool.chinaz.com/subdomain、https://dnsdumpster.com/</a> </p>
+<li>
+<p>第三方网站查询：<a target="_blank" rel="noopener" href="http://tool.chinaz.com/subdomain%E3%80%81https://dnsdumpster.com/">http://tool.chinaz.com/subdomain、https://dnsdumpster.com/</a></p>
 </li>
-<li><p>证书透明度公开日志枚举：<a target="_blank" rel="noopener" href="https://crt.sh/">https://crt.sh/</a> </p>
+<li>
+<p>证书透明度公开日志枚举：<a target="_blank" rel="noopener" href="https://crt.sh/">https://crt.sh/</a></p>
 </li>
-<li><p>其他途径：<a target="_blank" rel="noopener" href="https://phpinfo.me/domain">https://phpinfo.me/domain</a> ⭐︎</p>
+<li>
+<p>其他途径：<a target="_blank" rel="noopener" href="https://phpinfo.me/domain">https://phpinfo.me/domain</a> ⭐︎</p>
 </li>
-<li><p>Layer子域名挖掘机</p>
+<li>
+<p>Layer子域名挖掘机</p>
 <p>下载地址：<a target="_blank" rel="noopener" href="https://github.com/euphrat1ca/LayerDomainFinder">https://github.com/euphrat1ca/LayerDomainFinder</a></p>
 <p>没找到Mac版本，只有windows👆🏻，Layer子域名挖掘机还支持导出还是非常方便的</p>
 </li>
-<li><p>ksubdomain</p>
+<li>
+<p>ksubdomain</p>
 </li>
 </ol>
 <p><strong>接下去以ksubdomain作详解：</strong></p>
 <p>ksubdomain是一款基于无状态子域名爆破工具，支持在Windows/Linux/Mac上使用，它会很快的进行DNS爆破，在Mac和Windows上理论最大发包速度在30w/s,linux上为160w/s的速度。</p>
 <p>下载地址：<a target="_blank" rel="noopener" href="https://github.com/knownsec/ksubdomain">https://github.com/knownsec/ksubdomain</a></p>
 <p>从<a target="_blank" rel="noopener" href="https://github.com/knownsec/ksubdomain/releases">releases</a>下载二进制文件。在linux下，还需要安装<code>libpcap-dev</code>,在Windows下需要安装<code>WinPcap</code>，mac下可以直接使用。</p>
-<p>我就直接把它下载到自己建的文件夹中并解压，Mac下便可直接使用了。打开terminal，去到该文件所在文件夹，运行命令： <code>./ksubdomain -d baidu.com</code> </p>
+<p>我就直接把它下载到自己建的文件夹中并解压，Mac下便可直接使用了。打开terminal，去到该文件所在文件夹，运行命令： <code>./ksubdomain -d baidu.com</code></p>
 <p>此处是以爆破百度的域名为例：</p>
-<p><img src="/images/postimage/bei8.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/bei8.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 <p>下方则是爆破出来的子域名。</p>
 <blockquote>
 <p>关于ksubdomain的命令意思以及其他的命令均在github上和程序内有所介绍，这边就不多加阐述了。</p>
@@ -740,6 +778,13 @@ DNSSEC: unsigned
 
 
 
+
+  
+
+  
+    <!-- KaTeX -->
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css" />
+  
 
 
 

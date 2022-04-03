@@ -16,12 +16,12 @@
   <meta name="author" content="Lane Gong">
   <meta name="keywords" content="">
   
-    <meta name="description" content="摘要：本文主要涉及10道经典例题，包含阶乘尾部0的个数、同构数、向量点积……题源来自于2021年上海大学夏季程序设计实训课程oj板块，采用C语言进行编写。">
+    <meta name="description" content="摘要： 本文主要涉及10道经典例题，包含阶乘尾部0的个数、同构数、向量点积…题源来自于2021年上海大学夏季程序设计实训课程oj板块，采用C语言进行编写。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="经典例题&amp;算法1">
 <meta property="og:url" content="https://lanegong.github.io/posts/ab6a0381.html">
 <meta property="og:site_name" content="Lane&#39;s Blog">
-<meta property="og:description" content="摘要：本文主要涉及10道经典例题，包含阶乘尾部0的个数、同构数、向量点积……题源来自于2021年上海大学夏季程序设计实训课程oj板块，采用C语言进行编写。">
+<meta property="og:description" content="摘要： 本文主要涉及10道经典例题，包含阶乘尾部0的个数、同构数、向量点积…题源来自于2021年上海大学夏季程序设计实训课程oj板块，采用C语言进行编写。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lanegong.github.io/img/postimg/fsf.jpg">
 <meta property="article:published_time" content="2021-08-24T16:00:00.000Z">
@@ -220,7 +220,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      6k 字
+      6.1k 字
     </span>
   
 
@@ -269,10 +269,16 @@
             <h1 style="display: none">经典例题&amp;算法1</h1>
             
             <div class="markdown-body">
-              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>本文主要涉及10道经典例题，包含阶乘尾部0的个数、同构数、向量点积……题源来自于2021年上海大学夏季程序设计实训课程oj板块，采用C语言进行编写。</p>
+              <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要：</h2>
+<p>本文主要涉及10道经典例题，包含阶乘尾部0的个数、同构数、向量点积…题源来自于2021年上海大学夏季程序设计实训课程oj板块，采用C语言进行编写。</p>
 <span id="more"></span>
-
-<h2 id="1-阶乘尾部0的个数"><a href="#1-阶乘尾部0的个数" class="headerlink" title="1. 阶乘尾部0的个数"></a>1. 阶乘尾部0的个数</h2><p>问题描述：<br>    给定一个正整数n，计算n!的尾部0的个数。<br>输入：<br>    输入数据有若干行。每行上有一个正整数n，对应一种情形。<br>输出：<br>    对于每一种情形，先输出“Case #: ”（#为序号，从1起），然后输出n的值，逗号，结果，换行。</p>
+<h2 id="1-阶乘尾部0的个数"><a class="markdownIt-Anchor" href="#1-阶乘尾部0的个数"></a> 1. 阶乘尾部0的个数</h2>
+<p>问题描述：<br />
+给定一个正整数n，计算n!的尾部0的个数。<br />
+输入：<br />
+输入数据有若干行。每行上有一个正整数n，对应一种情形。<br />
+输出：<br />
+对于每一种情形，先输出“Case #: ”（#为序号，从1起），然后输出n的值，逗号，结果，换行。</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token keyword">int</span> <span class="token function">zeros</span><span class="token punctuation">(</span><span class="token keyword">int</span> n<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>   <span class="token comment">//质因数分解后0的产生是由2和5相乘，分解后观察到2的次方明显高于5的次方，所以利用5的次方进行判断即可。</span>
    <span class="token keyword">int</span> m<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> p<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">;</span>
@@ -289,10 +295,13 @@
    <span class="token punctuation">&#125;</span>
    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-
-
-<h2 id="2-判断算式的正确性"><a href="#2-判断算式的正确性" class="headerlink" title="2. 判断算式的正确性"></a>2. 判断算式的正确性</h2><p>问题描述<br>    给定一个算式，该算式中只含一个四则运算符号，操作数及结果均为整数。要求判断该算式的正确性（规定：除法必须除尽才可能正确）。<br>输入<br>    输入数据有若干行。每行上有一个算式，对应一种情形。<br>输出<br>    对于每一种情形，先输出“Case #: ”（#为序号，从1起），然后输出n的值，逗号，结果，换行。</p>
+<h2 id="2-判断算式的正确性"><a class="markdownIt-Anchor" href="#2-判断算式的正确性"></a> 2. 判断算式的正确性</h2>
+<p>问题描述<br />
+给定一个算式，该算式中只含一个四则运算符号，操作数及结果均为整数。要求判断该算式的正确性（规定：除法必须除尽才可能正确）。<br />
+输入<br />
+输入数据有若干行。每行上有一个算式，对应一种情形。<br />
+输出<br />
+对于每一种情形，先输出“Case #: ”（#为序号，从1起），然后输出n的值，逗号，结果，换行。</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
    <span class="token keyword">int</span> x<span class="token punctuation">,</span> y <span class="token punctuation">,</span> z<span class="token punctuation">,</span> k<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
@@ -306,10 +315,14 @@
    <span class="token punctuation">&#125;</span>
    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-
-
-<h2 id="3-求给定的n个实数中的最大值"><a href="#3-求给定的n个实数中的最大值" class="headerlink" title="3. 求给定的n个实数中的最大值"></a>3. 求给定的n个实数中的最大值</h2><p>问题描述<br>    给定整数n及n个实数，找出其中的最大值。<br>输入<br>    输入数据有若干行。每行上第一个数为整数n（n&gt;0），紧接其后有n个实数，对应一种情形，数据之间用空格分隔。<br>输出<br>    对于每一种情形，先输出“Case #: ”（#为序号，从1起，冒号后输出一个空格），然后输出计算结果（保留1位小数），最后换行。<br>输入样例</p>
+<h2 id="3-求给定的n个实数中的最大值"><a class="markdownIt-Anchor" href="#3-求给定的n个实数中的最大值"></a> 3. 求给定的n个实数中的最大值</h2>
+<p>问题描述<br />
+给定整数n及n个实数，找出其中的最大值。<br />
+输入<br />
+输入数据有若干行。每行上第一个数为整数n（n&gt;0），紧接其后有n个实数，对应一种情形，数据之间用空格分隔。<br />
+输出<br />
+对于每一种情形，先输出“Case #: ”（#为序号，从1起，冒号后输出一个空格），然后输出计算结果（保留1位小数），最后换行。<br />
+输入样例</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
    <span class="token keyword">int</span> i<span class="token punctuation">,</span> n<span class="token punctuation">,</span> k<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
@@ -326,10 +339,13 @@
    <span class="token punctuation">&#125;</span>
    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-
-
-<h2 id="4-计算若干整数的和"><a href="#4-计算若干整数的和" class="headerlink" title="4. 计算若干整数的和"></a>4. 计算若干整数的和</h2><p>问题描述<br>    对于给定的若干个整数，要求计算它们的项数及和。<br>输入<br>    输入数据有多行。每一行有若干个整数(个数不超过1024)，希望计算它们的项数及总和。<br>输出<br>    对于每一行中的数据，要求先输出“Case #: ”（#为序号从1起，冒号后输出一个空格），然后输出该行上数据的个数、逗号、空格、总和、换行。</p>
+<h2 id="4-计算若干整数的和"><a class="markdownIt-Anchor" href="#4-计算若干整数的和"></a> 4. 计算若干整数的和</h2>
+<p>问题描述<br />
+对于给定的若干个整数，要求计算它们的项数及和。<br />
+输入<br />
+输入数据有多行。每一行有若干个整数(个数不超过1024)，希望计算它们的项数及总和。<br />
+输出<br />
+对于每一行中的数据，要求先输出“Case #: ”（#为序号从1起，冒号后输出一个空格），然后输出该行上数据的个数、逗号、空格、总和、换行。</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 
 <span class="token keyword">int</span> <span class="token function">GetData</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span>p<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
@@ -356,10 +372,13 @@
    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-
-
-<h2 id="5-态度决定一切"><a href="#5-态度决定一切" class="headerlink" title="5. 态度决定一切"></a>5. 态度决定一切</h2><p>问题描述<br>    将英文26个字母A<del>Z，或a</del>z对应到整数1~26，则态度 Attitude 对应的数字之和为100。编程计算给定的字符串对应的数字之和，规定非英文字母的字符均对应0。<br>输入<br>    输入数据的第一行为一个整数n，其后共有n行字符串（字符串的长度不超过1000）表示有n种情况。<br>输出<br>    对于每一种情况，要求先输出“Case #: ”（#为序号，从1起，冒号后输出一个空格），然后输出原字符串、空格、等号、空格、结果、换行。</p>
+<h2 id="5-态度决定一切"><a class="markdownIt-Anchor" href="#5-态度决定一切"></a> 5. 态度决定一切</h2>
+<p>问题描述<br />
+将英文26个字母A<sub>Z，或a</sub>z对应到整数1~26，则态度 Attitude 对应的数字之和为100。编程计算给定的字符串对应的数字之和，规定非英文字母的字符均对应0。<br />
+输入<br />
+输入数据的第一行为一个整数n，其后共有n行字符串（字符串的长度不超过1000）表示有n种情况。<br />
+输出<br />
+对于每一种情况，要求先输出“Case #: ”（#为序号，从1起，冒号后输出一个空格），然后输出原字符串、空格、等号、空格、结果、换行。</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 
 <span class="token keyword">int</span> <span class="token function">sum</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>str<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
@@ -384,10 +403,14 @@
    <span class="token punctuation">&#125;</span>
    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-
-
-<h2 id="6-二维平面上过原点直线与x轴的夹角"><a href="#6-二维平面上过原点直线与x轴的夹角" class="headerlink" title="6. 二维平面上过原点直线与x轴的夹角"></a>6. 二维平面上过原点直线与x轴的夹角</h2><p><strong>问题描述</strong><br>​    给定平面坐标系 <em>XOY</em> 上的一个点 <em>P</em>(<em>x</em>, <em>y</em>)，计算从 <em>x</em> 轴正向与 <em>OP</em> 之间的夹角。<br><strong>输入</strong><br>​    输入数据有若干行。每行上有两个浮点型数据，对应一种情形。<br><strong>输出</strong><br>​    对于每一种情形，先输出”Case #: “（#为序号，从 1 起），然后输出结果。注意<br>结果应该在区间[-180°, 180°]中（保留 2 位小数）。</p>
+<h2 id="6-二维平面上过原点直线与x轴的夹角"><a class="markdownIt-Anchor" href="#6-二维平面上过原点直线与x轴的夹角"></a> 6. 二维平面上过原点直线与x轴的夹角</h2>
+<p><strong>问题描述</strong><br />
+​	给定平面坐标系 <em>XOY</em> 上的一个点 <em>P</em>(<em>x</em>, <em>y</em>)，计算从 <em>x</em> 轴正向与 <em>OP</em> 之间的夹角。<br />
+<strong>输入</strong><br />
+​	输入数据有若干行。每行上有两个浮点型数据，对应一种情形。<br />
+<strong>输出</strong><br />
+​	对于每一种情形，先输出&quot;Case #: &quot;（#为序号，从 1 起），然后输出结果。注意<br />
+结果应该在区间[-180°, 180°]中（保留 2 位小数）。</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;math.h></span></span>
 <span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
@@ -398,10 +421,14 @@
     <span class="token punctuation">&#125;</span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-
-
-<h2 id="7-算术平均数及几何平均数"><a href="#7-算术平均数及几何平均数" class="headerlink" title="7. 算术平均数及几何平均数"></a>7. 算术平均数及几何平均数</h2><p><strong>问题描述</strong><br>​    给定一系列双精度浮点型数据，计算其项数、算术平均数和几何平均数。<br><strong>输入</strong><br>​    输入数据有若干行。每行上有若干个（不超过 20 个）双精度浮点型数据，对应一种<br>情形。<br><strong>输出</strong><br>​    对于每一种情形，先输出”Case #: “（#为序号，从 1 起），然后参照输出样例输出数据的项数、算术平均数、几何平均数（保留 2 位小数）。</p>
+<h2 id="7-算术平均数及几何平均数"><a class="markdownIt-Anchor" href="#7-算术平均数及几何平均数"></a> 7. 算术平均数及几何平均数</h2>
+<p><strong>问题描述</strong><br />
+​	给定一系列双精度浮点型数据，计算其项数、算术平均数和几何平均数。<br />
+<strong>输入</strong><br />
+​	输入数据有若干行。每行上有若干个（不超过 20 个）双精度浮点型数据，对应一种<br />
+情形。<br />
+<strong>输出</strong><br />
+​	对于每一种情形，先输出&quot;Case #: &quot;（#为序号，从 1 起），然后参照输出样例输出数据的项数、算术平均数、几何平均数（保留 2 位小数）。</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;math.h></span></span>
 
@@ -442,10 +469,13 @@
     <span class="token punctuation">&#125;</span>
    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-
-
-<h2 id="8-计算和式"><a href="#8-计算和式" class="headerlink" title="8. 计算和式"></a>8. 计算和式</h2><p><strong>问题描述</strong><br>​    用记号[<em>dd</em>]表示 2 位十进制数 <em>d</em>×10+<em>d</em>；[<em>ddd</em>]表示 3 位十进制数 <em>d</em>×100+<em>d</em>×10+<em>d</em>；以此类推。给定 0~9 之间的一个数码 <em>d</em>，以及一个正整数 <em>n</em>，计算不超过 <em>n</em> 项的和式 <em>d</em>+[<em>dd</em>]+[<em>ddd</em>]+…+[<em>d</em>…<em>d</em>]，要求计算过程用 long long 数据类型且不发生溢出。例如：<em>d</em> 为 1， <em>n</em> 为 5 时，计算 1+11+111+1111+11111，结果为 12345，其中实际求和项数为 5。注意：如下测试样例 3 中，<em>n</em> 为 100，实际求和项数为 19。<br><strong>输入</strong><br>​    输入数据有若干行，每行上有两个数据分别表示 d 和 n，对应一种情形。<br><strong>输出</strong><br>​    参照输出样例输出结果。请注意①输出的 s(d, m)中 m 是实际求和的项数；②冒号和逗号后、等号前后都有一个空格字符。</p>
+<h2 id="8-计算和式"><a class="markdownIt-Anchor" href="#8-计算和式"></a> 8. 计算和式</h2>
+<p><strong>问题描述</strong><br />
+​	用记号[<em>dd</em>]表示 2 位十进制数 <em>d</em>×10+<em>d</em>；[<em>ddd</em>]表示 3 位十进制数 <em>d</em>×100+<em>d</em>×10+<em>d</em>；以此类推。给定 0~9 之间的一个数码 <em>d</em>，以及一个正整数 <em>n</em>，计算不超过 <em>n</em> 项的和式 <em>d</em>+[<em>dd</em>]+[<em>ddd</em>]+…+[<em>d</em>…<em>d</em>]，要求计算过程用 long long 数据类型且不发生溢出。例如：<em>d</em> 为 1， <em>n</em> 为 5 时，计算 1+11+111+1111+11111，结果为 12345，其中实际求和项数为 5。注意：如下测试样例 3 中，<em>n</em> 为 100，实际求和项数为 19。<br />
+<strong>输入</strong><br />
+​	输入数据有若干行，每行上有两个数据分别表示 d 和 n，对应一种情形。<br />
+<strong>输出</strong><br />
+​	参照输出样例输出结果。请注意①输出的 s(d, m)中 m 是实际求和的项数；②冒号和逗号后、等号前后都有一个空格字符。</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;limits.h></span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifndef</span>  <span class="token expression">LONG_LONG_MAX</span></span>
@@ -480,10 +510,13 @@
     <span class="token punctuation">&#125;</span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-
-
-<h2 id="9-判断同构数"><a href="#9-判断同构数" class="headerlink" title="9. 判断同构数"></a>9. 判断同构数</h2><p><strong>问题描述</strong><br>​    给定一个十进制正整数，判断其是否为同构数。所谓同构数是这样的一些数，它出现在其平方数的右边，例如 5 是出现在$5^2=25$右边的数，25 是出现在$25^2=625$右边的数，所以 5 和 25 都是同构数。<br><strong>输入</strong><br>​    输入数据有若干行。每行上有一个正整数，对应一种情形。<br><strong>输出</strong><br>​    对于每一种情形，先输出“Case #: ”（#为序号，从 1 起），然后输出 n，逗号及空格，n 的平方，逗号及空格，结果（Yes 或 No），换行。</p>
+<h2 id="9-判断同构数"><a class="markdownIt-Anchor" href="#9-判断同构数"></a> 9. 判断同构数</h2>
+<p><strong>问题描述</strong><br />
+​	给定一个十进制正整数，判断其是否为同构数。所谓同构数是这样的一些数，它出现在其平方数的右边，例如 5 是出现在<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>5</mn><mn>2</mn></msup><mo>=</mo><mn>25</mn></mrow><annotation encoding="application/x-tex">5^2=25</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span><span class="mord">5</span></span></span></span>右边的数，25 是出现在<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>2</mn><msup><mn>5</mn><mn>2</mn></msup><mo>=</mo><mn>625</mn></mrow><annotation encoding="application/x-tex">25^2=625</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">2</span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">6</span><span class="mord">2</span><span class="mord">5</span></span></span></span>右边的数，所以 5 和 25 都是同构数。<br />
+<strong>输入</strong><br />
+​	输入数据有若干行。每行上有一个正整数，对应一种情形。<br />
+<strong>输出</strong><br />
+​	对于每一种情形，先输出“Case #: ”（#为序号，从 1 起），然后输出 n，逗号及空格，n 的平方，逗号及空格，结果（Yes 或 No），换行。</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
     <span class="token keyword">int</span> n<span class="token punctuation">,</span>i<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>k<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
@@ -497,10 +530,13 @@
     <span class="token punctuation">&#125;</span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-
-
-<h2 id="10-计算两个向量的点积"><a href="#10-计算两个向量的点积" class="headerlink" title="10. 计算两个向量的点积"></a>10. 计算两个向量的点积</h2><p><strong>问题描述</strong><br>​    给定两个向量，计算它们的点积（内积）。<br><strong>输入</strong><br>​     输入数据有若干行。每行上有两个向量（维数皆不超过 20），对应一种情形。<br><strong>输出</strong><br>​    对于每一种情形，先输出”Case #: “（#为序号，从 1 起），然后输出结果（保留 2位小数），当维数不同时，输出 none。</p>
+<h2 id="10-计算两个向量的点积"><a class="markdownIt-Anchor" href="#10-计算两个向量的点积"></a> 10. 计算两个向量的点积</h2>
+<p><strong>问题描述</strong><br />
+​	给定两个向量，计算它们的点积（内积）。<br />
+<strong>输入</strong><br />
+​	 输入数据有若干行。每行上有两个向量（维数皆不超过 20），对应一种情形。<br />
+<strong>输出</strong><br />
+​	对于每一种情形，先输出&quot;Case #: &quot;（#为序号，从 1 起），然后输出结果（保留 2位小数），当维数不同时，输出 none。</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;string.h></span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">N</span> <span class="token expression"><span class="token number">50</span></span></span>
@@ -546,7 +582,6 @@
     <span class="token punctuation">&#125;</span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
 
             </div>
             <hr>
@@ -791,6 +826,13 @@
 
 
 
+
+  
+
+  
+    <!-- KaTeX -->
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css" />
+  
 
 
 

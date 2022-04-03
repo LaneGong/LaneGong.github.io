@@ -16,12 +16,12 @@
   <meta name="author" content="Lane Gong">
   <meta name="keywords" content="">
   
-    <meta name="description" content="摘要：本篇博客主要是记载了在CentOS上搭建MPICH环境及运行MPI程序，同时由于学校实验课程的安排，这边还加入了一波NFS远程文件访问，不足之处，敬请指正！">
+    <meta name="description" content="摘要： 本篇博客主要是记载了在CentOS上搭建MPICH环境及运行MPI程序，同时由于学校实验课程的安排，这边还加入了一波NFS远程文件访问，不足之处，敬请指正！">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CentOS7下安装MPICH及运行并行程序">
 <meta property="og:url" content="https://lanegong.github.io/posts/bf862eab.html">
 <meta property="og:site_name" content="Lane&#39;s Blog">
-<meta property="og:description" content="摘要：本篇博客主要是记载了在CentOS上搭建MPICH环境及运行MPI程序，同时由于学校实验课程的安排，这边还加入了一波NFS远程文件访问，不足之处，敬请指正！">
+<meta property="og:description" content="摘要： 本篇博客主要是记载了在CentOS上搭建MPICH环境及运行MPI程序，同时由于学校实验课程的安排，这边还加入了一波NFS远程文件访问，不足之处，敬请指正！">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lanegong.github.io/images/postimage/fmpi.jpg">
 <meta property="article:published_time" content="2022-02-24T16:00:00.000Z">
@@ -269,16 +269,20 @@
             <h1 style="display: none">CentOS7下安装MPICH及运行并行程序</h1>
             
             <div class="markdown-body">
-              <h2 id="摘要："><a href="#摘要：" class="headerlink" title="摘要："></a>摘要：</h2><p>本篇博客主要是记载了在CentOS上搭建MPICH环境及运行MPI程序，同时由于学校实验课程的安排，这边还加入了一波NFS远程文件访问，不足之处，敬请指正！</p>
+              <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要：</h2>
+<p>本篇博客主要是记载了在CentOS上搭建MPICH环境及运行MPI程序，同时由于学校实验课程的安排，这边还加入了一波NFS远程文件访问，不足之处，敬请指正！</p>
 <span id="more"></span>
-
-<h2 id="CentOS下安装MPICH"><a href="#CentOS下安装MPICH" class="headerlink" title="CentOS下安装MPICH"></a>CentOS下安装MPICH</h2><ol>
-<li><p>更新yum库并下载相关依赖包</p>
+<h2 id="centos下安装mpich"><a class="markdownIt-Anchor" href="#centos下安装mpich"></a> CentOS下安装MPICH</h2>
+<ol>
+<li>
+<p>更新yum库并下载相关依赖包</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">yum update #更新yum库
 #下载相关依赖包
 yum install wget -y 
-yum install gcc gcc-c++ gcc-fortran kernel-devel -y<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></li>
-<li><p>下载安装MPI安装包</p>
+yum install gcc gcc-c++ gcc-fortran kernel-devel -y<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>下载安装MPI安装包</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#根目录下新建一个文件夹存放下载包
 cd &#x2F;
 mkdir software
@@ -294,15 +298,16 @@ mkdir mpich-install
 #进入下载包所在文件夹，编译安装
 cd &#x2F;software&#x2F;mpich-3.4.1
 .&#x2F;configure --prefix&#x3D;&#x2F;mpich-install --with-device&#x3D;ch4:ofi 2&gt;&amp;1 | tee c.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
-<p><strong>报错：</strong>缺少Fortran 77编译器</p>
-<p><img src="/images/postimage/mpi1.png" srcset="/img/loading.gif" lazyload></p>
+<p>**报错：**缺少Fortran 77编译器</p>
+<p><img src="/images/postimage/mpi1.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 <p><strong>解决措施：</strong><code>yum install gcc-gfortran</code></p>
 <p><strong>再执行命令：</strong></p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">.&#x2F;configure --prefix&#x3D;&#x2F;mpich-install --with-device&#x3D;ch4:ofi 2&gt;&amp;1 | tee c.txt
 make
-make install<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></li>
-<li><p>配置环境</p>
+make install<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>配置环境</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">vi ~&#x2F;.bashrc
 #在最底部添加下面两句命令
 export MPICH&#x3D;&#x2F;mpich-install
@@ -310,10 +315,13 @@ export PATH&#x3D;$MPICH&#x2F;bin:$PATH
 #更新使生效
 source ~&#x2F;.bashrc
 #检查
-mpirun --version#返回版本号则安装成功<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+mpirun --version#返回版本号则安装成功<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
 </ol>
-<h2 id="运行MPI程序"><a href="#运行MPI程序" class="headerlink" title="运行MPI程序"></a>运行MPI程序</h2><ol>
-<li><p>Hello world</p>
+<h2 id="运行mpi程序"><a class="markdownIt-Anchor" href="#运行mpi程序"></a> 运行MPI程序</h2>
+<ol>
+<li>
+<p>Hello world</p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;mpi.h></span></span>
 <span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span> argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
@@ -329,24 +337,26 @@ mpirun --version#返回版本号则安装成功<span aria-hidden="true" class="l
   <span class="token function">MPI_Finalize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
 <p>进入程序所在文件夹：</p>
 <ul>
-<li><p><code>mpicc mpi_test1.c -o mpi_test1</code>编译C程序</p>
+<li>
+<p><code>mpicc mpi_test1.c -o mpi_test1</code>编译C程序</p>
 <blockquote>
 <p>C++程序：mpicxx name.cpp -o name</p>
 </blockquote>
 </li>
-<li><p><code>mpirun -np 4 ./mpi_test1</code>运行程序</p>
+<li>
+<p><code>mpirun -np 4 ./mpi_test1</code>运行程序</p>
 <blockquote>
 <p>-np用来指定进程数，4代表给程序分配了4个进程</p>
 </blockquote>
 </li>
 </ul>
 <p><strong>运行结果：</strong></p>
-<p><img src="/images/postimage/mpi2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/mpi2.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 </li>
-<li><p>MPI并行计算$\pi$</p>
+<li>
+<p>MPI并行计算<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>π</mi></mrow><annotation encoding="application/x-tex">\pi</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">π</span></span></span></span></p>
 <div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;mpi.h></span></span>
 <span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span><span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
@@ -398,77 +408,88 @@ mpirun --version#返回版本号则安装成功<span aria-hidden="true" class="l
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-
 <p><strong>运行程序所得结果：</strong></p>
-<p><img src="/images/postimage/mpi3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/mpi3.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 </li>
 </ol>
-<h2 id="利用NFS访问其他主机上MPI程序文件并运行"><a href="#利用NFS访问其他主机上MPI程序文件并运行" class="headerlink" title="利用NFS访问其他主机上MPI程序文件并运行"></a>利用NFS访问其他主机上MPI程序文件并运行</h2><p>通过NFS去访问主要是……这是另一个实验哈哈哈，这样的话相当于是两者联动了。</p>
+<h2 id="利用nfs访问其他主机上mpi程序文件并运行"><a class="markdownIt-Anchor" href="#利用nfs访问其他主机上mpi程序文件并运行"></a> 利用NFS访问其他主机上MPI程序文件并运行</h2>
+<p>通过NFS去访问主要是…这是另一个实验哈哈哈，这样的话相当于是两者联动了。</p>
 <p>主体思想：建了两台虚拟机，分别被部署为NFS的服务端和客户端，使得两台机子可以共享文件，然后将MPI程序上传至一台机子的共享文件夹中，便可在另一台机子访问这个程序并运行。</p>
 <blockquote>
 <p>这样一来，既检验了NFS功能的实现，又实现了MPI的功能，一举两得。</p>
 </blockquote>
 <p>关于MPICH，在两台机子上首先都按照上述安装步骤安装过了。关于部署NFS，根据后面的参考资料做即可，还是比较方便的。</p>
 <ul>
-<li><p>客户端检查NFS是否挂载成功</p>
-<p><img src="/images/postimage/mpi4.png" srcset="/img/loading.gif" lazyload></p>
+<li>
+<p>客户端检查NFS是否挂载成功</p>
+<p><img src="/images/postimage/mpi4.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 <p>最后一条显示服务端的/public挂载在客户端的/mnt/public</p>
 </li>
-<li><p>MPI程序上传至服务端共享文件夹<code>/public</code></p>
+<li>
+<p>MPI程序上传至服务端共享文件夹<code>/public</code></p>
 </li>
-<li><p>在客户机上进入共享文件夹<code>/mnt/public</code></p>
-<p><img src="/images/postimage/mpi5.png" srcset="/img/loading.gif" lazyload></p>
+<li>
+<p>在客户机上进入共享文件夹<code>/mnt/public</code></p>
+<p><img src="/images/postimage/mpi5.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 <p>mpi2.c则是我们上传在服务端的MPI程序</p>
 </li>
-<li><p>客户端在该文件夹下编译运行即可</p>
+<li>
+<p>客户端在该文件夹下编译运行即可</p>
 </li>
 </ul>
 <blockquote>
 <p>关于对MPI并行计算的性能分析，这边就不详细记录了，可以自行探索，欢迎评论或私信交流。</p>
 </blockquote>
-<h2 id="多节点上运行MPI程序"><a href="#多节点上运行MPI程序" class="headerlink" title="多节点上运行MPI程序"></a>多节点上运行MPI程序</h2><blockquote>
+<h2 id="多节点上运行mpi程序"><a class="markdownIt-Anchor" href="#多节点上运行mpi程序"></a> 多节点上运行MPI程序</h2>
+<blockquote>
 <p>前提：SSH免密登录已经实现</p>
 </blockquote>
 <ul>
-<li><p>将例子程序(cpi.c)复制到当前目录</p>
+<li>
+<p>将例子程序(cpi.c)复制到当前目录</p>
 <p><code>cp /software/mpich-3.4.1/examples/cpi* .</code></p>
 </li>
-<li><p>编译<code>mpicc –o cpi cpi.c</code></p>
+<li>
+<p>编译<code>mpicc –o cpi cpi.c</code></p>
 </li>
-<li><p>由于想采用多节点运行即我还需要和slave1虚拟机共同工作，所以客户端这边需要修改一下NFS共享的文件夹，将原先的/mnt/public也修改成和master一样的/public，这样我在master发起的多节点并行计算就可以利用NFS直接搜索/public中的文件，否则文件夹路径不一样，容易出现找不到文件。</p>
+<li>
+<p>由于想采用多节点运行即我还需要和slave1虚拟机共同工作，所以客户端这边需要修改一下NFS共享的文件夹，将原先的/mnt/public也修改成和master一样的/public，这样我在master发起的多节点并行计算就可以利用NFS直接搜索/public中的文件，否则文件夹路径不一样，容易出现找不到文件。</p>
 </li>
-<li><p>在当前文件夹新建编辑文件servers（可改），文件的每一行为一台节点机器名，其中第一行为本机名。节点名可重复出现，表示在节点上将启动若干个进程运行，节点名后面可说明进程数。</p>
+<li>
+<p>在当前文件夹新建编辑文件servers（可改），文件的每一行为一台节点机器名，其中第一行为本机名。节点名可重复出现，表示在节点上将启动若干个进程运行，节点名后面可说明进程数。</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">master:2
-slave1:2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></li>
-<li><p>关闭所有节点机器的防火墙</p>
+slave1:2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>关闭所有节点机器的防火墙</p>
 <div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">systemctl stop firewalld
 iptables -F<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
-
 <p>原先客户端未关会出现如下报错</p>
 <p>master上运行：</p>
-<p><img src="/images/postimage/mpi6.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/mpi6.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 <p>slave1上运行：</p>
-<p><img src="/images/postimage/mpi7.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/postimage/mpi7.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 </li>
-<li><p>运行程序<code>mpiexec -np 4 -f servers ./cpi</code></p>
-<p><img src="/images/postimage/mpi8.jpg" srcset="/img/loading.gif" lazyload></p>
+<li>
+<p>运行程序<code>mpiexec -np 4 -f servers ./cpi</code></p>
+<p><img src="/images/postimage/mpi8.jpg" srcset="/img/loading.gif" lazyload alt="" /></p>
 </li>
 </ul>
 <p>同样，多节点可以进一步提升性能，这边就不详细记录了，可以自行探索，欢迎评论或私信交流。</p>
 <blockquote>
 <p><strong>MPI参考资料：</strong></p>
 <ol>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wangzhouf/article/details/108222704?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164569585216780274145051%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164569585216780274145051&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-108222704.pc_search_result_cache&utm_term=centos%E5%91%BD%E4%BB%A4%E8%A1%8CMPI%E5%AE%89%E8%A3%85&spm=1018.2226.3001.4187">在CentOS7系统上搭建MPI环境</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wangzhouf/article/details/108222704?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164569585216780274145051%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&amp;request_id=164569585216780274145051&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-108222704.pc_search_result_cache&amp;utm_term=centos%E5%91%BD%E4%BB%A4%E8%A1%8CMPI%E5%AE%89%E8%A3%85&amp;spm=1018.2226.3001.4187">在CentOS7系统上搭建MPI环境</a></li>
 <li><a target="_blank" rel="noopener" href="http://blog.sina.com.cn/s/blog_4af3f0d20100ilx6.html">centos安装R语言</a></li>
-<li><a target="_blank" rel="noopener" href="https://lusongno1.blog.csdn.net/article/details/67002545?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1.pc_relevant_paycolumn_v3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1.pc_relevant_paycolumn_v3&utm_relevant_index=2">MPI入门基础（程序欣赏）</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42711189/article/details/117664111?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164570852116780274196831%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164570852116780274196831&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-6-117664111.pc_search_result_cache&utm_term=centos%E8%BF%90%E8%A1%8CMPI%E7%A8%8B%E5%BA%8F&spm=1018.2226.3001.4187">水文日常~~Linux命令行下如何编译运行MPI程序(C/C++)</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42348424/article/details/111834336?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164571370316781685383418%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164571370316781685383418&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-13-111834336.nonecase&utm_term=mpi%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97&spm=1018.2226.3001.4187">MPI并行计算PI，并进行n值和并行进程个数影响探讨</a></li>
+<li><a target="_blank" rel="noopener" href="https://lusongno1.blog.csdn.net/article/details/67002545?spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1.pc_relevant_paycolumn_v3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1.pc_relevant_paycolumn_v3&amp;utm_relevant_index=2">MPI入门基础（程序欣赏）</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42711189/article/details/117664111?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164570852116780274196831%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&amp;request_id=164570852116780274196831&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-6-117664111.pc_search_result_cache&amp;utm_term=centos%E8%BF%90%E8%A1%8CMPI%E7%A8%8B%E5%BA%8F&amp;spm=1018.2226.3001.4187">水文日常~~Linux命令行下如何编译运行MPI程序(C/C++)</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42348424/article/details/111834336?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164571370316781685383418%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&amp;request_id=164571370316781685383418&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-13-111834336.nonecase&amp;utm_term=mpi%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97&amp;spm=1018.2226.3001.4187">MPI并行计算PI，并进行n值和并行进程个数影响探讨</a></li>
 </ol>
 <p><strong>NFS参考资料：</strong></p>
 <ol>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_38265137/article/details/83146421?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164557565316780271988693%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=164557565316780271988693&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-83146421.first_rank_v2_pc_rank_v29&utm_term=nfs&spm=1018.2226.3001.4187">NFS服务器搭建与配置</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/supergirlll/article/details/111992664?ops_request_misc=&request_id=&biz_id=102&utm_term=%E6%89%BE%E4%B8%8D%E5%88%B0nfs-secure-server&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-1-111992664.first_rank_v2_pc_rank_v29&spm=1018.2226.3001.4187">小记nfs遇到的问题及解决方法</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_34406061/article/details/93073010?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164558250616781683992242%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=164558250616781683992242&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-3-93073010.first_rank_v2_pc_rank_v29&utm_term=clnt_create&spm=1018.2226.3001.4187">NFS问题：clnt_create: RPC: Port mapper failure - Unable to receive: errno 113 (No route to host)</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_38265137/article/details/83146421?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164557565316780271988693%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=164557565316780271988693&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-83146421.first_rank_v2_pc_rank_v29&amp;utm_term=nfs&amp;spm=1018.2226.3001.4187">NFS服务器搭建与配置</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/supergirlll/article/details/111992664?ops_request_misc=&amp;request_id=&amp;biz_id=102&amp;utm_term=%E6%89%BE%E4%B8%8D%E5%88%B0nfs-secure-server&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-1-111992664.first_rank_v2_pc_rank_v29&amp;spm=1018.2226.3001.4187">小记nfs遇到的问题及解决方法</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_34406061/article/details/93073010?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164558250616781683992242%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=164558250616781683992242&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-3-93073010.first_rank_v2_pc_rank_v29&amp;utm_term=clnt_create&amp;spm=1018.2226.3001.4187">NFS问题：clnt_create: RPC: Port mapper failure - Unable to receive: errno 113 (No route to host)</a></li>
 </ol>
 </blockquote>
 
@@ -723,6 +744,13 @@ iptables -F<span aria-hidden="true" class="line-numbers-rows"><span></span><span
 
 
 
+
+  
+
+  
+    <!-- KaTeX -->
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css" />
+  
 
 
 
