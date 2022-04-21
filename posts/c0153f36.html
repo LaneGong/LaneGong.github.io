@@ -1,0 +1,865 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/portrait.jpg">
+  <link rel="icon" href="/img/portrait.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lane Gong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="摘要： Django入门！本篇博客主要是记录学习了django的概述、安装、项目结构和URL+视图函数，以及路由配置，继续学习，不断实践，认真总结！欢迎指正交流！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django ①">
+<meta property="og:url" content="https://lanegong.github.io/posts/c0153f36.html">
+<meta property="og:site_name" content="Lane&#39;s Blog">
+<meta property="og:description" content="摘要： Django入门！本篇博客主要是记录学习了django的概述、安装、项目结构和URL+视图函数，以及路由配置，继续学习，不断实践，认真总结！欢迎指正交流！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lanegong.github.io/images/postimage/jango1.png">
+<meta property="article:published_time" content="2022-04-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-04-21T15:24:40.660Z">
+<meta property="article:author" content="Lane Gong">
+<meta property="article:tag" content="后端">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/jango1.png">
+  
+  
+  <title>Django ① - Lane&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"lanegong.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":"0aae2bb9475d846643a0f05755d8a37b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"BQhkuiEuKDoNKUCuKndW69hb-MdYXbMMI","app_key":"rHe0dTOjfn4mDpT4f9RRkf4P","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Lane の Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Django ①">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-04-21 00:00" pubdate>
+        2022年4月21日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      6.1k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      52 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- LeanCloud 统计文章PV -->
+      <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="leancloud-page-views"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Django ①</h1>
+            
+            <div class="markdown-body">
+              <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要：</h2>
+<p>Django入门！本篇博客主要是记录学习了django的概述、安装、项目结构和URL+视图函数，以及路由配置，继续学习，不断实践，认真总结！欢迎指正交流！</p>
+<span id="more"></span>
+<h2 id="django介绍"><a class="markdownIt-Anchor" href="#django介绍"></a> Django介绍</h2>
+<p>Python下有许多款不同的 Web 框架。Django是重量级选手中最有代表性的一位。许多成功的网站和APP都基于Django。Django 是一个开放源代码的 Web 应用框架，由 Python 写成。</p>
+<p>Django本身基于 MVC 模型，即 Model（模型）+ View（视图）+ Controller（控制器）设计模式，采取了 MVT 的软件设计模式。MVT本质上和 MVC 是一样的，也是为了各组件间保持松耦合关系，只是定义上有些许不同，Django 的 MTV 分别是指：即模型（Model），视图（View）和模板（Template）。</p>
+<ul>
+<li>M 表示模型（Model）：编写程序应有的功能，负责业务对象与数据库的映射(ORM)。</li>
+<li>T 表示模板 (Template)：负责如何把页面(html)展示给用户。</li>
+<li>V 表示视图（View）：负责业务逻辑，并在适当时候调用 Model和 Template。</li>
+</ul>
+<p>除了以上三层之外，还需要一个 URL 分发器，它的作用是将一个个 URL 的页面请求分发给不同的 View 处理，View 再调用相应的 Model 和 Template，MTV 的响应模式如下所示：</p>
+<p><img src="/images/postimage/jango1.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p><strong>用户操作流程：</strong></p>
+<p>用户通过浏览器向我们的服务器发起一个请求(request)，这个请求会去访问视图函数：</p>
+<ul>
+<li>如果不涉及到数据调用，那么这个时候视图函数直接返回一个模板也就是一个网页给用户。</li>
+<li>如果涉及到数据调用，那么视图函数调用模型，模型去数据库查找数据，然后逐级返回。</li>
+</ul>
+<p>视图函数把返回的数据填充到模板中空格中，最后返回网页给用户。</p>
+<p><img src="/images/postimage/jango2.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<h2 id="django安装"><a class="markdownIt-Anchor" href="#django安装"></a> Django安装</h2>
+<blockquote>
+<p>注：默认python环境已经搭建好了，直接开始Django</p>
+</blockquote>
+<p>环境：MacOS （linux可类比）</p>
+<p>学习过程中，为了方便，主要是先上手不实际开发，因此没有建立虚拟环境，直接在基础环境中安装。（后续开发具体项目时会补充上从建立virtualenv开始的步骤，其实也只是多了建环境这一步）</p>
+<ol>
+<li>
+<p>Terminal命令：<code>pip install django==3.2</code></p>
+<blockquote>
+<p>注：当前最新版本已经到了4.0，但django每个大版本间都会有一个LTS版本(Long Term Support)，相对稳定一些，故在这边目前采用3.2LTS版本。</p>
+</blockquote>
+<p>我的pip命令装的包的路径是统一到了anaconda下管理位置。</p>
+</li>
+<li>
+<p>Terminal cd回想要创建项目的文件夹</p>
+</li>
+<li>
+<p>命令：<code>django-admin startproject xxx</code>创建项目</p>
+<p>xxx代表项目名称，eg.<code>django-admin startproject mysite1</code></p>
+<p>django-admin是Django的一个命令行管理工具,用以对Django项目执行某些命令操作。</p>
+</li>
+<li>
+<p>启动项目（测试开发阶段）</p>
+<ul>
+<li>进入项目文件夹mysite1</li>
+<li>执行：<code>python3 manage.py runserver</code>启动服务，此方式下，Django在前台启动服务，默认监听8000端口</li>
+<li>浏览器访问http://127.0.0.1:8000可看到Django启动页面</li>
+<li>若想更换端口，启动命令改为：<code>python3 manage.py runserver 端口号</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="django项目结构"><a class="markdownIt-Anchor" href="#django项目结构"></a> Django项目结构</h2>
+<p>创建完项目后，可以进入项目文件夹，使用命令：<code>tree mysite1</code>查看整个文件夹树形结构：</p>
+<p><img src="/images/postimage/jango3.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<blockquote>
+<p>Mac上没装tree命令，咳咳，就直接用教程里的图了。</p>
+</blockquote>
+<ul>
+<li>db.sqlite3：第一次运行django项目后会自动生成，是默认的数据库存储文件，后面应该会用MySQL替换</li>
+<li><a target="_blank" rel="noopener" href="http://mange.py">mange.py</a>：包含项目管理的子命令，如：
+<ul>
+<li><code>python3 manage.py runserver</code>启动服务</li>
+<li><code>python3 manage.py startapp</code>创建应用</li>
+<li><code>python3 manage.py migrate</code>数据库迁移</li>
+<li>…(直接执行<code>python3 manage.py</code>可列出所有的子命令)</li>
+</ul>
+</li>
+<li>mysite1：项目同名文件夹
+<ul>
+<li>_init_:Python包的初始化文件</li>
+<li><a target="_blank" rel="noopener" href="http://wsgi.py">wsgi.py</a>：WEB服务网关的配置文件(Django正式启动时用到)</li>
+<li><a target="_blank" rel="noopener" href="http://urls.py">urls.py</a>：项目的主路由配置（HTTP请求进入Django时，优先调用该文件）</li>
+<li><a target="_blank" rel="noopener" href="http://settings.py">settings.py</a>：项目的配置文件（包含项目启动时需要的配置）</li>
+</ul>
+</li>
+</ul>
+<p>可用Pycharm打开项目文件夹，接下去首先重点关注<strong><a target="_blank" rel="noopener" href="http://settings.py">settings.py</a></strong>配置文件</p>
+<p>settings.py包含项目启动的所有配置项：</p>
+<ul>
+<li>配置项分为<strong>公有配置</strong>（Django官方提供的基础配置）和<strong>自定义配置</strong></li>
+<li>配置项格式：BASE_DIR=‘xxx’  （名称必须全大写，自定义配置可参考此格式写入，名字尽量个性化，以防覆盖公有配置）</li>
+<li>settings.py中的所有配置项都可以按需在代码中引入，命令：<code>from django.conf import settings</code>(注意：这里的settings是源码，而不是.py文件，后面会强调)</li>
+</ul>
+<p>以下挑了当下会用到的出来说：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> pathlib <span class="token keyword">import</span> Path
+
+<span class="token comment"># Build paths inside the project like this: BASE_DIR / 'subdir'.</span>
+BASE_DIR <span class="token operator">=</span> Path<span class="token punctuation">(</span>__file__<span class="token punctuation">)</span><span class="token punctuation">.</span>resolve<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>parent<span class="token punctuation">.</span>parent
+<span class="token triple-quoted-string string">"""
+用于绑定当前项目的绝对路径（动态计算出来的），所有文件夹都可以依赖此路径
+print(BASE_DIR)
+输出结果：/Users/gongchen/Desktop/program/web development/mysite1
+"""</span>
+<span class="token comment"># SECURITY WARNING: don't run with debug turned on in production!</span>
+DEBUG <span class="token operator">=</span> <span class="token boolean">True</span>
+<span class="token triple-quoted-string string">"""
+启动模式
+1 True 调试模式
+ a 检测代码改动后，立刻重启服务
+ b 报错页面
+2 False 正式启动模式/上线模式
+"""</span>
+<span class="token comment">#允许的请求头，能过滤一些病毒式脏请求，防范攻击的一种手段</span>
+<span class="token comment"># '*'表示完全敞开，任何请求头的host都能访问到当前项目，一般来说等网站正式上线后会改成相应域名</span>
+<span class="token comment">#[]默认127.0.0.1 or localhost</span>
+ALLOWED_HOSTS <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+ROOT_URLCONF <span class="token operator">=</span> <span class="token string">'mysite1.urls'</span>
+<span class="token comment">#表明django主路由的位置</span>
+LANGUAGE_CODE <span class="token operator">=</span> <span class="token string">'en-us'</span><span class="token comment">#'zh-Hans'</span>
+
+TIME_ZONE <span class="token operator">=</span> <span class="token string">'UTC'</span><span class="token comment">#'Asia/Shanghai'东八</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<h2 id="url和视图函数"><a class="markdownIt-Anchor" href="#url和视图函数"></a> URL和视图函数</h2>
+<h3 id="url"><a class="markdownIt-Anchor" href="#url"></a> URL</h3>
+<p>URL定义：统一资源定位符(Uniform Resource Locator)，用来表示互联网上某个资源的地址。</p>
+<p>URL一般语法格式([]表示可选)：protocol://hostname[:port]/path[?query][#fragment]</p>
+<p>eg. <a target="_blank" rel="noopener" href="http://tts.tmooc.cn:80/video/showVideo?menuld=657421&amp;version=AID999#subject">http://tts.tmooc.cn:80/video/showVideo?menuld=657421&amp;version=AID999#subject</a></p>
+<ul>
+<li>
+<p>protocol即通过该协议访问资源==》http（https一般在nginx里面配置）</p>
+</li>
+<li>
+<p>hostname是指存放资源的服务器的域名系统(DNS)主机名、域名或IP地址==》<a target="_blank" rel="noopener" href="http://tts.tmooc.cn">tts.tmooc.cn</a></p>
+</li>
+<li>
+<p>port：整数，可选，省略时使用协议的默认端口（http默认端口为80）==》:80</p>
+</li>
+<li>
+<p>path即路由地址，由零或多个/符号隔开的字符串，一般用来表示主机上的一个目录或文件地址。路由地址决定了服务器端如何处理这个请求==》video/showVideo</p>
+</li>
+<li>
+<p>query(查询)：用于给动态网页传递参数，可有多个参数，用&amp;符号隔开，每个参数格式key=value==》menuld=657421&amp;version=AID999</p>
+</li>
+<li>
+<p>fragment(信息片段)：字符串，用于指定网络资源中的片段。有点像锚点==》#subject</p>
+</li>
+</ul>
+<h3 id="django处理url的请求"><a class="markdownIt-Anchor" href="#django处理url的请求"></a> Django处理URL的请求</h3>
+<p>浏览器地址栏输入：<a target="_blank" rel="noopener" href="http://127.0.0.1:8000/page/2003/">http://127.0.0.1:8000/page/2003/</a></p>
+<ol>
+<li>Django从配置文件中根据ROOT_URLCONF找到主路由文件</li>
+<li>Django加载主路由文件中的urlpatterns变量</li>
+<li>依次匹配urlpatterns中的URL，匹配到一个合适的中断后续匹配</li>
+<li>匹配成功：调用对应的视图函数处理请求，返回响应</li>
+<li>匹配失败：返回404响应</li>
+</ol>
+<h3 id="视图函数"><a class="markdownIt-Anchor" href="#视图函数"></a> 视图函数</h3>
+<p>视图函数是用于接受一个浏览器请求(HttpRequest对象)并通过HttpResponse对象返回响应的函数。此函数可以接受浏览器请求并根据业务逻辑返回相应的响应内容给浏览器。</p>
+<p>语法：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">xxx_view</span><span class="token punctuation">(</span>request <span class="token punctuation">[</span><span class="token punctuation">,</span>其他参数<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+  <span class="token keyword">return</span> HttpResponse对象
+<span class="token comment">#函数名可以自己取，参数必须要有request请求，其他可选，返回对象一定是HttpResponse对象</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div>
+<p>位置：视图函数文件views.py创建在<strong>项目同名文件夹</strong>下，然后可在其中写入视图函数。</p>
+<h3 id="实操"><a class="markdownIt-Anchor" href="#实操"></a> 实操</h3>
+<p>想在浏览器访问http://127.0.0.1:8000/page/2003/这个页面：</p>
+<ol>
+<li>
+<p>在urls.py中配置路由</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> django<span class="token punctuation">.</span>contrib <span class="token keyword">import</span> admin
+<span class="token keyword">from</span> django<span class="token punctuation">.</span>urls <span class="token keyword">import</span> path
+<span class="token keyword">from</span> <span class="token punctuation">.</span> <span class="token keyword">import</span> views
+
+<span class="token comment">#第一个是django提供的管理后台的路由</span>
+urlpatterns <span class="token operator">=</span> <span class="token punctuation">[</span>
+    path<span class="token punctuation">(</span><span class="token string">'admin/'</span><span class="token punctuation">,</span> admin<span class="token punctuation">.</span>site<span class="token punctuation">.</span>urls<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token comment">#http://127.0.0.1:8000/page/2003/</span>
+    path<span class="token punctuation">(</span><span class="token string">'page/2003/'</span><span class="token punctuation">,</span>views<span class="token punctuation">.</span>page_2003_view<span class="token punctuation">)</span><span class="token comment">#新增此路由，若匹配上则调用page_2003_view这个视图函数处理</span>
+<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>项目同名文件夹下创建views.py文件，写入该视图函数及他要处理的操作</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> django<span class="token punctuation">.</span>http <span class="token keyword">import</span> HttpResponse<span class="token comment">#导入HttpResponse对象</span>
+
+<span class="token keyword">def</span> <span class="token function">page_2003_view</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    html<span class="token operator">=</span><span class="token string">"&lt;h1>这是第一个页面&lt;/h1>"</span>
+    <span class="token keyword">return</span> HttpResponse<span class="token punctuation">(</span>html<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>在urls.py中引入views.py文件</p>
+<p><code>from . import views</code></p>
+</li>
+<li>
+<p>已完成，浏览器访问http://127.0.0.1:8000/page/2003/</p>
+<p><img src="/images/postimage/jango4.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+</ol>
+<h2 id="路由配置"><a class="markdownIt-Anchor" href="#路由配置"></a> 路由配置</h2>
+<h3 id="path函数"><a class="markdownIt-Anchor" href="#path函数"></a> path()函数</h3>
+<p>导入：from django.urls import path</p>
+<p>语法：path(route,views,name=None)</p>
+<p>参数：</p>
+<ul>
+<li>route：字符串类型，匹配请求的路径</li>
+<li>views：指定路径所对应的视图处理函数的名称</li>
+<li>name：为地址起别名，在模板中地址反向解析时使用</li>
+</ul>
+<h3 id="path转换器"><a class="markdownIt-Anchor" href="#path转换器"></a> path转换器</h3>
+<p>语法：&lt;转换器类型:自定义名&gt;</p>
+<p>作用：若转换器类型匹配到对应类型的数据，则将数据按照<strong>关键字传参</strong>的方式传递给视图函数</p>
+<table>
+<thead>
+<tr>
+<th>转换器类型</th>
+<th>作用</th>
+<th>样例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>str</td>
+<td>匹配除’/'之外的非空字符串</td>
+<td>V1/users/&lt;str:username&gt;</td>
+</tr>
+<tr>
+<td>int</td>
+<td>匹配0或任何正整数，返回一个int</td>
+<td>page/&lt;int:page&gt;</td>
+</tr>
+<tr>
+<td>slug</td>
+<td>匹配任意由ASCII字母或数字以及连字符和下划线组成的短标签</td>
+<td>detail/&lt;slug:sl&gt;，比如/detail/this-is-django</td>
+</tr>
+<tr>
+<td>path</td>
+<td>匹配非空字段，包括路径分隔符’/’</td>
+<td>v1/users/&lt;path:ph&gt;，比如/v1/goods/a/b/c</td>
+</tr>
+</tbody>
+</table>
+<h3 id="实验计算器"><a class="markdownIt-Anchor" href="#实验计算器"></a> 实验：计算器</h3>
+<p>路由格式：<a target="_blank" rel="noopener" href="http://127.0.0.1:8000/%E6%95%B4%E6%95%B0/%E6%93%8D%E4%BD%9C%E5%AD%97%E7%AC%A6%E4%B8%B2%5Badd/sub/mul%5D/%E6%95%B4%E6%95%B0">http://127.0.0.1:8000/整数/操作字符串[add/sub/mul]/整数</a></p>
+<p>功能：从路由中提取数据，做相应操作后返回给浏览器</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#urls.py新增路由</span>
+<span class="token comment">#http://127.0.0.1:8000/整数/操作字符串[add/sub/mul]/整数</span>
+path<span class="token punctuation">(</span><span class="token string">'&lt;int:a>/&lt;str:op>/&lt;int:b>'</span><span class="token punctuation">,</span>views<span class="token punctuation">.</span>calculate_view<span class="token punctuation">)</span>
+<span class="token comment">#views.py新增视图函数</span>
+<span class="token keyword">def</span> <span class="token function">calculate_view</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span>a<span class="token punctuation">,</span>op<span class="token punctuation">,</span>b<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> op <span class="token keyword">not</span> <span class="token keyword">in</span> <span class="token punctuation">[</span><span class="token string">'add'</span><span class="token punctuation">,</span><span class="token string">'sub'</span><span class="token punctuation">,</span><span class="token string">'mul'</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> HttpResponse<span class="token punctuation">(</span><span class="token string">'非法操作符!'</span><span class="token punctuation">)</span>
+    result<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> op<span class="token operator">==</span><span class="token string">'add'</span><span class="token punctuation">:</span>
+        result<span class="token operator">=</span>a<span class="token operator">+</span>b
+    <span class="token keyword">elif</span> op<span class="token operator">==</span><span class="token string">'sub'</span><span class="token punctuation">:</span>
+        result<span class="token operator">=</span>a<span class="token operator">-</span>b
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        result<span class="token operator">=</span>a<span class="token operator">*</span>b
+    <span class="token keyword">return</span> HttpResponse<span class="token punctuation">(</span><span class="token string">'运算结果是:%s'</span><span class="token operator">%</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>效果：</p>
+<p><img src="/images/postimage/jango5.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>⚠️这边转换器中自定义名一定要和视图函数名中的形参名一致，因为是关键字传参，所以要两两匹配上，否则不一致会出现如下报错：我将自定义名改为c,e,d了，所以视图函数会获得一个未期待未定义的关键字参数c</p>
+<p><img src="/images/postimage/jango6.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<h3 id="re_path函数"><a class="markdownIt-Anchor" href="#re_path函数"></a> re_path()函数</h3>
+<p>在URL的匹配过程中可以使用正则表达式进行精确匹配</p>
+<p>语法：re_path(reg,view,name=xxx)</p>
+<p>正则表达式采取命名分组模式，语法：(?P&lt;name&gt;pattern)。匹配提取参数后用关键字传参方式传递给视图函数。</p>
+<p>示例：上述计算器例子改进，只能作两位数内运算</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> django<span class="token punctuation">.</span>urls <span class="token keyword">import</span> path<span class="token punctuation">,</span>re_path<span class="token comment">#导入re_path</span>
+
+<span class="token comment">#在urlpatterns中添加re_path路由</span>
+<span class="token comment">#http://127.0.0.1:8000/整数2/操作字符串[add/sub/mul]/整数2</span>
+re_path<span class="token punctuation">(</span><span class="token string">r'^(?P&lt;a>\d&#123;1,2&#125;)/(?P&lt;op>\w+)/(?P&lt;b>\d&#123;1,2&#125;)$'</span><span class="token punctuation">,</span>views<span class="token punctuation">.</span>calculate2_view<span class="token punctuation">)</span>
+
+<span class="token comment">#views.py</span>
+<span class="token keyword">def</span> <span class="token function">calculate2_view</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span>a<span class="token punctuation">,</span>op<span class="token punctuation">,</span>b<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> op <span class="token keyword">not</span> <span class="token keyword">in</span> <span class="token punctuation">[</span><span class="token string">'add'</span><span class="token punctuation">,</span><span class="token string">'sub'</span><span class="token punctuation">,</span><span class="token string">'mul'</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> HttpResponse<span class="token punctuation">(</span><span class="token string">'非法操作符!'</span><span class="token punctuation">)</span>
+    result<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> op<span class="token operator">==</span><span class="token string">'add'</span><span class="token punctuation">:</span>
+        result<span class="token operator">=</span>a<span class="token operator">+</span>b
+    <span class="token keyword">elif</span> op<span class="token operator">==</span><span class="token string">'sub'</span><span class="token punctuation">:</span>
+        result<span class="token operator">=</span>a<span class="token operator">-</span>b
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        result<span class="token operator">=</span>a<span class="token operator">*</span>b
+    <span class="token keyword">return</span> HttpResponse<span class="token punctuation">(</span><span class="token string">'两位数以内运算的运算结果是:%s'</span><span class="token operator">%</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>⚠️通过re_path()正则读入的数据都是字符串型，关键字传参传入的也是字符串，所以像上面这么写，a,b也都是字符串而不是整型，若我输入的是12/add/12，出来的结果是1212而不是24！！</p>
+<p><img src="/images/postimage/jango7.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>函数内部改进一下：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">calculate2_view</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span>a<span class="token punctuation">,</span>op<span class="token punctuation">,</span>b<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> op <span class="token keyword">not</span> <span class="token keyword">in</span> <span class="token punctuation">[</span><span class="token string">'add'</span><span class="token punctuation">,</span><span class="token string">'sub'</span><span class="token punctuation">,</span><span class="token string">'mul'</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> HttpResponse<span class="token punctuation">(</span><span class="token string">'非法操作符!'</span><span class="token punctuation">)</span>
+    result<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> op<span class="token operator">==</span><span class="token string">'add'</span><span class="token punctuation">:</span>
+        result<span class="token operator">=</span><span class="token builtin">int</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token operator">+</span><span class="token builtin">int</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span>
+    <span class="token keyword">elif</span> op<span class="token operator">==</span><span class="token string">'sub'</span><span class="token punctuation">:</span>
+        result<span class="token operator">=</span><span class="token builtin">int</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token operator">-</span><span class="token builtin">int</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        result<span class="token operator">=</span><span class="token builtin">int</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token operator">*</span><span class="token builtin">int</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> HttpResponse<span class="token punctuation">(</span><span class="token string">'两位数以内运算的运算结果是:%s'</span><span class="token operator">%</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>运算结果：</p>
+<p><img src="/images/postimage/jango8.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<blockquote>
+<p>‼️是时候恶补一下正则了…</p>
+</blockquote>
+<blockquote>
+<p><strong>参考资料：</strong></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/django/django-tutorial.html">Django 教程</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1vK4y1o7jH">2021最新版Django全套视频（django框架快速上手）_Python全栈</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.djangoproject.com/en/3.2/">Django documentation</a></li>
+</ol>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/Web%E5%BC%80%E5%8F%91/">Web开发</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%90%8E%E7%AB%AF/">后端</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/46f5d77b.html">
+                        <span class="hidden-mobile">Birthday Paradox</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="waline"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#waline', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/@waline/client@1/dist/Waline.min.js', function() {
+        var options = Object.assign(
+          {"serverURL":"https://blog-comment-eta.vercel.app/","path":"window.location.pathname","placeholder":null,"meta":["nick","mail","link"],"requiredMeta":["nick"],"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],"dark":"html[data-user-color-scheme=\"dark\"]","avatar":"retro","avatarCDN":"https://seccdn.libravatar.org/avatar/","avatarForce":false,"wordLimit":0,"pageSize":10,"highlight":true},
+          {
+            el: '#waline',
+            path: window.location.pathname
+          }
+        )
+        new Waline(options);
+        Fluid.utils.waitElementVisible('#waline .vcontent', () => {
+          Fluid.plugins.initFancyBox('#waline .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- LeanCloud 统计PV -->
+        <span id="leancloud-site-pv-container" style="display: none">
+            总访问量 
+            <span id="leancloud-site-pv"></span>
+             次
+          </span>
+      
+      
+        <!-- LeanCloud 统计UV -->
+        <span id="leancloud-site-uv-container" style="display: none">
+            总访客数 
+            <span id="leancloud-site-uv"></span>
+             人
+          </span>
+      
+
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- KaTeX -->
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css" />
+  
+
+
+
+
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0aae2bb9475d846643a0f05755d8a37b";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":"true#是否在手机端显示"},"log":false});</script></body>
+</html>
