@@ -1,0 +1,890 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/portrait.jpg">
+  <link rel="icon" href="/img/portrait.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lane Gong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="摘要： 本博客主要是记录了利用Wireshark抓每一层协议的数据包并进行分析，不足之处，欢迎指正交流！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据包结构分析">
+<meta property="og:url" content="https://lanegong.github.io/posts/9e515245.html">
+<meta property="og:site_name" content="Lane&#39;s Blog">
+<meta property="og:description" content="摘要： 本博客主要是记录了利用Wireshark抓每一层协议的数据包并进行分析，不足之处，欢迎指正交流！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lanegong.github.io/images/postimage/fzb.png">
+<meta property="article:published_time" content="2022-05-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-17T14:47:55.550Z">
+<meta property="article:author" content="Lane Gong">
+<meta property="article:tag" content="Wireshark">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/fzb.png">
+  
+  
+  <title>数据包结构分析 - Lane&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"lanegong.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":"0aae2bb9475d846643a0f05755d8a37b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"BQhkuiEuKDoNKUCuKndW69hb-MdYXbMMI","app_key":"rHe0dTOjfn4mDpT4f9RRkf4P","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Lane の Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="数据包结构分析">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-05-17 00:00" pubdate>
+        2022年5月17日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      6.7k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      57 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- LeanCloud 统计文章PV -->
+      <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="leancloud-page-views"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">数据包结构分析</h1>
+            
+            <div class="markdown-body">
+              <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要：</h2>
+<p>本博客主要是记录了利用Wireshark抓每一层协议的数据包并进行分析，不足之处，欢迎指正交流！</p>
+<span id="more"></span>
+<p>本次实验抓包工具：<a class="btn" href="https://www.wireshark.org/"  title="Wireshark" target="_blank">Wireshark</a></p>
+<h2 id="混杂模式"><a class="markdownIt-Anchor" href="#混杂模式"></a> 混杂模式</h2>
+<p>混杂模式就是接收所有经过网卡的数据包，包括不是发给本机的包，即不验证MAC 地址。普通模式下网卡只接收发给本机的包（包括广播包）传递给上层程序，其它的包一律丢弃。一般来说，混杂模式不会影响网卡的正常工作，多在网络监听工具上使用。</p>
+<h3 id="关闭和开启混杂模式"><a class="markdownIt-Anchor" href="#关闭和开启混杂模式"></a> 关闭和开启混杂模式</h3>
+<ol>
+<li>
+<p>停止抓包</p>
+</li>
+<li>
+<p>工具栏➡️Capture➡️options</p>
+</li>
+<li>
+<p>选上即开启（默认开启）</p>
+<p><img src="/images/postimage/zb1.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+</ol>
+<h2 id="wireshark过滤器"><a class="markdownIt-Anchor" href="#wireshark过滤器"></a> Wireshark过滤器</h2>
+<h3 id="筛选不同协议数据包"><a class="markdownIt-Anchor" href="#筛选不同协议数据包"></a> 筛选不同协议数据包</h3>
+<blockquote>
+<p>⚠️筛选条件都使用小写</p>
+</blockquote>
+<ul>
+<li>
+<p>TCP包	<code>tcp</code></p>
+<p><img src="/images/postimage/zb2.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>ARP包    <code>arp</code></p>
+<p><img src="/images/postimage/zb3.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>UDP包    <code>udp</code></p>
+<p><img src="/images/postimage/zb4.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p><strong>Question:</strong> 为什么输入 udp 之后出现那么多种协议呢？</p>
+<p><strong>Answer:</strong>  DNS和SSDP都是基于udp的传输层之上的协议</p>
+<blockquote>
+<p>扩展：客户端向 DNS 服务器查询域名，一般返回的内容都不超过 512 字节，用 UDP 传输即可。不用经过三次握手，这样 DNS 服务器负载更低，响应更快。理论上说，客户端也可以指定向 DNS 服务器查询时用 TCP，但事实上，很多 DNS 服务器进行配置的时候，仅支持 UDP 查询包。</p>
+</blockquote>
+</li>
+<li>
+<p>…</p>
+</li>
+</ul>
+<h3 id="筛选指定源地址目的地址等数据包"><a class="markdownIt-Anchor" href="#筛选指定源地址目的地址等数据包"></a> 筛选指定源地址/目的地址等数据包</h3>
+<p><strong>筛选源地址192.168.1.3、目的地址192.168.1.1</strong></p>
+<ul>
+<li>
+<p>Terminal ping 192.168.1.1</p>
+<p><img src="/images/postimage/zb5.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p><code>filter：ip.src_host==192.168.1.3 and ip.dst_host==192.168.1.1</code></p>
+<p><img src="/images/postimage/zb6.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p><code>ip.src_host==192.168.1.3</code>：源IP地址</p>
+<p><code>ip.dst_host==192.168.1.1</code>：目的地址</p>
+<p><code>and</code>：表示左右2个条件都满足</p>
+<p><code>or</code>：表示左右条件满足一个即会显示</p>
+</li>
+</ul>
+<h2 id="wireshark抓常用协议数据包并分析原理"><a class="markdownIt-Anchor" href="#wireshark抓常用协议数据包并分析原理"></a> Wireshark抓常用协议数据包并分析原理</h2>
+<blockquote>
+<p>协议分析时关闭混杂模式，避免干扰数据包</p>
+</blockquote>
+<h3 id="arp协议"><a class="markdownIt-Anchor" href="#arp协议"></a> ARP协议</h3>
+<ul>
+<li>
+<p>Wireshark <code>filter:arp</code></p>
+</li>
+<li>
+<p>抓到的ARP包</p>
+<p><img src="/images/postimage/zb7.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>分析NO.5646请求包</p>
+<p>通过抓包列表显示这个数据包是中国移动服务器广播发出的ARP请求包，主要内容是Who has 192.168.1.3?谁有该IP地址（本机IP），请求该IP的MAC地址。Tell 192.168.1.1，请将MAC地址告知192.168.1.1（请求方），发送ARP响应包。</p>
+<p><strong>查看Address Resolution Protocol(request) ARP请求包内容</strong></p>
+<p><img src="/images/postimage/zb8.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">Address Resolution Protocol (request)#ARP地址解析协议，request表示请求包
+    Hardware type: Ethernet (1)#硬件类型
+    Protocol type: IPv4 (0x0800)#协议类型
+    Hardware size: 6#硬件地址
+    Protocol size: 4#协议长度
+    Opcode: request (1)#操作码，值为1表示ARP请求包
+    Sender MAC address: ChinaMob_38:57:c1 (90:47:3c:38:57:c1)#源的MAC地址
+    Sender IP address: 192.168.1.1#源的IP地址
+    Target MAC address: 00:00:00_00:00:00 (00:00:00:00:00:00)#目标MAC地址，广播
+    Target IP address: 192.168.1.3#目标IP地址<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>分析NO.5647应答包</p>
+<p>首先通过抓包列表可以清楚发现应答包已经不是广播包了，单播通信，是从目标IP发送到请求IP的主机上，主要信息内容为目标地址IP所对应的MAC地址。</p>
+<p><strong>查看Address Resolution Protocol(reply) ARP应答包内容</strong></p>
+<p><img src="/images/postimage/zb9.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">Address Resolution Protocol (reply)#ARP地址解析协议，reply表示应答包
+    Hardware type: Ethernet (1)#硬件类型
+    Protocol type: IPv4 (0x0800)#协议类型
+    Hardware size: 6#硬件地址
+    Protocol size: 4#协议长度
+    Opcode: reply (2)#操作码，值2表示ARP应答包
+    Sender MAC address: Apple_01:30:d7 (3c:06:30:01:30:d7)#源MAC地址
+    Sender IP address: 192.168.1.3#源IP地址
+    Target MAC address: ChinaMob_38:57:c1 (90:47:3c:38:57:c1)#目标MAC地址
+    Target IP address: 192.168.1.1#目标IP地址<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>总结：应答包补全了自己的MAC地址，目的地址和源地址做了替换</p>
+</li>
+</ul>
+<h3 id="icmp协议"><a class="markdownIt-Anchor" href="#icmp协议"></a> ICMP协议</h3>
+<ul>
+<li>
+<p>Wireshark <code>filter:icmp</code></p>
+</li>
+<li>
+<p>Terminal <code>ping baidu.com -c 1</code></p>
+<p>只发送一个 ping 包，方便分析发送完之后停止抓包即可。</p>
+<p><img src="/images/postimage/zb10.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>分析请求包</p>
+<p>首先它是一个4层的协议包</p>
+<p><strong>查看Internet Control Message Protocol</strong></p>
+<p><img src="/images/postimage/zb11.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">Internet Control Message Protocol
+    Type: 8 (Echo (ping) request)
+    Code: 0 #协议类型8，代码0，表示回显请求，即Ping请求
+    Checksum: 0x0adc [correct]#校验和，用于检查错误的数据
+    [Checksum Status: Good]#校验状态：Good
+    Identifier (BE): 16348 (0x3fdc)
+    Identifier (LE): 56383 (0xdc3f)#ID值，在应答包中返回该字段
+    Sequence Number (BE): 0 (0x0000)
+    Sequence Number (LE): 0 (0x0000)#序列号，依旧在应答包中返回该字段
+    [Response frame: 125044]#响应帧的序列号
+    Timestamp from icmp data: May 15, 2022 13:47:16.248796000 CST
+    [Timestamp from icmp data (relative): 0.000111000 seconds]
+    Data (48 bytes)#填充数据，共48字节<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>分析应答包</p>
+<p><strong>查看Internet Control Message Protocol</strong></p>
+<p><img src="/images/postimage/zb12.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">Internet Control Message Protocol
+    Type: 0 (Echo (ping) reply)
+    Code: 0 #协议类型0，代码0，表示回显应答报文
+    Checksum: 0x12dc [correct]
+    [Checksum Status: Good]#校验和
+    Identifier (BE): 16348 (0x3fdc)
+    Identifier (LE): 56383 (0xdc3f)
+    Sequence Number (BE): 0 (0x0000)
+    Sequence Number (LE): 0 (0x0000)#这里的ID和序列号和请求包中的一致
+    [Request frame: 125021]#请求帧的序列号
+    [Response time: 37.942 ms]#响应时间
+    Timestamp from icmp data: May 15, 2022 13:47:16.248796000 CST
+    [Timestamp from icmp data (relative): 0.038053000 seconds]
+    Data (48 bytes)#填充数据，共48字节<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li>
+<p>总结：本机发送一个 ICMP Echo Request 的包，接受方返回一个 ICMP Echo Reply，包含了接受到的数据拷贝和一些其他指令。</p>
+</li>
+</ul>
+<h3 id="tcp协议"><a class="markdownIt-Anchor" href="#tcp协议"></a> TCP协议</h3>
+<ul>
+<li>
+<p>Wireshark <code>filter:tcp</code></p>
+</li>
+<li>
+<p>模拟TCP会话建立：Terminal <code>curl www.baidu.com</code></p>
+</li>
+<li>
+<p>filter改进：<code>tcp and (ip.src_host==192.168.1.3 or ip.src_host==36.152.44.96) and (ip.dst_host==192.168.1.3 or ip.dst_host==36.152.44.96)</code></p>
+</li>
+<li>
+<p>抓到想要的包列表</p>
+<p><img src="/images/postimage/zb13.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<blockquote>
+<p>TCP 协议最核心的概念：3 次握手 4 次挥手</p>
+</blockquote>
+</li>
+<li>
+<p>分析TCP的三次握手</p>
+<p><strong>先查看第一个SYN数据包</strong></p>
+<p><img src="/images/postimage/zb14.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<div class="code-wrapper"><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">Transmission Control Protocol, Src Port: 58625, Dst Port: 80, Seq: 0, Len: 0
+    Source Port: 58625#源端口
+    Destination Port: 80#目的端口
+    [Stream index: 1]
+    [Conversation completeness: Complete, WITH_DATA (31)]
+    [TCP Segment Len: 0]
+    Sequence Number: 0    (relative sequence number)#序列号
+    Sequence Number (raw): 1350198396
+    [Next Sequence Number: 1    (relative sequence number)]#确认序列号
+    Acknowledgment Number: 0
+    Acknowledgment number (raw): 0
+    1011 .... &#x3D; Header Length: 44 bytes (11)#头部长度
+    Flags: 0x002 (SYN)#标志位SYN
+    Window: 65535
+    [Calculated window size: 65535]#窗口大小
+    Checksum: 0x3324 [unverified]#校验和
+    [Checksum Status: Unverified]
+    Urgent Pointer: 0
+    Options: (24 bytes), Maximum segment size, No-Operation (NOP), Window scale, No-Operation (NOP), No-Operation (NOP), Timestamps, SACK permitted, End of Option List (EOL)
+    [Timestamps]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>打开标志位的详细信息：</p>
+<p><img src="/images/postimage/zb15.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>SYN=1表示发起一个连接请求，TCP Flags=S表示SYN类型</p>
+<p>从以上信息就可以看出这是一个 SYN 数据包,SYN=1表示发送一个链接请求。这时Seq和ACK 都是 0</p>
+<p><strong>查看第二个数据包[SYN,ACK]</strong></p>
+<p><img src="/images/postimage/zb16.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>源端口和目的端口互换，关注Seq和ACK，Seq为0，Ack为1，标志位(SYN,ACK)表示这是TCP三次握手中的第二次。最后一个红框表示这里是Seq和ACK的数据。</p>
+<p>展开Flags标志位信息：</p>
+<p><img src="/images/postimage/zb17.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>Ack=1确认序列号有效，SYN=1，类型为SYN/ACK</p>
+<p>展开[SEQ/ACK analysis]:</p>
+<p><img src="/images/postimage/zb18.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>表示ACK响应第19帧的请求即第一个SYN请求。</p>
+<p>可以看到服务端收到 SYN 连接请求返回的数据包 SYN=1,ACK=1 表示回应第一个 SYN 数据包。</p>
+<p><strong>分析第三个数据包ACK包</strong></p>
+<p><img src="/images/postimage/zb19.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>Seq等于上一帧的确认序列号，Ack=1，Flags=ACK</p>
+<p>展开Flags和[SEQ/ACK analysis]：</p>
+<p><img src="/images/postimage/zb20.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>Ack=1确认序列号有效，flags为A表示ACK，响应第20帧</p>
+<p><mark>至此，三次握手过程就结束了</mark></p>
+</li>
+<li>
+<p>流量图观察数据交互，statistics➡️Flow Graph➡️Limit to display filter</p>
+<p><img src="/images/postimage/zb21.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>前面 3 个就是TCP建立链接的过程，后面的就是相互通信的过程了。这个时候 seq 就会根据数据包的大小改变。</p>
+</li>
+<li>
+<p>分析TCP断开连接，四次挥手过程</p>
+<blockquote>
+<p>重抓了一下，帧数可能有些不一致，但无大影响</p>
+</blockquote>
+<p><strong>命令：</strong> <code>curl -I baidu.com</code></p>
+<blockquote>
+<p>curl 是一个在命令行下工作的文件传输工具，我们这里用来发送 http 请求。-I 表示仅返回头部信息。</p>
+</blockquote>
+<p><img src="/images/postimage/zb22.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>第一次挥手：主机发送一个[FIN+ACK]，表示自己没有数据要发送了，想断开连接，并进入FIN_WAIT_1 状态</p>
+<p>第二次挥手：百度收到 FIN 后，知道不会再有数据从主机传来，发送 ACK 进行确认，确认序号为收到序号+1（与SYN相同，一个FIN占用一个序号），客户端进入 CLOSE_WAIT 状态。</p>
+<p>第三次挥手：百度发送 [FIN+ACK] 给对方，表示自己没有数据要发送了，百度进入LAST_ACK 状态，然后直接断开 TCP 会话的连接，释放相应的资源。</p>
+<p>第四次挥手：主机收到了百度的FIN命令后，进入 TIMED_WAIT 状态，并发送 ACK 确认消息。主机在 TIMED_WAIT 状态下，等待一段时间，没有数据到来，就认为对面已经收到了自己发送的ACK 并正确关闭了进入 CLOSE 状态，自己也断开了 TCP 连接，释放所有资源。当百度收到主机的ACK 回应后，会进入 CLOSE 状态并关闭本端的会话接口，释放相应资源。</p>
+</li>
+<li>
+<p>四次挥手的小插曲 <code>Spurious Retransmission</code> 和 <code>out of order</code></p>
+<p>使用<code>curl www.baidu.com</code>抓包如下</p>
+<p><img src="/images/postimage/zb23.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p><strong>TCP Retransmission</strong></p>
+<p>在网络环境中，数据包丢失是非常常见的事情。TCP协议有内建的处理机制来确保网络数据传输正确。但是，如果看到大量的TCP重传（TCP Retransmission），则往往表示存在异常。</p>
+<blockquote>
+<p>当数据发送方没有接收到接收方的ACK，就会<code>TCP Retransmission</code>。虽然很多时候是由于网络链路问题，但是也有可能是服务器压力过大或者服务器端网卡、驱动等主机故障导致。</p>
+</blockquote>
+<p>TCP Retransmission有三种类型，重点展开遇到的 <strong>Spurious Retransmission</strong> ：</p>
+<p>Checks for a retransmission based on analysis data in the reverse direction. Set when all of the following are true:</p>
+<ul>
+<li>The SYN or FIN flag is set.</li>
+<li>This is not a keepalive packet.</li>
+<li>The segment length is greater than zero.</li>
+<li>Data for this flow has been acknowledged. That is, the last-seen acknowledgement number has been set.</li>
+<li>The next sequence number is less than or equal to the last-seen acknowledgement number.</li>
+</ul>
+<p>满足了上述条件，设置虚假重传。</p>
+<p><strong>TCP Out-Of-Order</strong></p>
+<p>Set when all of the following are true:</p>
+<ul>
+<li>This is not a keepalive packet.</li>
+<li>In the forward direction, the segment length is greater than zero or the SYN or FIN is set.</li>
+<li>The next expected sequence number is greater than the current sequence number.</li>
+<li>The next expected sequence number and the next sequence number differ.</li>
+<li>The last segment arrived within the Out-Of-Order RTT threshold. The threshold is either the value shown in the “iRTT” (tcp.analysis.initial_rtt) field under “SEQ/ACK analysis” if it is present, or the default value of 3ms if it is not.</li>
+</ul>
+<p>Supersedes “Retransmission”.</p>
+<blockquote>
+<p>reference：<a target="_blank" rel="noopener" href="https://www.wireshark.org/docs/wsug_html_chunked/ChAdvTCPAnalysis.html">TCP Analysis</a></p>
+</blockquote>
+</li>
+</ul>
+<h3 id="http协议"><a class="markdownIt-Anchor" href="#http协议"></a> HTTP协议</h3>
+<ul>
+<li>
+<p><strong>Terminal命令：</strong> <code>curl -I baidu.com</code> ，抓包</p>
+<p>筛选 TCP 协议因为 HTTP 是 TCP 的上层协议，所以我们过滤 TCP 的数据会包含 HTTP 协议的数据包，同时也能观察到前面的TCP三次握手、四次挥手。第158和160是HTTP数据包。</p>
+<p><img src="/images/postimage/zb24.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>第一步：发送了一个 HTTP 的 HEAD 请求</p>
+</li>
+<li>
+<p>第二步：服务器收到我们的请求返回了一个 Seq/ACK 进行确认</p>
+</li>
+<li>
+<p>第三步：服务器将 HTTP 的头部信息返回给我们客户端，状态码为 200 表示页面正常</p>
+</li>
+<li>
+<p>第四步：客户端收到服务器返回的头部信息向服务器发送 Seq/ACK 进行确认</p>
+</li>
+<li>
+<p>最后：发送完成之后客户端就会发送 FIN/ACK 来进行关闭链接的请求。</p>
+</li>
+<li>
+<p>查看请求内容</p>
+<p><img src="/images/postimage/zb25.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>查看响应报文</p>
+<p><img src="/images/postimage/zb26.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+</ul>
+<p>关于头部详情可参考：<a href="https://lanegong.github.io/posts/cc926504.html">HTTP协议及抓包分析</a></p>
+<h3 id="ip协议"><a class="markdownIt-Anchor" href="#ip协议"></a> IP协议</h3>
+<blockquote>
+<p>可以使用和TCP协议一样的方法，<code>curl -I baidu.com</code> ，然后筛选条件filter思路一致，关于tcp的过滤，因为tcp是IP的上层协议，所以抓tcp会同时显示ip协议数据包。</p>
+</blockquote>
+<ul>
+<li>
+<p><code>curl -I baidu.com</code></p>
+<p><img src="/images/postimage/zb27.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>查看IP数据包</p>
+<p><img src="/images/postimage/zb28.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>从上到下依次是版本IPv4、首部长度、区分服务、总长度、标识、标志、片偏移、生存时间（TTL）、协议（该字段本数据包的值TCP即使目的主机的 IP 层知道应将数据部分上交给TCP协议进行处理）、首部检验和，源地址和目的地址。因为首部长度为固定的20字节，因此不存在可变部分。</p>
+</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/Web%E5%AE%89%E5%85%A8/">Web安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Wireshark/">Wireshark</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/e097aaaf.html">
+                        <span class="hidden-mobile">DDoS攻击原理及实现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="waline"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#waline', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/@waline/client@1/dist/Waline.min.js', function() {
+        var options = Object.assign(
+          {"serverURL":"https://blog-comment-eta.vercel.app/","path":"window.location.pathname","placeholder":null,"meta":["nick","mail","link"],"requiredMeta":["nick"],"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],"dark":"html[data-user-color-scheme=\"dark\"]","avatar":"retro","avatarCDN":"https://seccdn.libravatar.org/avatar/","avatarForce":false,"wordLimit":0,"pageSize":10,"highlight":true},
+          {
+            el: '#waline',
+            path: window.location.pathname
+          }
+        )
+        new Waline(options);
+        Fluid.utils.waitElementVisible('#waline .vcontent', () => {
+          Fluid.plugins.initFancyBox('#waline .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- LeanCloud 统计PV -->
+        <span id="leancloud-site-pv-container" style="display: none">
+            总访问量 
+            <span id="leancloud-site-pv"></span>
+             次
+          </span>
+      
+      
+        <!-- LeanCloud 统计UV -->
+        <span id="leancloud-site-uv-container" style="display: none">
+            总访客数 
+            <span id="leancloud-site-uv"></span>
+             人
+          </span>
+      
+
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- KaTeX -->
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css" />
+  
+
+
+
+
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0aae2bb9475d846643a0f05755d8a37b";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":"true#是否在手机端显示"},"log":false});</script></body>
+</html>
