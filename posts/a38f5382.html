@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lanegong.github.io/images/postimage/fbdemo1.png">
 <meta property="article:published_time" content="2022-05-23T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-05-24T13:32:18.341Z">
+<meta property="article:modified_time" content="2022-05-25T05:36:32.215Z">
 <meta property="article:author" content="Lane Gong">
 <meta property="article:tag" content="python">
 <meta property="article:tag" content="Django">
@@ -992,7 +992,7 @@ path<span class="token punctuation">(</span><span class="token string">'article-
 &#123;% endblock %&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
 <h3 id="路由配置"><a class="markdownIt-Anchor" href="#路由配置"></a> 路由配置</h3>
 <div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#article/urls.py</span>
-path<span class="token punctuation">(</span><span class="token string">'article-update/&lt;int:id>'</span><span class="token punctuation">,</span>views<span class="token punctuation">.</span>article_update<span class="token punctuation">,</span>name<span class="token operator">=</span><span class="token string">'article_update'</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+path<span class="token punctuation">(</span><span class="token string">'article-update/&lt;int:id>/'</span><span class="token punctuation">,</span>views<span class="token punctuation">.</span>article_update<span class="token punctuation">,</span>name<span class="token operator">=</span><span class="token string">'article_update'</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
 <h3 id="优化入口"><a class="markdownIt-Anchor" href="#优化入口"></a> 优化入口</h3>
 <div class="code-wrapper"><pre class="line-numbers language-html" data-language="html"><code class="language-html">#tempaltes/article/detail.html
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col-12 alert alert-success<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>作者：&#123;&#123; article.author &#125;&#125;
@@ -1242,6 +1242,12 @@ path<span class="token punctuation">(</span><span class="token string">'register
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/posts/50f7bf7a.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Nginx解析漏洞</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">

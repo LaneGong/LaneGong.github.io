@@ -1,0 +1,672 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/portrait.jpg">
+  <link rel="icon" href="/img/portrait.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lane Gong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="摘要： 主要学习了Web server漏洞中的Nginx解析漏洞，并借助vulhub环境进行漏洞复现，不足之处，欢迎指正交流！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx解析漏洞">
+<meta property="og:url" content="https://lanegong.github.io/posts/50f7bf7a.html">
+<meta property="og:site_name" content="Lane&#39;s Blog">
+<meta property="og:description" content="摘要： 主要学习了Web server漏洞中的Nginx解析漏洞，并借助vulhub环境进行漏洞复现，不足之处，欢迎指正交流！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lanegong.github.io/images/postimage/ng9.png">
+<meta property="article:published_time" content="2022-06-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-06-17T08:56:48.721Z">
+<meta property="article:author" content="Lane Gong">
+<meta property="article:tag" content="Web server漏洞">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/ng9.png">
+  
+  
+  <title>Nginx解析漏洞 - Lane&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"lanegong.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":"0aae2bb9475d846643a0f05755d8a37b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"BQhkuiEuKDoNKUCuKndW69hb-MdYXbMMI","app_key":"rHe0dTOjfn4mDpT4f9RRkf4P","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Lane の Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Nginx解析漏洞">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-06-16 00:00" pubdate>
+        2022年6月16日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.6k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      14 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- LeanCloud 统计文章PV -->
+      <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="leancloud-page-views"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Nginx解析漏洞</h1>
+            
+            <div class="markdown-body">
+              <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要：</h2>
+<p>主要学习了Web server漏洞中的Nginx解析漏洞，并借助vulhub环境进行漏洞复现，不足之处，欢迎指正交流！</p>
+<span id="more"></span>
+<div class="note note-warning">
+            <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动，后果自负！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
+          </div>
+<h2 id="docker搭建漏洞环境"><a class="markdownIt-Anchor" href="#docker搭建漏洞环境"></a> Docker搭建漏洞环境</h2>
+<p><a target="_blank" rel="noopener" href="https://github.com/vulhub/vulhub">vulhub</a>项目里有很多Dockerfile，覆盖了绝大部分常用应用，非常方便修改和使用。且设计比较合理，web代码基本都是通过挂载www目录的方式进行部署，调试和部署起来非常的方便。</p>
+<p>主要运用命令：</p>
+<ul>
+<li><code>docker-compose bulid</code></li>
+<li><code>docker-compose up -d</code></li>
+</ul>
+<blockquote>
+<p>可使用的推荐的另一个漏洞环境：<a target="_blank" rel="noopener" href="https://fofapro.github.io/vulfocus/">Vulfocus</a></p>
+</blockquote>
+<p>具体下载方法参照Github…</p>
+<h2 id="常用工具的准备"><a class="markdownIt-Anchor" href="#常用工具的准备"></a> 常用工具的准备</h2>
+<ul>
+<li>
+<p>Burp Suite    <a target="_blank" rel="noopener" href="https://portswigger.net/burp/communitydownload">Burp Suite Community Edition</a></p>
+<p>这边我直接使用kali自带的了。</p>
+<p>初始化配置</p>
+<ul>
+<li>Proxy➡️Options➡️第一个Edit</li>
+</ul>
+<p><img src="/images/postimage/ng1.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<ul>
+<li>firefox插件SwitchyOmega配置代理/当然也可以使用设置手动配置不用插件</li>
+</ul>
+<p><img src="/images/postimage/ng2.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<ul>
+<li>配置完成后选择此情景，BS选择HTTP history</li>
+</ul>
+</li>
+<li>
+<p>蚁剑    <a target="_blank" rel="noopener" href="https://www.yuque.com/antswordproject/antsword/srruro">获取蚁剑</a></p>
+</li>
+</ul>
+<h2 id="nginx解析漏洞"><a class="markdownIt-Anchor" href="#nginx解析漏洞"></a> Nginx解析漏洞</h2>
+<p>版本信息：</p>
+<ul>
+<li>Nginx 1.x 最新版</li>
+<li>PHP 7.x最新版</li>
+</ul>
+<p>由此可知，该漏洞与Nginx、php版本无关，属于用户配置不当造成的解析漏洞。</p>
+<h3 id="漏洞原理"><a class="markdownIt-Anchor" href="#漏洞原理"></a> 漏洞原理</h3>
+<p><img src="/images/postimage/ng3.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>根据nginx的配置文件可以发现nginx把以’.php’结尾的文件交给fastcgi处理,为此可以构造http://ip/uploadfiles/xxx.png/.php (url结尾不一定是‘.php’,任何服务器端不存在的php文件均可,比如’a.php’),其中test.png是我们上传的包含PHP代码的照片文件。但是fastcgi在处理’.php’文件时发现文件并不存在,这时php.ini配置文件中cgi.fix_pathinfo=1 发挥作用,这项配置用于修复路径,如果当前路径不存在则采用上层路径。为此这里交由fastcgi处理的文件就变成了’/xxx.png’。</p>
+<p>⚠️最重要的一点是php-fpm.conf中的security.limit_extensions配置项限制了fastcgi解析文件的类型(即指定什么类型的文件当做代码解析),此项设置为空的时候才允许fastcgi将’.png’等文件当做代码解析。</p>
+<p>查看漏洞环境中的该配置：</p>
+<p><img src="/images/postimage/ng4.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<blockquote>
+<p>注:限制fpm允许解析的脚本扩展名。此设置可以预防web服务器配置的错误。应当限制fpm仅仅解析.php扩展名,阻止恶意用户使用其他扩展名运行php代码。默认值:.php。</p>
+</blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/yuzly/p/11208742.html">nginx解析漏洞复现</a></p>
+<p>由此可以发现通过url后面加上(任意不存在的).php可以直接处理解析前面xxx.png，执行相应的php代码。</p>
+<p><strong>威胁描述：</strong> 我可以直接任意上传一张图片，在图片后加上一句话木马，例如<code>&lt;?php phpinfo(); ?&gt;</code>，通过构造上述url，浏览器便会执行我的php代码，存在解析漏洞。</p>
+<h3 id="漏洞复现"><a class="markdownIt-Anchor" href="#漏洞复现"></a> 漏洞复现</h3>
+<ol>
+<li>
+<p>运行环境，该漏洞直接运行即可，不用编译</p>
+<p><img src="/images/postimage/ng5.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>浏览器访问<code>http://虚拟机ip:80/</code></p>
+<p><img src="/images/postimage/ng6.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>上传一张照片</p>
+<p><img src="/images/postimage/ng7.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>BS抓包</p>
+<p><img src="/images/postimage/ng8.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>修改数据包，在末尾添加一句话木马<code>&lt;?php phpinfo();?&gt;</code>，将request send to repeater进行修改发送</p>
+<p><img src="/images/postimage/ng9.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+<li>
+<p>浏览器访问右端地址拼合成的地址：</p>
+<p><code>http://虚拟机ip/uploadfiles/d85d04f3d790edd17ef1b6e7b6313a42.png/.php</code></p>
+<p><img src="/images/postimage/ng10.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+</li>
+</ol>
+<p>➡️可以发现成功执行了php代码，存在解析漏洞</p>
+<h3 id="漏洞防御"><a class="markdownIt-Anchor" href="#漏洞防御"></a> 漏洞防御</h3>
+<p>根据漏洞原理：</p>
+<ol>
+<li>
+<p>将php.ini文件中的cgi.fix_pathinfo的值设置为0,这样php再解析1.php/1.jpg这样的目录时,只要1.jpg不存在就会显示404页面</p>
+</li>
+<li>
+<p>php-fpm.conf中的security.limit_extensions后面的值设置为.php</p>
+</li>
+</ol>
+<blockquote>
+<p>参考资料：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yuzly/p/11208742.html">nginx解析漏洞复现</a></li>
+<li><a target="_blank" rel="noopener" href="https://vulhub.org/#/environments/nginx/nginx_parsing_vulnerability/">Nginx 解析漏洞复现</a></li>
+</ol>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2%E5%AE%9E%E6%88%98/">网络攻防实战</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Web-server%E6%BC%8F%E6%B4%9E/">Web server漏洞</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/posts/f501cb53.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">IDEA集成Tomcat创建web项目以及简单的Servelet接口开发</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/a38f5382.html">
+                        <span class="hidden-mobile">基于Django+Bootstrap4的博客网站搭建Demo1</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="waline"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#waline', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/@waline/client@1/dist/Waline.min.js', function() {
+        var options = Object.assign(
+          {"serverURL":"https://blog-comment-eta.vercel.app/","path":"window.location.pathname","placeholder":null,"meta":["nick","mail","link"],"requiredMeta":["nick"],"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],"dark":"html[data-user-color-scheme=\"dark\"]","avatar":"retro","avatarCDN":"https://seccdn.libravatar.org/avatar/","avatarForce":false,"wordLimit":0,"pageSize":10,"highlight":true},
+          {
+            el: '#waline',
+            path: window.location.pathname
+          }
+        )
+        new Waline(options);
+        Fluid.utils.waitElementVisible('#waline .vcontent', () => {
+          Fluid.plugins.initFancyBox('#waline .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- LeanCloud 统计PV -->
+        <span id="leancloud-site-pv-container" style="display: none">
+            总访问量 
+            <span id="leancloud-site-pv"></span>
+             次
+          </span>
+      
+      
+        <!-- LeanCloud 统计UV -->
+        <span id="leancloud-site-uv-container" style="display: none">
+            总访客数 
+            <span id="leancloud-site-uv"></span>
+             人
+          </span>
+      
+
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- KaTeX -->
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css" />
+  
+
+
+
+
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0aae2bb9475d846643a0f05755d8a37b";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":"true#是否在手机端显示"},"log":false});</script></body>
+</html>
