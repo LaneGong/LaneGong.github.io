@@ -16,24 +16,23 @@
   <meta name="author" content="Lane Gong">
   <meta name="keywords" content="">
   
-    <meta name="description" content="摘要： 本part主要是通过IDEA集成了Tomcat来创建Web项目，快速搭建简易Web，并通过简单的例子体会Servelet接口开发，不足之处，欢迎指正！">
+    <meta name="description" content="摘要： 不足之处，欢迎指正！">
 <meta property="og:type" content="article">
-<meta property="og:title" content="IDEA集成Tomcat创建web项目以及简单的Servelet接口开发">
-<meta property="og:url" content="https://lanegong.github.io/posts/f501cb53.html">
+<meta property="og:title" content="Java安全基础">
+<meta property="og:url" content="https://lanegong.github.io/posts/eb712b6d.html">
 <meta property="og:site_name" content="Lane&#39;s Blog">
-<meta property="og:description" content="摘要： 本part主要是通过IDEA集成了Tomcat来创建Web项目，快速搭建简易Web，并通过简单的例子体会Servelet接口开发，不足之处，欢迎指正！">
+<meta property="og:description" content="摘要： 不足之处，欢迎指正！">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lanegong.github.io/images/postimage/ser7.jpg">
-<meta property="article:published_time" content="2022-06-16T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-06-17T08:56:48.719Z">
+<meta property="og:image" content="https://lanegong.github.io/images/postimage/fjas.png">
+<meta property="article:published_time" content="2022-06-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-06-18T08:22:49.326Z">
 <meta property="article:author" content="Lane Gong">
 <meta property="article:tag" content="Java">
-<meta property="article:tag" content="Tomcat">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/ser7.jpg">
+<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/fjas.png">
   
   
-  <title>IDEA集成Tomcat创建web项目以及简单的Servelet接口开发 - Lane&#39;s Blog</title>
+  <title>Java安全基础 - Lane&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -199,7 +198,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="IDEA集成Tomcat创建web项目以及简单的Servelet接口开发">
+            <span class="h2" id="subtitle" title="Java安全基础">
               
             </span>
 
@@ -209,8 +208,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2022-06-17 00:00" pubdate>
-        2022年6月17日 凌晨
+      <time datetime="2022-06-18 00:00" pubdate>
+        2022年6月18日 凌晨
       </time>
     </span>
   
@@ -220,7 +219,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2k 字
+      2.2k 字
     </span>
   
 
@@ -266,109 +265,83 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">IDEA集成Tomcat创建web项目以及简单的Servelet接口开发</h1>
+            <h1 style="display: none">Java安全基础</h1>
             
             <div class="markdown-body">
               <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要：</h2>
-<p>本part主要是通过IDEA集成了Tomcat来创建Web项目，快速搭建简易Web，并通过简单的例子体会Servelet接口开发，不足之处，欢迎指正！</p>
+<p>不足之处，欢迎指正！</p>
 <span id="more"></span>
 <div class="note note-warning">
             <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动，后果自负！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
           </div>
-<h2 id="下载tomcat"><a class="markdownIt-Anchor" href="#下载tomcat"></a> 下载Tomcat</h2>
-<p>下载地址：<a target="_blank" rel="noopener" href="https://tomcat.apache.org/download-90.cgi">https://tomcat.apache.org/download-90.cgi</a></p>
-<p>Mac用户直接选择Core中的zip或者tar.gz即可，下完之后解压。</p>
-<p>⚠️⚠️后面这一步检查权限一定要操作检查，否则等在IDEA中部署后会出现如下报错，不能执行。</p>
+<h2 id="java安全概述"><a class="markdownIt-Anchor" href="#java安全概述"></a> Java安全概述</h2>
 <blockquote>
-<p>参考资料：<a target="_blank" rel="noopener" href="https://chihokyo.com/post/32/">【2021年最新】Mac版本M1安装Apache Tomcat</a></p>
+<p>只要有代码的地方就有漏洞</p>
 </blockquote>
-<p><img src="/images/postimage/ser1.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<p>Java的漏洞出现的原因：</p>
 <ul>
-<li>
-<p>进入下载的文件夹的<code>bin</code>目录，打开终端：<code>ls -la *.sh</code>，一般是<code>-rw-r--r--</code>，是没有可执行权限的</p>
-</li>
-<li>
-<p>执行命令：<code>chmod +x *.sh</code>，在这之后再执行权限查看会变成<code>-rwxr-xr-x</code></p>
-</li>
-<li>
-<p>运行tomcat，<code>sudo sh ./startup.sh</code>，浏览器访问http://localhost:8080/，如下即成功</p>
-<p><img src="/images/postimage/ser2.png" srcset="/img/loading.gif" lazyload alt="" /></p>
-</li>
-<li>
-<p><code>sudo sh ./shutdown.sh</code>关闭tomcat</p>
-</li>
+<li>程序员编码不当，编码时未考虑安全性。<br />
+例如，输入输出未做过滤&amp;净化、权限控制不完备、程序逻辑存在问题等。另外，对框架的使用不当造成的问题也不容忽视。 例如，典型的使用MyBatis框架是未使用预编译模式。</li>
+<li>第三方组件使用不当。<br />
+例如，使用了存在漏洞的低版本组件，组件开发模式未关闭等。</li>
 </ul>
-<h2 id="idea集成tomcat创建web项目"><a class="markdownIt-Anchor" href="#idea集成tomcat创建web项目"></a> IDEA集成Tomcat创建Web项目</h2>
-<ul>
-<li>
-<p>New Project</p>
-</li>
-<li>
-<p>Java Enterprise，如下配置</p>
-<p><img src="/images/postimage/ser3.png" srcset="/img/loading.gif" lazyload alt="" /></p>
-</li>
-<li>
-<p>在<code>src/main/webapp/WEB-INF</code>下新建两个文件夹lib，classes</p>
-</li>
-<li>
-<p>file➡️Project Structure,如下配置</p>
-<p><img src="/images/postimage/ser4.png" srcset="/img/loading.gif" lazyload alt="" /></p>
-</li>
-<li>
-<p>检查Tomcat配置（若还不是则进行配置）</p>
-<p><img src="/images/postimage/ser5.png" srcset="/img/loading.gif" lazyload alt="" /></p>
-</li>
-<li>
-<p>此时tomcat就已经集成完毕了！可以单击运行看一眼效果</p>
-<p><img src="/images/postimage/ser6.png" srcset="/img/loading.gif" lazyload alt="" /></p>
-</li>
-</ul>
-<h2 id="简单servlet接口开发"><a class="markdownIt-Anchor" href="#简单servlet接口开发"></a> 简单Servlet接口开发</h2>
-<p>还没深入学习，但通过后面简单开发，个人感觉Servlet的功能非常像Django中的view…</p>
-<p><img src="/images/postimage/ser7.jpg" srcset="/img/loading.gif" lazyload alt="Servlet架构" /></p>
+<h2 id="java危险函数及poc"><a class="markdownIt-Anchor" href="#java危险函数及poc"></a> Java危险函数及POC</h2>
 <blockquote>
-<p>图片来源于<a target="_blank" rel="noopener" href="https://www.runoob.com/servlet/servlet-intro.html">Servlet 简介</a></p>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://github.com/7hang/--Java">https://github.com/7hang/--Java</a></p>
+<p>POC源码已上传至Github：<a target="_blank" rel="noopener" href="https://github.com/LaneGong/JavaCodeAudit">https://github.com/LaneGong/JavaCodeAudit</a></p>
 </blockquote>
+<h3 id="任意代码命令执行os命令注入"><a class="markdownIt-Anchor" href="#任意代码命令执行os命令注入"></a> 任意代码|命令执行/OS命令注入</h3>
+<p>常见关键字：</p>
+<p>System|exec|passthru|popen|shell_exec|eval|preg_replace|str_replace|call_user_func|getRuntime().exec|system|execlp|execvp|ShellExecute|wsystem|popen(|getRuntime|ProcessBuilder|execfile|input|Shell|ShellExecuteForExplore(|ShellExecute|execute|.exec|/bin/sh、/bin/bash|cmd</p>
+<p>命令执行POC（使用Runtime类的exec方法），可以发现直接调用起了系统的计算器应用。</p>
+<p><img src="/images/postimage/jas1.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<blockquote>
+<p>第二种方法没成功，还在研究当中…</p>
+</blockquote>
+<h3 id="反序列化方法"><a class="markdownIt-Anchor" href="#反序列化方法"></a> 反序列化方法</h3>
+<p>常见关键字</p>
+<p>ObjectInputStream.readObject｜ObjectInputStream.readUnshared｜XMLDecoder.readObject<br />
+Yaml.load｜XStream.fromXML｜ObjectMapper.readValue｜JSON.parseObject｜Serializable</p>
+<p>常见可利用基础库</p>
+<p>commons-io 2.4｜commons-collections 3.1｜commons-logging 1.2｜commons-beanutils 1.9.2<br />
+org.slf4j:slf4j-api 1.7.21｜com.mchange:mchange-commons-java 0.2.11<br />
+org.apache.commons:commons-collections 4.0｜com.mchange:c3p0 0.9.5.2｜org.beanshell:bsh 2.0b5<br />
+org.codehaus.groovy:groovy 2.3.9｜org.springframework:spring-aop4.1.4.RELEASE</p>
+<p><strong>Java实现序列化和反序列化的过程</strong></p>
 <ol>
-<li>
-<p>创建Servlet，src/main/java/com.example.xxx右键new➡️Servlet，输入名字apitest创建</p>
-</li>
-<li>
-<p>编写Servlet，在<code>doGet</code>中编写如下：</p>
-<div class="code-wrapper"><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
-   <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> response<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-       <span class="token comment">//设置同源策略，*表示通配符，允许所有ip都可以访问此接口</span>
-       response<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">"Access-Control-Allow-Origin"</span><span class="token punctuation">,</span><span class="token string">"*"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-       <span class="token comment">//设置都允许的请求访问类型</span>
-       response<span class="token punctuation">.</span><span class="token function">addHeader</span><span class="token punctuation">(</span><span class="token string">"Access-Control-Allow-Method"</span><span class="token punctuation">,</span><span class="token string">"POST,GET"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-       <span class="token comment">//设置返回数据类型</span>
-       response<span class="token punctuation">.</span><span class="token function">setContentType</span><span class="token punctuation">(</span><span class="token string">"text/html;charset=utf-8"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-       response<span class="token punctuation">.</span><span class="token function">setCharacterEncoding</span><span class="token punctuation">(</span><span class="token string">"utf-8"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-       response<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">"Content-type"</span><span class="token punctuation">,</span><span class="token string">"text/html;charset=UTF-8"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-       response<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">"访问成功"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-   <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-</li>
-<li>
-<p>路由配置/路径映射（思想和Django的路由配置非常像）</p>
-<p>这边采用注解配置，在Servlet类的注解中配置urlPatterns字段或者value字段</p>
-<div class="code-wrapper"><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@WebServlet</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"apitest"</span><span class="token punctuation">,</span>urlPatterns <span class="token operator">=</span> <span class="token string">"/apitest"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> apitest <span class="token keyword">extends</span> <span class="token class-name">HttpServlet</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
-<span class="token comment">//两种均可</span>
-<span class="token annotation punctuation">@WebServlet</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"apitest"</span><span class="token punctuation">,</span>value <span class="token operator">=</span> <span class="token string">"/apitest"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> apitest <span class="token keyword">extends</span> <span class="token class-name">HttpServlet</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-<p>启动，浏览器访问http://localhost:8080/webtest_war_exploded/apitest便可观察到访问成功字段！</p>
-</li>
-<li>
-<p>更改默认访问页面，原先一开始弹出的其实是index.jsp，可以进行修改，使用<code>web.xml</code>配置</p>
-<div class="code-wrapper"><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token operator">&lt;</span>welcome<span class="token operator">-</span>file<span class="token operator">-</span>list<span class="token operator">></span>
-        <span class="token operator">&lt;</span>welcome<span class="token operator">-</span>file<span class="token operator">></span>a<span class="token punctuation">.</span>html<span class="token operator">&lt;</span><span class="token operator">/</span>welcome<span class="token operator">-</span>file<span class="token operator">></span>
-        <span class="token operator">&lt;</span>welcome<span class="token operator">-</span>file<span class="token operator">></span>testindex<span class="token punctuation">.</span>html<span class="token operator">&lt;</span><span class="token operator">/</span>welcome<span class="token operator">-</span>file<span class="token operator">></span>
-        <span class="token operator">&lt;</span>welcome<span class="token operator">-</span>file<span class="token operator">></span>index<span class="token punctuation">.</span>jsp<span class="token operator">&lt;</span><span class="token operator">/</span>welcome<span class="token operator">-</span>file<span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">/</span>welcome<span class="token operator">-</span>file<span class="token operator">-</span>list<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-<p>在<code>web.xml</code>增加<code>&lt;welcome-file-list&gt;&lt;/welcome-file-list&gt;</code>标签配置默认页面，可以配置多个，按顺序从上到下依次查找，第一个不存在，则访问第二个，以此类推。</p>
-<p>在webapp文件夹下新增<code>testindex.html</code>文件测试，便可观察到效果。</p>
-</li>
+<li>实现序列化的必备要求：<br />
+只有实现了Serializable或者Externalizable接口的类的对象才能被序列化为字节序列。（不是则会抛出异常）</li>
+<li>JDK中序列化和反序列化的API：<br />
+java.io.ObjectInputStream：对象输入流。<br />
+该类的readObject()方法从输入流中读取字节序列，然后将字节序列反序列化为一个对象并返回。<br />
+java.io.ObjectOutputStream：对象输出流。<br />
+该类的writeObject(Object obj)方法将将传入的obj对象进行序列化，把得到的字节序列写入到目标输出流中进行输出。</li>
 </ol>
+<p><strong>序列化和反序列化POC</strong></p>
+<p><img src="/images/postimage/jas2.png" srcset="/img/loading.gif" lazyload alt="序列化" /></p>
+<p><img src="/images/postimage/jas3.png" srcset="/img/loading.gif" lazyload alt="反序列化" /></p>
+<h3 id="xml解析xxe"><a class="markdownIt-Anchor" href="#xml解析xxe"></a> Xml解析(XXE)</h3>
+<blockquote>
+<p>XXE：XML External Entity Injection XML外部实体注入</p>
+</blockquote>
+<p>常见关键字：<br />
+Documentbuilder｜DocumentBuilderFactory｜SAXReader｜SAXParser｜SAXParserFactory｜SAXBuilder<br />
+TransformerFactory｜reqXml|getInputStream｜XMLReaderFactory｜.newInstance｜SchemaFactory<br />
+SAXTransformerFactory｜javax.xml.bind｜XMLReader｜XmlUtils.get｜Validator</p>
+<p>XML解析POC</p>
+<p><img src="/images/postimage/jas4.png" srcset="/img/loading.gif" lazyload alt="" /></p>
+<h3 id="执行sql语句方法"><a class="markdownIt-Anchor" href="#执行sql语句方法"></a> 执行SQL语句方法</h3>
+<p>常见关键字：<br />
+Select｜insert｜update|delete｜java.sql.Connection|Statement｜.execute.executeQuery｜jdbcTemplate|queryForInt|queryForObject｜queryForMap|getConnection<br />
+PreparedStatement｜Statement｜execute|jdbcTemplate｜queryForInt|queryForObject<br />
+queryForMap｜executeQuery｜getConnection</p>
+<p><strong>Java运行sql（oracle）</strong></p>
+<ul>
+<li>jdbc驱动包</li>
+<li>注册oracle jdbc驱动程序</li>
+<li>链接数据库</li>
+<li>创建JDBC Statement对象来执行sql语句</li>
+</ul>
 
             </div>
             <hr>
@@ -380,7 +353,7 @@
                     
                       <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
                     
-                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/Web%E5%AE%89%E5%85%A8/">Web安全</a>
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8/">代码安全</a>
                     
                   </div>
                 
@@ -389,8 +362,6 @@
                     <i class="iconfont icon-tags"></i>
                     
                       <a class="hover-with-bg" href="/tags/Java/">Java</a>
-                    
-                      <a class="hover-with-bg" href="/tags/Tomcat/">Tomcat</a>
                     
                   </div>
                 
@@ -407,18 +378,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/posts/eb712b6d.html">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java安全基础</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/posts/50f7bf7a.html">
-                        <span class="hidden-mobile">Nginx解析漏洞</span>
+                      <a href="/posts/f501cb53.html">
+                        <span class="hidden-mobile">IDEA集成Tomcat创建web项目以及简单的Servelet接口开发</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
