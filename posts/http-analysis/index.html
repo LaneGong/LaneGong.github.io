@@ -1,37 +1,1112 @@
-<!doctype html><html itemscope itemtype=http://schema.org/WebPage lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=2"><meta name=robots content="noodp"><title>HTTP协议及抓包分析 - Lane-诶嘿! Welcome~~</title><meta name=author content="Lane Gong"><meta name=author-link content="https://github.com/LaneGong"><meta name=description content="本篇主要是根据网课资源梳理了关于HTTP协议的相关知识点，作了一个入门。同时借助Wireshark抓包HTTP进一步分析其报文格式及内容。不足之处，敬请指正！"><meta name=keywords content="通信协议,Wireshark"><meta itemprop=name content="HTTP协议及抓包分析"><meta itemprop=description content="本篇主要是根据网课资源梳理了关于HTTP协议的相关知识点，作了一个入门。同时借助Wireshark抓包HTTP进一步分析其报文格式及内容。不足之处，敬请指正！"><meta itemprop=datePublished content="2022-01-03T13:35:15+08:00"><meta itemprop=dateModified content="2022-01-03T13:35:15+08:00"><meta itemprop=wordCount content="7441"><meta itemprop=image content="http://lanegong.top/logo.png"><meta itemprop=keywords content="通信协议,Wireshark,"><meta property="og:title" content="HTTP协议及抓包分析"><meta property="og:description" content="本篇主要是根据网课资源梳理了关于HTTP协议的相关知识点，作了一个入门。同时借助Wireshark抓包HTTP进一步分析其报文格式及内容。不足之处，敬请指正！"><meta property="og:type" content="article"><meta property="og:url" content="http://lanegong.top/posts/http-analysis/"><meta property="og:image" content="http://lanegong.top/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-01-03T13:35:15+08:00"><meta property="article:modified_time" content="2022-01-03T13:35:15+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://lanegong.top/logo.png"><meta name=twitter:title content="HTTP协议及抓包分析"><meta name=twitter:description content="本篇主要是根据网课资源梳理了关于HTTP协议的相关知识点，作了一个入门。同时借助Wireshark抓包HTTP进一步分析其报文格式及内容。不足之处，敬请指正！"><meta name=application-name content="FixIt"><meta name=apple-mobile-web-app-title content="FixIt"><meta name=theme-color data-light=#f8f8f8 data-dark=#252627 content="#f8f8f8"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=canonical href=http://lanegong.top/posts/http-analysis/><link rel=prev href=http://lanegong.top/posts/notes-to-share/><link rel=next href=http://lanegong.top/posts/warmup-writeup/><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"HTTP协议及抓包分析","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/lanegong.top\/posts\/http-analysis\/"},"genre":"posts","keywords":"通信协议, Wireshark","wordcount":7441,"url":"http:\/\/lanegong.top\/posts\/http-analysis\/","datePublished":"2022-01-03T13:35:15+08:00","dateModified":"2022-01-03T13:35:15+08:00","publisher":{"@type":"Organization","name":"Lane","logo":{"@type":"ImageObject","url":"http:\/\/lanegong.top\/images\/avatar.jpeg","width":690,"height":684}},"author":{"@type":"Person","name":"Lane Gong"},"description":""}</script></head><body data-header-desktop=sticky data-header-mobile=auto><script>(window.localStorage?.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("data-theme","dark")</script><div class=wrapper><header class="desktop animate__faster" id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Lane-诶嘿! Welcome~~"><img class="lazyload logo" src=/svg/loading.min.svg data-src=/images/avatar.jpeg data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x" data-sizes=auto alt="Lane-诶嘿! Welcome~~" title="Lane-诶嘿! Welcome~~" width=690 height=684><span class=header-title-text>Lane の Blog</span></a><span class=header-subtitle></span></div><nav><ul class=menu><li class="menu-item has-children"><a class=menu-link href=/posts/ title=查看所有文章><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden=true></i> 归档</a><i class="dropdown-icon fa-solid fa-chevron-down" aria-hidden=true></i><ul class=sub-menu><li class=menu-item><a class=menu-link href=/categories/><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden=true></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden=true></i> 标签</a></li></ul></li><li class=menu-item><a class=menu-link href=/friends/ title=友情链接><i class="fa-solid fa-users fa-fw fa-sm" aria-hidden=true></i> 友链</a></li><li class=menu-item><a class=menu-link href=/fun/ title=正在开发中...><i class="fa-solid fa-fan fa-fw fa-sm" aria-hidden=true></i> 趣味</a></li><li class=menu-item><a class=menu-link href=/guides/ title=常用站点指南><i class="fa-solid fa-subway fa-fw fa-sm" aria-hidden=true></i> 站点导航</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id=search-desktop><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fa-solid fa-search fa-fw" aria-hidden=true></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fa-solid fa-times-circle fa-fw" aria-hidden=true></i></a>
-<span class="search-button search-loading" id=search-loading-desktop><i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw" aria-hidden=true></i></li></ul></nav></div></header><header class="mobile animate__faster" id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Lane-诶嘿! Welcome~~"><img class="lazyload logo" src=/svg/loading.min.svg data-src=/images/avatar.jpeg data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x" data-sizes=auto alt=/images/avatar.jpeg title=/images/avatar.jpeg width=690 height=684><span class=header-title-text>Lane の Blog</span></a><span class=header-subtitle></span></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><nav><ul class=menu id=menu-mobile><li class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fa-solid fa-search fa-fw" aria-hidden=true></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fa-solid fa-times-circle fa-fw" aria-hidden=true></i></a>
-<span class="search-button search-loading" id=search-loading-mobile><i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></li><li class=menu-item><span class=nested-item><a class=menu-link href=/posts/ title=查看所有文章><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden=true></i> 归档</a>
-<i class="dropdown-icon fa-solid fa-chevron-right" aria-hidden=true></i></span><ul class=sub-menu><li class=menu-item><a class=menu-link href=/categories/><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden=true></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden=true></i> 标签</a></li></ul></li><li class=menu-item><a class=menu-link href=/friends/ title=友情链接><i class="fa-solid fa-users fa-fw fa-sm" aria-hidden=true></i> 友链</a></li><li class=menu-item><a class=menu-link href=/fun/ title=正在开发中...><i class="fa-solid fa-fan fa-fw fa-sm" aria-hidden=true></i> 趣味</a></li><li class=menu-item><a class=menu-link href=/guides/ title=常用站点指南><i class="fa-solid fa-subway fa-fw fa-sm" aria-hidden=true></i> 站点导航</a></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw" aria-hidden=true></i></li></ul></nav></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=container data-page-style=normal><aside class=toc id=toc-auto><h2 class=toc-title>目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden=true></i></h2><div class=toc-content id=toc-content-auto></div></aside><aside class=aside-custom></aside><article class="page single"><div class=header><h1 class="single-title animate__animated animate__flipInX"><span>HTTP协议及抓包分析</span></h1></div><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://github.com/LaneGong title=作者 target=_blank rel="external nofollow noopener noreferrer author" class=author><img class="lazyload avatar" src=/svg/loading.min.svg data-src=/images/avatar.jpeg data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x" data-sizes=auto alt="Lane Gong" title="Lane Gong" width=690 height=684>&nbsp;Lane Gong</a></span>
-<span class=post-category>收录于 <a href=/categories/web%E5%AE%89%E5%85%A8/><i class="fa-regular fa-folder fa-fw" aria-hidden=true></i> Web安全</a></span></div><div class=post-meta-line><span title="2022-01-03 13:35:15"><i class="fa-regular fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2022-01-03>2022-01-03</time></span>&nbsp;<span><i class="fa-solid fa-pencil-alt fa-fw" aria-hidden=true></i> 约 7441 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw" aria-hidden=true></i> 预计阅读 15 分钟</span>&nbsp;<span id=busuanzi_container_page_pv class="busuanzi_visitors comment-visitors" data-flag-title=HTTP协议及抓包分析>
-<i class="fa-regular fa-eye fa-fw" aria-hidden=true></i>&nbsp;<span id=busuanzi_value_page_pv>-</span>&nbsp;次阅读
-</span>&nbsp;</div></div><div class="details toc" id=toc-static data-kept=false><div class="details-summary toc-title"><span>目录</span>
-<span><i class="details-icon fa-solid fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#http简介>HTTP简介</a></li><li><a href=#http三个要点>HTTP三个要点</a></li><li><a href=#http工作原理>HTTP工作原理</a></li><li><a href=#http消息结构>HTTP消息结构</a><ul><li><a href=#请求报文的构成>请求报文的构成</a><ul><li><a href=#1-请求行>1. 请求行</a></li><li><a href=#2-请求方法>2. 请求方法</a></li><li><a href=#3-请求参数>3. 请求参数</a></li><li><a href=#4-请求头>4. 请求头</a></li></ul></li><li><a href=#响应报文的构成>响应报文的构成</a><ul><li><a href=#1-状态码>1. 状态码</a></li><li><a href=#2-响应头>2. 响应头</a></li><li><a href=#3-响应内容和content-type>3. 响应内容和content type</a></li></ul></li></ul></li><li><a href=#wireshark抓包http>Wireshark抓包HTTP</a><ul><li><a href=#总结>总结</a></li></ul></li></ul></nav></div></div><div class=content id=content><p>本篇主要是根据网课资源梳理了关于HTTP协议的相关知识点，作了一个入门。同时借助Wireshark抓包HTTP进一步分析其报文格式及内容。不足之处，敬请指正！</p><h2 id=http简介>HTTP简介</h2><p>HTTP协议是Hyper Text Transfer Protocol（超文本传输协议）的缩写,是用于从万维网（WWW:World Wide Web ）服务器传输超文本到本地浏览器的传送协议。HTTP是一个基于TCP/IP通信协议来传递数据（HTML 文件, 图片文件, 查询结果等）。</p><p>请求访问文本或图像等资源的一端称为客户端，而提供资源响应的一端称为服务器端。（应用http协议时必定是一端担任客户端角色，另一端担任服务器端角色）</p><h2 id=http三个要点>HTTP三个要点</h2><ul><li>HTTP是无连接的：无连接的含义是限制每次连接只处理一个请求，服务器处理完客户的请求，并收到客户的应答后，即断开连接。节省传播时间。</li><li>HTTP是媒体独立的：只要客户端和服务器知道如何处理的数据内容，任何类型的数据都可以通过HTTP发送。客户端以及服务器指定使用适合的MIME-type内容类型。</li><li>HTTP是无状态的：无状态是指协议对于事务处理没有记忆功能。缺少状态意味着如果后续处理需要前面的信息，则它必须重传，这样可能导致每次连接传送的数据量增大。另一方面，在服务器不需要先前信息时他的应答就较快。</li></ul><h2 id=http工作原理>HTTP工作原理</h2><p>HTTP是浏览器或者其他客户端（如手机App）和网站服务器之间沟通的协议。HTTP协议规定，请求从客户端发出，最后服务器端响应该请求并返回。也就是说，肯定是先从客户端开始建立通信的，服务器端在没有接收到请求之前不会发送响应。</p><p>浏览器作为HTTP客户端通过URL向HTTP服务端即WEB服务器发送所有请求。</p><p>常用的Web服务器有：Nginx，Apache，IIS服务器（微软的产品）等。</p><p>Web服务器接收到的请求后，向客户端发送响应信息。</p><p>HTTP默认端口号为80，但是你也可以改为8080或者其他端口。</p><h2 id=http消息结构>HTTP消息结构</h2><ul><li><p>请求</p><ul><li><p><strong>地址</strong>和<strong>动词</strong>：例如 <strong>GET <a href=https://www.baidu.com target=_blank rel="external nofollow noopener noreferrer">https://www.baidu.com</a></strong></p></li><li><p><strong>请求头（header)</strong>：用来描述请求和发送者的一些信息</p></li><li><p><strong>请求参数</strong>：以百度为例，要搜索的关键词。</p></li></ul></li><li><p>响应</p><ul><li><p><strong>响应代码</strong>：200表示成功，404表示不存在等</p></li><li><p><strong>响应头header</strong>：描述相应内容的一些信息</p></li><li><p><strong>响应内容</strong>：HTML, JSON, 图片等</p></li></ul></li></ul><p><strong>示例：</strong></p><p>客户端发送请求</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=nf>GET</span> <span class=nn>/</span> <span class=kr>HTTP</span><span class=o>/</span><span class=m>1.1</span>
-</span></span><span class=line><span class=cl><span class=n>Host</span><span class=o>:</span> <span class=l>hackr.jp</span>
-</span></span></code></pre></td></tr></table></div></div><p>服务器端发送响应</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=kr>HTTP</span><span class=o>/</span><span class=m>1.1</span> <span class=m>200</span> <span class=ne>OK</span>
-</span></span><span class=line><span class=cl><span class=n>Date</span><span class=o>:</span> <span class=l>Tue, 10 Jul 2012 06:50:15 GMT</span>
-</span></span><span class=line><span class=cl><span class=n>Content-Length</span><span class=o>:</span> <span class=l>362</span>
-</span></span><span class=line><span class=cl><span class=n>Content-Type</span><span class=o>:</span> <span class=l>text/html</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>html</span><span class=p>&gt;</span>
-</span></span><span class=line><span class=cl>...
-</span></span></code></pre></td></tr></table></div></div><p>注意你看到一个网页，通常是分多次请求的，一般的过程为：</p><ul><li>先请求网页文本，也就是HTML</li><li>根据HTML中的指定的地址，请求其他内容，最常见的是：样式表，JavaScript，图片等</li></ul><h3 id=请求报文的构成>请求报文的构成</h3><p><strong>请求报文内容实例：</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=nf>GET</span> <span class=nn>/index.htm</span>  <span class=kr>HTTP</span><span class=o>/</span><span class=m>1.1</span>
-</span></span><span class=line><span class=cl><span class=n>Host</span><span class=o>:</span> <span class=l>hackr.jp</span>
-</span></span></code></pre></td></tr></table></div></div><p>GET：表示请求访问服务器的类型，称为方法（method）</p><p>/index.htm：请求访问的资源对象，也叫做请求URI</p><p>HTTP/1.1: HTTP的版本号，用来提示客户端使用的HTTP协议功能。</p><p>➡️请求访问某台HTTP服务器上的/index.htm页面资源</p><p><strong>请求报文=请求方法+请求URI+协议版本+可选的请求首部字段+内容实体</strong></p><h4 id=1-请求行>1. 请求行</h4><p>请求行=请求方法+请求URI+协议版本</p><ul><li>请求方法：例子中是GET，表示你要干什么</li><li>请求的资源地址：例子中是 /index.htm，结合下面的<strong>Host</strong> (hacker.jp)就可以拼接处完整的地址</li><li>使用的HTTP协议的版本号</li></ul><h4 id=2-请求方法>2. 请求方法</h4><p>根据 HTTP 标准，HTTP 请求可以使用多种请求方法，这些方法表示这个请求要做什么。</p><p>HTTP1.0 定义了三种请求方法：GET, POST 和 HEAD方法。</p><p>HTTP1.1 新增了六种请求方法：OPTIONS、PUT、PATCH、DELETE、TRACE 和 CONNECT 方法。</p><p>最常用的请求方法是：</p><ul><li><strong>GET</strong> 请求表示要获取内容，它不会修改服务器上的数据</li><li><strong>POST</strong> 请求表示要提交内容，通常会修改服务器上的内容</li></ul><table><thead><tr><th style=text-align:left>序号</th><th style=text-align:left>方法</th><th style=text-align:left>描述</th></tr></thead><tbody><tr><td style=text-align:left>1</td><td style=text-align:left>GET</td><td style=text-align:left>请求指定的页面信息，并返回实体主体。</td></tr><tr><td style=text-align:left>2</td><td style=text-align:left>HEAD</td><td style=text-align:left>类似于 GET 请求，只不过返回的响应中没有具体的内容，用于获取报头</td></tr><tr><td style=text-align:left>3</td><td style=text-align:left>POST</td><td style=text-align:left>向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST 请求可能会导致新的资源的建立和/或已有资源的修改。</td></tr><tr><td style=text-align:left>4</td><td style=text-align:left>PUT</td><td style=text-align:left>从客户端向服务器传送的数据取代指定的文档的内容。</td></tr><tr><td style=text-align:left>5</td><td style=text-align:left>DELETE</td><td style=text-align:left>请求服务器删除指定的页面。</td></tr><tr><td style=text-align:left>6</td><td style=text-align:left>CONNECT</td><td style=text-align:left>HTTP/1.1 协议中预留给能够将连接改为管道方式的代理服务器。</td></tr><tr><td style=text-align:left>7</td><td style=text-align:left>OPTIONS</td><td style=text-align:left>允许客户端查看服务器的性能。</td></tr><tr><td style=text-align:left>8</td><td style=text-align:left>TRACE</td><td style=text-align:left>回显服务器收到的请求，主要用于测试或诊断。</td></tr><tr><td style=text-align:left>9</td><td style=text-align:left>PATCH</td><td style=text-align:left>是对 PUT 方法的补充，用来对已知资源进行局部更新 。</td></tr></tbody></table><h4 id=3-请求参数>3. 请求参数</h4><p><strong>GET 请求</strong>的参数都是放在URL中的，网页可见。请求参数是以键值对的形式出现，一般形式为：</p><ul><li>网址的后面紧跟着是一个问号</li><li>问号的后面是一对对参数，形式为：参数1=参数1的值</li><li>多个参数之间用&符号隔开</li></ul><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/http1.png data-srcset="/images/http1.png, /images/http1.png 1.5x, /images/http1.png 2x" data-sizes=auto alt=/images/http1.png title=/images/http1.png width=2286 height=310></p><p><strong>POST请求</strong>的参数：</p><ul><li>POST请求的参数放在请求体中</li><li>网页上看不见</li><li>但可以通过chrome开发者工具或者抓包工具看见</li></ul><h4 id=4-请求头>4. 请求头</h4><p><strong>请求头部部分示例：</strong></p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/http2.png data-srcset="/images/http2.png, /images/http2.png 1.5x, /images/http2.png 2x" data-sizes=auto alt=/images/http2.png title=/images/http2.png width=2152 height=422></p><table><thead><tr><th style=text-align:left>Header</th><th style=text-align:left>解释</th><th style=text-align:left>示例</th></tr></thead><tbody><tr><td style=text-align:left>Accept</td><td style=text-align:left>指定客户端能够接收的内容类型</td><td style=text-align:left>Accept: text/plain, text/html</td></tr><tr><td style=text-align:left>Accept-Charset</td><td style=text-align:left>浏览器可以接受的字符编码集。</td><td style=text-align:left>Accept-Charset: iso-8859-5</td></tr><tr><td style=text-align:left>Accept-Encoding</td><td style=text-align:left>指定浏览器可以支持的web服务器返回内容压缩编码类型。</td><td style=text-align:left>Accept-Encoding: compress, gzip</td></tr><tr><td style=text-align:left>Accept-Language</td><td style=text-align:left>浏览器可接受的语言</td><td style=text-align:left>Accept-Language: en,zh</td></tr><tr><td style=text-align:left>Accept-Ranges</td><td style=text-align:left>可以请求网页实体的一个或者多个子范围字段</td><td style=text-align:left>Accept-Ranges: bytes</td></tr><tr><td style=text-align:left>Authorization</td><td style=text-align:left>HTTP授权的授权证书</td><td style=text-align:left>Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</td></tr><tr><td style=text-align:left>Cache-Control</td><td style=text-align:left>指定请求和响应遵循的缓存机制</td><td style=text-align:left>Cache-Control: no-cache</td></tr><tr><td style=text-align:left>Connection</td><td style=text-align:left>表示是否需要持久连接。（HTTP 1.1默认进行持久连接）</td><td style=text-align:left>Connection: close</td></tr><tr><td style=text-align:left>Cookie</td><td style=text-align:left>HTTP请求发送时，会把保存在该请求域名下的所有cookie值一起发送给web服务器。比如里面可能记录了登录信息，或者上次请求服务端设置的信息。</td><td style=text-align:left>Cookie: $Version=1; Skin=new;</td></tr><tr><td style=text-align:left>Content-Length</td><td style=text-align:left>请求的内容长度</td><td style=text-align:left>Content-Length: 348</td></tr><tr><td style=text-align:left>Content-Type</td><td style=text-align:left>请求的与实体对应的MIME信息</td><td style=text-align:left>Content-Type: application/x-www-form-urlencoded</td></tr><tr><td style=text-align:left>Date</td><td style=text-align:left>请求发送的日期和时间</td><td style=text-align:left>Date: Tue, 15 Nov 2010 08:12:31 GMT</td></tr><tr><td style=text-align:left>Expect</td><td style=text-align:left>请求的特定的服务器行为</td><td style=text-align:left>Expect: 100-continue</td></tr><tr><td style=text-align:left>From</td><td style=text-align:left>发出请求的用户的Email</td><td style=text-align:left>From: <a href=mailto:user@email.com>user@email.com</a></td></tr><tr><td style=text-align:left>Host</td><td style=text-align:left>指定请求的服务器的域名和端口号</td><td style=text-align:left>Host: <a href=https://www.zcmhi.com target=_blank rel="external nofollow noopener noreferrer">www.zcmhi.com</a></td></tr><tr><td style=text-align:left>If-Match</td><td style=text-align:left>只有请求内容与实体相匹配才有效</td><td style=text-align:left>If-Match: “737060cd8c284d8af7ad3082f209582d”</td></tr><tr><td style=text-align:left>If-Modified-Since</td><td style=text-align:left>如果请求的部分在指定时间之后被修改则请求成功，未被修改则返回304代码</td><td style=text-align:left>If-Modified-Since: Sat, 29 Oct 2010 19:43:31 GMT</td></tr><tr><td style=text-align:left>If-None-Match</td><td style=text-align:left>如果内容未改变返回304代码，参数为服务器先前发送的Etag，与服务器回应的Etag比较判断是否改变</td><td style=text-align:left>If-None-Match: “737060cd8c284d8af7ad3082f209582d”</td></tr><tr><td style=text-align:left>If-Range</td><td style=text-align:left>如果实体未改变，服务器发送客户端丢失的部分，否则发送整个实体。参数也为Etag</td><td style=text-align:left>If-Range: “737060cd8c284d8af7ad3082f209582d”</td></tr><tr><td style=text-align:left>If-Unmodified-Since</td><td style=text-align:left>只在实体在指定时间之后未被修改才请求成功</td><td style=text-align:left>If-Unmodified-Since: Sat, 29 Oct 2010 19:43:31 GMT</td></tr><tr><td style=text-align:left>Max-Forwards</td><td style=text-align:left>限制信息通过代理和网关传送的时间</td><td style=text-align:left>Max-Forwards: 10</td></tr><tr><td style=text-align:left>Pragma</td><td style=text-align:left>用来包含实现特定的指令</td><td style=text-align:left>Pragma: no-cache</td></tr><tr><td style=text-align:left>Proxy-Authorization</td><td style=text-align:left>连接到代理的授权证书</td><td style=text-align:left>Proxy-Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</td></tr><tr><td style=text-align:left>Range</td><td style=text-align:left>只请求实体的一部分，指定范围</td><td style=text-align:left>Range: bytes=500-999</td></tr><tr><td style=text-align:left>Referer</td><td style=text-align:left>先前网页的地址，当前请求网页紧随其后,即来路</td><td style=text-align:left>Referer: <a href=http://www.zcmhi.com/archives/71.html target=_blank rel="external nofollow noopener noreferrer">http://www.zcmhi.com/archives/71.html</a></td></tr><tr><td style=text-align:left>TE</td><td style=text-align:left>客户端愿意接受的传输编码，并通知服务器接受接受尾加头信息</td><td style=text-align:left>TE: trailers,deflate;q=0.5</td></tr><tr><td style=text-align:left>Upgrade</td><td style=text-align:left>向服务器指定某种传输协议以便服务器进行转换（如果支持）</td><td style=text-align:left>Upgrade: HTTP/2.0, SHTTP/1.3, IRC/6.9, RTA/x11</td></tr><tr><td style=text-align:left>User-Agent</td><td style=text-align:left>User-Agent的内容包含发出请求的用户信息，比如发起访问的是什么浏览器。</td><td style=text-align:left>User-Agent: Mozilla/5.0 (Linux; X11)</td></tr><tr><td style=text-align:left>Via</td><td style=text-align:left>通知中间网关或代理服务器地址，通信协议</td><td style=text-align:left>Via: 1.0 fred, 1.1 nowhere.com (Apache/1.1)</td></tr><tr><td style=text-align:left>Warning</td><td style=text-align:left>关于消息实体的警告信息</td><td style=text-align:left>Warn: 199 Miscellaneous warning</td></tr></tbody></table><h3 id=响应报文的构成>响应报文的构成</h3><p><strong>响应报文头部部分示例：</strong></p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/http3.png data-srcset="/images/http3.png, /images/http3.png 1.5x, /images/http3.png 2x" data-sizes=auto alt=/images/http3.png title=/images/http3.png width=2090 height=592></p><h4 id=1-状态码>1. 状态码</h4><p>当浏览者访问一个网页时，浏览者的浏览器会向网页所在服务器发出请求。当浏览器接收并显示网页前，此网页所在的服务器会返回一个包含HTTP状态码的信息头（server header）用以响应浏览器的请求。HTTP状态码的英文为HTTP Status Code。</p><p>HTTP状态码由三个数字组成，第一个数字定义了状态码的类型，后两个数字表示具体的状态。HTTP状态码共分为5种类型：</p><table><thead><tr><th style=text-align:left>分类</th><th style=text-align:left>分类描述</th></tr></thead><tbody><tr><td style=text-align:left>1**</td><td style=text-align:left>信息，服务器收到请求，需要请求者继续执行操作</td></tr><tr><td style=text-align:left>2**</td><td style=text-align:left>成功，操作被成功接收并处理</td></tr><tr><td style=text-align:left>3**</td><td style=text-align:left>重定向，需要进一步的操作以完成请求</td></tr><tr><td style=text-align:left>4**</td><td style=text-align:left>客户端错误，请求包含语法错误或无法完成请求</td></tr><tr><td style=text-align:left>5**</td><td style=text-align:left>服务器错误，服务器在处理请求的过程中发生了错误</td></tr></tbody></table><p>HTTP状态码列表:</p><table><thead><tr><th style=text-align:left>状态码</th><th style=text-align:left>状态码英文名称</th><th style=text-align:left>中文描述</th></tr></thead><tbody><tr><td style=text-align:left>100</td><td style=text-align:left>Continue</td><td style=text-align:left>继续。客户端应继续其请求</td></tr><tr><td style=text-align:left>101</td><td style=text-align:left>Switching Protocols</td><td style=text-align:left>切换协议。服务器根据客户端的请求切换协议。只能切换到更高级的协议，例如，切换到HTTP的新版本协议</td></tr><tr><td style=text-align:left></td><td style=text-align:left></td><td style=text-align:left></td></tr><tr><td style=text-align:left>200</td><td style=text-align:left>OK</td><td style=text-align:left>请求成功。一般用于GET与POST请求</td></tr><tr><td style=text-align:left>201</td><td style=text-align:left>Created</td><td style=text-align:left>已创建。成功请求并创建了新的资源</td></tr><tr><td style=text-align:left>202</td><td style=text-align:left>Accepted</td><td style=text-align:left>已接受。已经接受请求，但未处理完成</td></tr><tr><td style=text-align:left>203</td><td style=text-align:left>Non-Authoritative Information</td><td style=text-align:left>非授权信息。请求成功。但返回的meta信息不在原始的服务器，而是一个副本</td></tr><tr><td style=text-align:left>204</td><td style=text-align:left>No Content</td><td style=text-align:left>无内容。服务器成功处理，但未返回内容。在未更新网页的情况下，可确保浏览器继续显示当前文档</td></tr><tr><td style=text-align:left>205</td><td style=text-align:left>Reset Content</td><td style=text-align:left>重置内容。服务器处理成功，用户终端（例如：浏览器）应重置文档视图。可通过此返回码清除浏览器的表单域</td></tr><tr><td style=text-align:left>206</td><td style=text-align:left>Partial Content</td><td style=text-align:left>部分内容。服务器成功处理了部分GET请求</td></tr><tr><td style=text-align:left></td><td style=text-align:left></td><td style=text-align:left></td></tr><tr><td style=text-align:left>300</td><td style=text-align:left>Multiple Choices</td><td style=text-align:left>多种选择。请求的资源可包括多个位置，相应可返回一个资源特征与地址的列表用于用户终端（例如：浏览器）选择</td></tr><tr><td style=text-align:left>301</td><td style=text-align:left>Moved Permanently</td><td style=text-align:left>永久移动。请求的资源已被永久的移动到新URI，返回信息会包括新的URI，浏览器会自动定向到新URI。今后任何新的请求都应使用新的URI代替</td></tr><tr><td style=text-align:left>302</td><td style=text-align:left>Found</td><td style=text-align:left>临时移动。与301类似。但资源只是临时被移动。客户端应继续使用原有URI</td></tr><tr><td style=text-align:left>303</td><td style=text-align:left>See Other</td><td style=text-align:left>查看其它地址。与301类似。使用GET和POST请求查看</td></tr><tr><td style=text-align:left>304</td><td style=text-align:left>Not Modified</td><td style=text-align:left>未修改。所请求的资源未修改，服务器返回此状态码时，不会返回任何资源。客户端通常会缓存访问过的资源，通过提供一个头信息指出客户端希望只返回在指定日期之后修改的资源</td></tr><tr><td style=text-align:left>305</td><td style=text-align:left>Use Proxy</td><td style=text-align:left>使用代理。所请求的资源必须通过代理访问</td></tr><tr><td style=text-align:left>306</td><td style=text-align:left>Unused</td><td style=text-align:left>已经被废弃的HTTP状态码</td></tr><tr><td style=text-align:left>307</td><td style=text-align:left>Temporary Redirect</td><td style=text-align:left>临时重定向。与302类似。使用GET请求重定向</td></tr><tr><td style=text-align:left></td><td style=text-align:left></td><td style=text-align:left></td></tr><tr><td style=text-align:left>400</td><td style=text-align:left>Bad Request</td><td style=text-align:left>客户端请求的语法错误，服务器无法理解</td></tr><tr><td style=text-align:left>401</td><td style=text-align:left>Unauthorized</td><td style=text-align:left>请求要求用户的身份认证</td></tr><tr><td style=text-align:left>402</td><td style=text-align:left>Payment Required</td><td style=text-align:left>保留，将来使用</td></tr><tr><td style=text-align:left>403</td><td style=text-align:left>Forbidden</td><td style=text-align:left>服务器理解请求客户端的请求，但是拒绝执行此请求</td></tr><tr><td style=text-align:left>404</td><td style=text-align:left>Not Found</td><td style=text-align:left>服务器无法根据客户端的请求找到资源（网页）。通过此代码，网站设计人员可设置"您所请求的资源无法找到"的个性页面</td></tr><tr><td style=text-align:left>405</td><td style=text-align:left>Method Not Allowed</td><td style=text-align:left>客户端请求中的方法被禁止</td></tr><tr><td style=text-align:left>406</td><td style=text-align:left>Not Acceptable</td><td style=text-align:left>服务器无法根据客户端请求的内容特性完成请求</td></tr><tr><td style=text-align:left>407</td><td style=text-align:left>Proxy Authentication Required</td><td style=text-align:left>请求要求代理的身份认证，与401类似，但请求者应当使用代理进行授权</td></tr><tr><td style=text-align:left>408</td><td style=text-align:left>Request Time-out</td><td style=text-align:left>服务器等待客户端发送的请求时间过长，超时</td></tr><tr><td style=text-align:left>409</td><td style=text-align:left>Conflict</td><td style=text-align:left>服务器完成客户端的 PUT 请求时可能返回此代码，服务器处理请求时发生了冲突</td></tr><tr><td style=text-align:left>410</td><td style=text-align:left>Gone</td><td style=text-align:left>客户端请求的资源已经不存在。410不同于404，如果资源以前有现在被永久删除了可使用410代码，网站设计人员可通过301代码指定资源的新位置</td></tr><tr><td style=text-align:left>411</td><td style=text-align:left>Length Required</td><td style=text-align:left>服务器无法处理客户端发送的不带Content-Length的请求信息</td></tr><tr><td style=text-align:left>412</td><td style=text-align:left>Precondition Failed</td><td style=text-align:left>客户端请求信息的先决条件错误</td></tr><tr><td style=text-align:left>413</td><td style=text-align:left>Request Entity Too Large</td><td style=text-align:left>由于请求的实体过大，服务器无法处理，因此拒绝请求。为防止客户端的连续请求，服务器可能会关闭连接。如果只是服务器暂时无法处理，则会包含一个Retry-After的响应信息</td></tr><tr><td style=text-align:left>414</td><td style=text-align:left>Request-URI Too Large</td><td style=text-align:left>请求的URI过长（URI通常为网址），服务器无法处理</td></tr><tr><td style=text-align:left>415</td><td style=text-align:left>Unsupported Media Type</td><td style=text-align:left>服务器无法处理请求附带的媒体格式</td></tr><tr><td style=text-align:left>416</td><td style=text-align:left>Requested range not satisfiable</td><td style=text-align:left>客户端请求的范围无效</td></tr><tr><td style=text-align:left>417</td><td style=text-align:left>Expectation Failed</td><td style=text-align:left>服务器无法满足Expect的请求头信息</td></tr><tr><td style=text-align:left></td><td style=text-align:left></td><td style=text-align:left></td></tr><tr><td style=text-align:left>500</td><td style=text-align:left>Internal Server Error</td><td style=text-align:left>服务器内部错误，无法完成请求</td></tr><tr><td style=text-align:left>501</td><td style=text-align:left>Not Implemented</td><td style=text-align:left>服务器不支持请求的功能，无法完成请求</td></tr><tr><td style=text-align:left>502</td><td style=text-align:left>Bad Gateway</td><td style=text-align:left>作为网关或者代理工作的服务器尝试执行请求时，从远程服务器接收到了一个无效的响应</td></tr><tr><td style=text-align:left>503</td><td style=text-align:left>Service Unavailable</td><td style=text-align:left>由于超载或系统维护，服务器暂时的无法处理客户端的请求。延时的长度可包含在服务器的Retry-After头信息中</td></tr><tr><td style=text-align:left>504</td><td style=text-align:left>Gateway Time-out</td><td style=text-align:left>充当网关或代理的服务器，未及时从远端服务器获取请求</td></tr><tr><td style=text-align:left>505</td><td style=text-align:left>HTTP Version not supported</td><td style=text-align:left>服务器不支持请求的HTTP协议的版本，无法完成处理</td></tr></tbody></table><h4 id=2-响应头>2. 响应头</h4><p>HTTP响应头包含了网页的重要描述信息，比如网页的格式，网页的过期时间等。</p><table><thead><tr><th style=text-align:left>应答头</th><th style=text-align:left>说明</th></tr></thead><tbody><tr><td style=text-align:left>Allow</td><td style=text-align:left>服务器支持哪些请求方法（如GET、POST等）。</td></tr><tr><td style=text-align:left>Content-Encoding</td><td style=text-align:left>文档的编码（Encode）方法。只有在解码之后才可以得到Content-Type头指定的内容类型。利用gzip压缩文档能够显著地减少HTML文档的下载时间。Java的GZIPOutputStream可以很方便地进行gzip压缩，但只有Unix上的Netscape和Windows上的IE 4、IE 5才支持它。因此，Servlet应该通过查看Accept-Encoding头（即request.getHeader(&ldquo;Accept-Encoding&rdquo;)）检查浏览器是否支持gzip，为支持gzip的浏览器返回经gzip压缩的HTML页面，为其他浏览器返回普通页面。</td></tr><tr><td style=text-align:left>Content-Length</td><td style=text-align:left>表示内容长度。只有当浏览器使用持久HTTP连接时才需要这个数据。如果你想要利用持久连接的优势，可以把输出文档写入 ByteArrayOutputStream，完成后查看其大小，然后把该值放入Content-Length头，最后通过byteArrayStream.writeTo(response.getOutputStream()发送内容。</td></tr><tr><td style=text-align:left>Content-Type</td><td style=text-align:left>表示后面的文档属于什么MIME类型。Servlet默认为text/plain，但通常需要显式地指定为text/html。由于经常要设置Content-Type，因此HttpServletResponse提供了一个专用的方法setContentType。</td></tr><tr><td style=text-align:left>Date</td><td style=text-align:left>当前的GMT时间。你可以用setDateHeader来设置这个头以避免转换时间格式的麻烦。</td></tr><tr><td style=text-align:left>Expires</td><td style=text-align:left>应该在什么时候认为文档已经过期，从而不再缓存它？</td></tr><tr><td style=text-align:left>Last-Modified</td><td style=text-align:left>文档的最后改动时间。客户可以通过If-Modified-Since请求头提供一个日期，该请求将被视为一个条件GET，只有改动时间迟于指定时间的文档才会返回，否则返回一个304（Not Modified）状态。Last-Modified也可用setDateHeader方法来设置。</td></tr><tr><td style=text-align:left>Location</td><td style=text-align:left>表示客户应当到哪里去提取文档。Location通常不是直接设置的，而是通过HttpServletResponse的sendRedirect方法，该方法同时设置状态代码为302。</td></tr><tr><td style=text-align:left>Refresh</td><td style=text-align:left>表示浏览器应该在多少时间之后刷新文档，以秒计。除了刷新当前文档之外，你还可以通过setHeader(&ldquo;Refresh&rdquo;, &ldquo;5; URL=http://host/path&rdquo;)让浏览器读取指定的页面。注意这种功能通常是通过设置HTML页面HEAD区的＜META HTTP-EQUIV=&ldquo;Refresh&rdquo; CONTENT=&ldquo;5;URL=http://host/path"＞实现，这是因为，自动刷新或重定向对于那些不能使用CGI或Servlet的HTML编写者十分重要。但是，对于Servlet来说，直接设置Refresh头更加方便。 注意Refresh的意义是"N秒之后刷新本页面或访问指定页面&rdquo;，而不是"每隔N秒刷新本页面或访问指定页面"。因此，连续刷新要求每次都发送一个Refresh头，而发送204状态代码则可以阻止浏览器继续刷新，不管是使用Refresh头还是＜META HTTP-EQUIV=&ldquo;Refresh&rdquo; &mldr;＞。 注意Refresh头不属于HTTP 1.1正式规范的一部分，而是一个扩展，但Netscape和IE都支持它。</td></tr><tr><td style=text-align:left>Server</td><td style=text-align:left>服务器名字。Servlet一般不设置这个值，而是由Web服务器自己设置。</td></tr><tr><td style=text-align:left>Set-Cookie</td><td style=text-align:left>设置和页面关联的Cookie。Servlet不应使用response.setHeader(&ldquo;Set-Cookie&rdquo;, &mldr;)，而是应使用HttpServletResponse提供的专用方法addCookie。</td></tr><tr><td style=text-align:left>WWW-Authenticate</td><td style=text-align:left>客户应该在Authorization头中提供什么类型的授权信息？在包含401（Unauthorized）状态行的应答中这个头是必需的。例如，response.setHeader(&ldquo;WWW-Authenticate&rdquo;, &ldquo;BASIC realm=＼&ldquo;executives＼&rdquo;")。注意Servlet一般不进行这方面的处理，而是让Web服务器的专门机制来控制受密码保护页面的访问（例如.htaccess）。</td></tr></tbody></table><h4 id=3-响应内容和content-type>3. 响应内容和content type</h4><p>我们最常见的网页的内容格式为：</p><ul><li>HTML - 给人看的页面</li><li>JSON - 数据格式，一般是API，给程序用的，比如手机APP</li><li>XML - 也是数据格式</li></ul><p>其实除此之外，还有图片，样式表，JavaScript等。</p><p>Content-Type就表示了网页的内容类型，它告诉浏览器文件类型，网页编码，帮助浏览器决定将以什么形式、什么编码读取这个文件。Content-Type 标头告诉客户端实际返回的内容的内容类型。</p><p>常见的媒体格式类型如下：</p><ul><li>text/html ：HTML格式</li><li>text/plain ：纯文本格式</li><li>text/xml ：XML格式</li><li>image/gif ：gif图片格式</li><li>image/jpeg ：jpg图片格式</li><li>image/png：png图片格式</li></ul><p>以application开头的媒体格式类型：</p><ul><li>application/xhtml+xml ：XHTML格式</li><li>application/xml：XML数据格式</li><li>application/atom+xml ：Atom XML聚合格式</li><li>application/json：JSON数据格式</li><li>application/pdf：pdf格式</li><li>application/msword ：Word文档格式</li><li>application/octet-stream ：二进制流数据（如常见的文件下载）</li><li>application/x-www-form-urlencoded ：中默认的encType，form表单数据被编码为key/value格式发送到服务器（表单默认的提交数据的格式）</li></ul><p>另外一种常见的媒体格式是上传文件之时使用的：</p><ul><li>multipart/form-data ：需要在表单中进行文件上传时，就需要使用该格式</li></ul><p><strong>注：</strong> 以上关于HTTP部分的学习以及内容整理大多来自于<a href="https://www.bilibili.com/video/BV165411A7ef?from=search&seid=4826439324478152295&spm_id_from=333.337.0.0" target=_blank rel="external nofollow noopener noreferrer">麦叔编程</a>。作为目的为初步了解入门http，了解其基本报文格式等，在看了一些视频后觉得这个视频讲的相对更清楚一些。</p><h2 id=wireshark抓包http>Wireshark抓包HTTP</h2><ol><li><p>打开Wireshark，选择相应网卡后点击左上角鲨鱼图标开始抓包</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/http4.png data-srcset="/images/http4.png, /images/http4.png 1.5x, /images/http4.png 2x" data-sizes=auto alt=/images/http4.png title=/images/http4.png width=1500 height=1156></p></li><li><p>打开网页，浏览一下后回到Wireshark，便可发现已抓取很多数据包</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/http5.png data-srcset="/images/http5.png, /images/http5.png 1.5x, /images/http5.png 2x" data-sizes=auto alt=/images/http5.png title=/images/http5.png width=1486 height=286></p></li><li><p>通过filter过滤，抓取GET数据包：<code>http.request.method==GET</code></p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/htpp6.png data-srcset="/images/htpp6.png, /images/htpp6.png 1.5x, /images/htpp6.png 2x" data-sizes=auto alt=/images/htpp6.png title=/images/htpp6.png width=1496 height=168></p></li><li><p>观察info字段，找到GET数据包右键follow->HTTP Stream，追踪数据流，得到一次HTTP传输的所有数据包。</p><p>截取部分：</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/http7.png data-srcset="/images/http7.png, /images/http7.png 1.5x, /images/http7.png 2x" data-sizes=auto alt=/images/http7.png title=/images/http7.png width=1166 height=766></p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/http8.png data-srcset="/images/http8.png, /images/http8.png 1.5x, /images/http8.png 2x" data-sizes=auto alt=/images/http8.png title=/images/http8.png width=1130 height=436></p><p>​ 通过这样的一次抓包，其实就可以很清楚的观察到一次请求过程中HTTP协议传输的具体情况，他的请求报文和响应报文就很直观，请求什么，内容形式，User-Agent，响应状态码，内容等都可以获取。上例中，可以发现第一次建立的这种请求是存在问题的，因为在其响应报文中给出的状态码是301，Moved Permanently，请求的资源已被永久的移动到新URI，返回信息会包括新的URI，浏览器会自动定向到新URI。</p></li></ol><h3 id=总结>总结</h3><p>​ 对于用工具如Wireshark进行抓包分析当下只是第一次接触，属于是先熟悉了解一下这个过程，正好通过前面刚刚入门的http练手，来抓包分析http协议传输过程和报文格式内容等，未来还会根据具体学习需求进一步深化学习。</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span title="2022-01-03 13:35:15">更新于 2022-01-03&nbsp;</span></div><div class=post-info-license><span><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fa-solid fa-tags fa-fw me-1" aria-hidden=true></i><a href=/tags/%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ class=post-tag>通信协议</a><a href=/tags/wireshark/ class=post-tag>Wireshark</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/notes-to-share/ class=post-nav-item rel=prev title="Notes To Share"><i class="fa-solid fa-angle-left fa-fw" aria-hidden=true></i>Notes To Share</a>
-<a href=/posts/warmup-writeup/ class=post-nav-item rel=next title="warmup Writeup">warmup Writeup<i class="fa-solid fa-angle-right fa-fw" aria-hidden=true></i></a></div></div></article></main><footer class=footer><div class=footer-container><div class="footer-line copyright" itemscope itemtype=http://schema.org/CreativeWork><i class="fa-regular fa-copyright fa-fw" aria-hidden=true></i>
-<span itemprop=copyrightYear>2022 - 2023</span><span class=author itemprop=copyrightHolder>
-<a href=https://github.com/LaneGong target=_blank rel="external nofollow noopener noreferrer">Lane Gong</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div><div class="footer-line statistics"><span class=site-time title="网站运行中 ..."><i class="fa-solid fa-heartbeat fa-fw animate-icon" aria-hidden=true></i>&nbsp;<span class=run-times>网站运行中 ...</span></span></div><div class="footer-line ibruce"><span id=busuanzi_container_site_uv title=总访客数><i class="fa-regular fa-user fa-fw" aria-hidden=true></i>&nbsp;<span id=busuanzi_value_site_uv><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden=true></i></span></span><span id=busuanzi_container_site_pv class=footer-divider title=总访问量><i class="fa-regular fa-eye fa-fw" aria-hidden=true></i>&nbsp;<span id=busuanzi_value_site_pv><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden=true></i></span></span></div><div class="footer-line beian"><span class="icp footer-divider"><a href=https://beian.miit.gov.cn/ target=_blank>沪ICP备2022033527号-1</a></span></div></div></footer></div><div class=widgets><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role=button aria-label=回到顶部><i class="fa-solid fa-arrow-up fa-fw" aria-hidden=true></i><span class=variant-numeric>0%</span></div></div><div id=mask></div><div class=reading-progress-bar style=left:0;top:0></div><noscript><div class=noscript-warning>FixIt 主题在启用 JavaScript 的情况下效果最佳。</div></noscript></div><link rel=stylesheet href=/lib/katex/katex.min.css><link rel=stylesheet href=/lib/cookieconsent/cookieconsent.min.css><script src=/lib/autocomplete/autocomplete.min.js defer></script><script src=/lib/algoliasearch/algoliasearch-lite.umd.min.js defer></script><script src=/lib/lazysizes/lazysizes.min.js async defer></script><script src=/lib/katex/katex.min.js defer></script><script src=/lib/katex/auto-render.min.js defer></script><script src=/lib/katex/copy-tex.min.js defer></script><script src=/lib/katex/mhchem.min.js defer></script><script src=/lib/cookieconsent/cookieconsent.min.js defer></script><script src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async defer></script><script>window.config={code:{copyTitle:"复制到剪贴板",editLockTitle:"锁定可编辑代码块",editUnLockTitle:"解锁可编辑代码块",editable:!0,maxShownLines:10},comment:{enable:!1},cookieconsent:{content:{dismiss:"同意",link:"了解更多",message:"本网站使用 Cookies 来改善您的浏览体验。"},enable:!0,palette:{button:{background:"#f0f0f0"},popup:{background:"#1aa3ff"}},theme:"edgeless"},math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!0,left:"\\begin{equation}",right:"\\end{equation}"},{display:!0,left:"\\begin{equation*}",right:"\\end{equation*}"},{display:!0,left:"\\begin{align}",right:"\\end{align}"},{display:!0,left:"\\begin{align*}",right:"\\end{align*}"},{display:!0,left:"\\begin{alignat}",right:"\\end{alignat}"},{display:!0,left:"\\begin{alignat*}",right:"\\end{alignat*}"},{display:!0,left:"\\begin{gather}",right:"\\end{gather}"},{display:!0,left:"\\begin{CD}",right:"\\end{CD}"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{algoliaAppID:"",algoliaIndex:"",algoliaSearchKey:"",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:30,type:"algolia"},siteTime:"2022-11-23T15:00:00+08:00"}</script><script src=/js/theme.min.js defer></script></body></html>
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>HTTP协议及抓包分析 - Lane-诶嘿! Welcome~~</title><meta name="author" content="Lane Gong">
+<meta name="author-link" content="https://github.com/LaneGong">
+<meta name="description" content="本篇主要是根据网课资源梳理了关于HTTP协议的相关知识点，作了一个入门。同时借助Wireshark抓包HTTP进一步分析其报文格式及内容。不足之处，敬请指正！" /><meta name="keywords" content='通信协议, Wireshark' /><meta itemprop="name" content="HTTP协议及抓包分析">
+<meta itemprop="description" content="本篇主要是根据网课资源梳理了关于HTTP协议的相关知识点，作了一个入门。同时借助Wireshark抓包HTTP进一步分析其报文格式及内容。不足之处，敬请指正！"><meta itemprop="datePublished" content="2022-01-03T13:35:15+08:00" />
+<meta itemprop="dateModified" content="2022-01-03T13:35:15+08:00" />
+<meta itemprop="wordCount" content="7441"><meta itemprop="image" content="http://lanegong.top/logo.png"/>
+<meta itemprop="keywords" content="通信协议,Wireshark," /><meta property="og:title" content="HTTP协议及抓包分析" />
+<meta property="og:description" content="本篇主要是根据网课资源梳理了关于HTTP协议的相关知识点，作了一个入门。同时借助Wireshark抓包HTTP进一步分析其报文格式及内容。不足之处，敬请指正！" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://lanegong.top/posts/http-analysis/" /><meta property="og:image" content="http://lanegong.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-01-03T13:35:15+08:00" />
+<meta property="article:modified_time" content="2022-01-03T13:35:15+08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://lanegong.top/logo.png"/>
+
+<meta name="twitter:title" content="HTTP协议及抓包分析"/>
+<meta name="twitter:description" content="本篇主要是根据网课资源梳理了关于HTTP协议的相关知识点，作了一个入门。同时借助Wireshark抓包HTTP进一步分析其报文格式及内容。不足之处，敬请指正！"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://lanegong.top/posts/http-analysis/" /><link rel="prev" href="http://lanegong.top/posts/notes-to-share/" /><link rel="next" href="http://lanegong.top/posts/warmup-writeup/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "HTTP协议及抓包分析",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "http:\/\/lanegong.top\/posts\/http-analysis\/"
+    },"genre": "posts","keywords": "通信协议, Wireshark","wordcount":  7441 ,
+    "url": "http:\/\/lanegong.top\/posts\/http-analysis\/","datePublished": "2022-01-03T13:35:15+08:00","dateModified": "2022-01-03T13:35:15+08:00","publisher": {
+      "@type": "Organization",
+      "name": "Lane","logo": {
+          "@type": "ImageObject",
+          "url": "http:\/\/lanegong.top\/images\/avatar.jpeg",
+          "width":  690 ,
+          "height":  684 
+        }},"author": {
+        "@type": "Person",
+        "name": "Lane Gong"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="Lane-诶嘿! Welcome~~"><img
+    class="lazyload logo"
+    src="/svg/loading.min.svg"
+    data-src="/images/avatar.jpeg"
+    data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x"
+    data-sizes="auto"
+    alt="Lane-诶嘿! Welcome~~"
+    title="Lane-诶嘿! Welcome~~" width="690" height="684"/><span class="header-title-text">Lane の Blog</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item has-children">
+              <a
+                class="menu-link"
+                href="/posts/"
+                title="查看所有文章"
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a><i class="dropdown-icon fa-solid fa-chevron-down" aria-hidden="true"></i>
+                <ul class="sub-menu">
+                  <li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/categories/"
+                          
+                          
+                        ><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden="true"></i> 分类</a>
+                      </li><li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/tags/"
+                          
+                          
+                        ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a>
+                      </li></ul></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/fun/"
+                title="正在开发中..."
+                
+              ><i class="fa-solid fa-fan fa-fw fa-sm" aria-hidden="true"></i> 趣味</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/guides/"
+                title="常用站点指南"
+                
+              ><i class="fa-solid fa-subway fa-fw fa-sm" aria-hidden="true"></i> 站点导航</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容 ..." id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="Lane-诶嘿! Welcome~~"><img
+    class="lazyload logo"
+    src="/svg/loading.min.svg"
+    data-src="/images/avatar.jpeg"
+    data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x"
+    data-sizes="auto"
+    alt="/images/avatar.jpeg"
+    title="/images/avatar.jpeg" width="690" height="684"/><span class="header-title-text">Lane の Blog</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容 ..." id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><span class="nested-item">
+                  <a
+                    class="menu-link"
+                    href="/posts/"
+                    title="查看所有文章"
+                    
+                  ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a>
+                  <i class="dropdown-icon fa-solid fa-chevron-right" aria-hidden="true"></i>
+                </span>
+                <ul class="sub-menu">
+                  <li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/categories/"
+                          
+                          
+                        ><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden="true"></i> 分类</a>
+                      </li><li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/tags/"
+                          
+                          
+                        ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a>
+                      </li></ul></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/fun/"
+                  title="正在开发中..."
+                  
+                ><i class="fa-solid fa-fan fa-fw fa-sm" aria-hidden="true"></i> 趣味</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/guides/"
+                  title="常用站点指南"
+                  
+                ><i class="fa-solid fa-subway fa-fw fa-sm" aria-hidden="true"></i> 站点导航</a></li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container" data-page-style="normal"><aside class="toc" id="toc-auto"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside>
+
+  <aside class="aside-custom">
+    </aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX">
+        <span>HTTP协议及抓包分析</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><a href="https://github.com/LaneGong" title="作者"target="_blank" rel="external nofollow noopener noreferrer author" class="author"><img
+    class="lazyload avatar"
+    src="/svg/loading.min.svg"
+    data-src="/images/avatar.jpeg"
+    data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x"
+    data-sizes="auto"
+    alt="Lane Gong"
+    title="Lane Gong" width="690" height="684"/>&nbsp;Lane Gong</a></span>
+          <span class="post-category">收录于 <a href="/categories/web%E5%AE%89%E5%85%A8/"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Web安全</a></span></div>
+      <div class="post-meta-line"><span title=2022-01-03&#32;13:35:15><i class="fa-regular fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-01-03">2022-01-03</time></span>&nbsp;<span><i class="fa-solid fa-pencil-alt fa-fw" aria-hidden="true"></i> 约 7441 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw" aria-hidden="true"></i> 预计阅读 15 分钟</span>&nbsp;<span id="busuanzi_container_page_pv" class="busuanzi_visitors comment-visitors" data-flag-title="HTTP协议及抓包分析">
+            <i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_page_pv">-</span>&nbsp;次阅读
+          </span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#http简介">HTTP简介</a></li>
+    <li><a href="#http三个要点">HTTP三个要点</a></li>
+    <li><a href="#http工作原理">HTTP工作原理</a></li>
+    <li><a href="#http消息结构">HTTP消息结构</a>
+      <ul>
+        <li><a href="#请求报文的构成">请求报文的构成</a>
+          <ul>
+            <li><a href="#1-请求行">1. 请求行</a></li>
+            <li><a href="#2-请求方法">2. 请求方法</a></li>
+            <li><a href="#3-请求参数">3. 请求参数</a></li>
+            <li><a href="#4-请求头">4. 请求头</a></li>
+          </ul>
+        </li>
+        <li><a href="#响应报文的构成">响应报文的构成</a>
+          <ul>
+            <li><a href="#1-状态码">1. 状态码</a></li>
+            <li><a href="#2-响应头">2. 响应头</a></li>
+            <li><a href="#3-响应内容和content-type">3. 响应内容和content type</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#wireshark抓包http">Wireshark抓包HTTP</a>
+      <ul>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+      </div><div class="content" id="content"><p>本篇主要是根据网课资源梳理了关于HTTP协议的相关知识点，作了一个入门。同时借助Wireshark抓包HTTP进一步分析其报文格式及内容。不足之处，敬请指正！</p>
+<h2 id="http简介">HTTP简介</h2>
+<p>HTTP协议是Hyper Text Transfer Protocol（超文本传输协议）的缩写,是用于从万维网（WWW:World Wide Web ）服务器传输超文本到本地浏览器的传送协议。HTTP是一个基于TCP/IP通信协议来传递数据（HTML 文件, 图片文件, 查询结果等）。</p>
+<p>请求访问文本或图像等资源的一端称为客户端，而提供资源响应的一端称为服务器端。（应用http协议时必定是一端担任客户端角色，另一端担任服务器端角色）</p>
+<h2 id="http三个要点">HTTP三个要点</h2>
+<ul>
+<li>HTTP是无连接的：无连接的含义是限制每次连接只处理一个请求，服务器处理完客户的请求，并收到客户的应答后，即断开连接。节省传播时间。</li>
+<li>HTTP是媒体独立的：只要客户端和服务器知道如何处理的数据内容，任何类型的数据都可以通过HTTP发送。客户端以及服务器指定使用适合的MIME-type内容类型。</li>
+<li>HTTP是无状态的：无状态是指协议对于事务处理没有记忆功能。缺少状态意味着如果后续处理需要前面的信息，则它必须重传，这样可能导致每次连接传送的数据量增大。另一方面，在服务器不需要先前信息时他的应答就较快。</li>
+</ul>
+<h2 id="http工作原理">HTTP工作原理</h2>
+<p>HTTP是浏览器或者其他客户端（如手机App）和网站服务器之间沟通的协议。HTTP协议规定，请求从客户端发出，最后服务器端响应该请求并返回。也就是说，肯定是先从客户端开始建立通信的，服务器端在没有接收到请求之前不会发送响应。</p>
+<p>浏览器作为HTTP客户端通过URL向HTTP服务端即WEB服务器发送所有请求。</p>
+<p>常用的Web服务器有：Nginx，Apache，IIS服务器（微软的产品）等。</p>
+<p>Web服务器接收到的请求后，向客户端发送响应信息。</p>
+<p>HTTP默认端口号为80，但是你也可以改为8080或者其他端口。</p>
+<h2 id="http消息结构">HTTP消息结构</h2>
+<ul>
+<li>
+<p>请求</p>
+<ul>
+<li>
+<p><strong>地址</strong>和<strong>动词</strong>：例如 <strong>GET <a href="https://www.baidu.com"target="_blank" rel="external nofollow noopener noreferrer">https://www.baidu.com</a></strong></p>
+</li>
+<li>
+<p><strong>请求头（header)</strong>：用来描述请求和发送者的一些信息</p>
+</li>
+<li>
+<p><strong>请求参数</strong>：以百度为例，要搜索的关键词。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>响应</p>
+<ul>
+<li>
+<p><strong>响应代码</strong>：200表示成功，404表示不存在等</p>
+</li>
+<li>
+<p><strong>响应头header</strong>：描述相应内容的一些信息</p>
+</li>
+<li>
+<p><strong>响应内容</strong>：HTML, JSON, 图片等</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>示例：</strong></p>
+<p>客户端发送请求</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="nf">GET</span> <span class="nn">/</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">Host</span><span class="o">:</span> <span class="l">hackr.jp</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>服务器端发送响应</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="n">Date</span><span class="o">:</span> <span class="l">Tue, 10 Jul 2012 06:50:15 GMT</span>
+</span></span><span class="line"><span class="cl"><span class="n">Content-Length</span><span class="o">:</span> <span class="l">362</span>
+</span></span><span class="line"><span class="cl"><span class="n">Content-Type</span><span class="o">:</span> <span class="l">text/html</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>注意你看到一个网页，通常是分多次请求的，一般的过程为：</p>
+<ul>
+<li>先请求网页文本，也就是HTML</li>
+<li>根据HTML中的指定的地址，请求其他内容，最常见的是：样式表，JavaScript，图片等</li>
+</ul>
+<h3 id="请求报文的构成">请求报文的构成</h3>
+<p><strong>请求报文内容实例：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="nf">GET</span> <span class="nn">/index.htm</span>  <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">Host</span><span class="o">:</span> <span class="l">hackr.jp</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>GET：表示请求访问服务器的类型，称为方法（method）</p>
+<p>/index.htm：请求访问的资源对象，也叫做请求URI</p>
+<p>HTTP/1.1: HTTP的版本号，用来提示客户端使用的HTTP协议功能。</p>
+<p>➡️请求访问某台HTTP服务器上的/index.htm页面资源</p>
+<p><strong>请求报文=请求方法+请求URI+协议版本+可选的请求首部字段+内容实体</strong></p>
+<h4 id="1-请求行">1. 请求行</h4>
+<p>请求行=请求方法+请求URI+协议版本</p>
+<ul>
+<li>请求方法：例子中是GET，表示你要干什么</li>
+<li>请求的资源地址：例子中是 /index.htm，结合下面的<strong>Host</strong> (hacker.jp)就可以拼接处完整的地址</li>
+<li>使用的HTTP协议的版本号</li>
+</ul>
+<h4 id="2-请求方法">2. 请求方法</h4>
+<p>根据 HTTP 标准，HTTP 请求可以使用多种请求方法，这些方法表示这个请求要做什么。</p>
+<p>HTTP1.0 定义了三种请求方法：GET, POST 和 HEAD方法。</p>
+<p>HTTP1.1 新增了六种请求方法：OPTIONS、PUT、PATCH、DELETE、TRACE 和 CONNECT 方法。</p>
+<p>最常用的请求方法是：</p>
+<ul>
+<li><strong>GET</strong> 请求表示要获取内容，它不会修改服务器上的数据</li>
+<li><strong>POST</strong> 请求表示要提交内容，通常会修改服务器上的内容</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">序号</th>
+<th style="text-align:left">方法</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left">GET</td>
+<td style="text-align:left">请求指定的页面信息，并返回实体主体。</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td style="text-align:left">HEAD</td>
+<td style="text-align:left">类似于 GET 请求，只不过返回的响应中没有具体的内容，用于获取报头</td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td style="text-align:left">POST</td>
+<td style="text-align:left">向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST 请求可能会导致新的资源的建立和/或已有资源的修改。</td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td style="text-align:left">PUT</td>
+<td style="text-align:left">从客户端向服务器传送的数据取代指定的文档的内容。</td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td style="text-align:left">DELETE</td>
+<td style="text-align:left">请求服务器删除指定的页面。</td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td style="text-align:left">CONNECT</td>
+<td style="text-align:left">HTTP/1.1 协议中预留给能够将连接改为管道方式的代理服务器。</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td style="text-align:left">OPTIONS</td>
+<td style="text-align:left">允许客户端查看服务器的性能。</td>
+</tr>
+<tr>
+<td style="text-align:left">8</td>
+<td style="text-align:left">TRACE</td>
+<td style="text-align:left">回显服务器收到的请求，主要用于测试或诊断。</td>
+</tr>
+<tr>
+<td style="text-align:left">9</td>
+<td style="text-align:left">PATCH</td>
+<td style="text-align:left">是对 PUT 方法的补充，用来对已知资源进行局部更新 。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="3-请求参数">3. 请求参数</h4>
+<p><strong>GET 请求</strong>的参数都是放在URL中的，网页可见。请求参数是以键值对的形式出现，一般形式为：</p>
+<ul>
+<li>网址的后面紧跟着是一个问号</li>
+<li>问号的后面是一对对参数，形式为：参数1=参数1的值</li>
+<li>多个参数之间用&amp;符号隔开</li>
+</ul>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/http1.png"
+    data-srcset="/images/http1.png, /images/http1.png 1.5x, /images/http1.png 2x"
+    data-sizes="auto"
+    alt="/images/http1.png"
+    title="/images/http1.png" width="2286" height="310"/></p>
+<p><strong>POST请求</strong>的参数：</p>
+<ul>
+<li>POST请求的参数放在请求体中</li>
+<li>网页上看不见</li>
+<li>但可以通过chrome开发者工具或者抓包工具看见</li>
+</ul>
+<h4 id="4-请求头">4. 请求头</h4>
+<p><strong>请求头部部分示例：</strong></p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/http2.png"
+    data-srcset="/images/http2.png, /images/http2.png 1.5x, /images/http2.png 2x"
+    data-sizes="auto"
+    alt="/images/http2.png"
+    title="/images/http2.png" width="2152" height="422"/></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Header</th>
+<th style="text-align:left">解释</th>
+<th style="text-align:left">示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Accept</td>
+<td style="text-align:left">指定客户端能够接收的内容类型</td>
+<td style="text-align:left">Accept: text/plain, text/html</td>
+</tr>
+<tr>
+<td style="text-align:left">Accept-Charset</td>
+<td style="text-align:left">浏览器可以接受的字符编码集。</td>
+<td style="text-align:left">Accept-Charset: iso-8859-5</td>
+</tr>
+<tr>
+<td style="text-align:left">Accept-Encoding</td>
+<td style="text-align:left">指定浏览器可以支持的web服务器返回内容压缩编码类型。</td>
+<td style="text-align:left">Accept-Encoding: compress, gzip</td>
+</tr>
+<tr>
+<td style="text-align:left">Accept-Language</td>
+<td style="text-align:left">浏览器可接受的语言</td>
+<td style="text-align:left">Accept-Language: en,zh</td>
+</tr>
+<tr>
+<td style="text-align:left">Accept-Ranges</td>
+<td style="text-align:left">可以请求网页实体的一个或者多个子范围字段</td>
+<td style="text-align:left">Accept-Ranges: bytes</td>
+</tr>
+<tr>
+<td style="text-align:left">Authorization</td>
+<td style="text-align:left">HTTP授权的授权证书</td>
+<td style="text-align:left">Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</td>
+</tr>
+<tr>
+<td style="text-align:left">Cache-Control</td>
+<td style="text-align:left">指定请求和响应遵循的缓存机制</td>
+<td style="text-align:left">Cache-Control: no-cache</td>
+</tr>
+<tr>
+<td style="text-align:left">Connection</td>
+<td style="text-align:left">表示是否需要持久连接。（HTTP 1.1默认进行持久连接）</td>
+<td style="text-align:left">Connection: close</td>
+</tr>
+<tr>
+<td style="text-align:left">Cookie</td>
+<td style="text-align:left">HTTP请求发送时，会把保存在该请求域名下的所有cookie值一起发送给web服务器。比如里面可能记录了登录信息，或者上次请求服务端设置的信息。</td>
+<td style="text-align:left">Cookie: $Version=1; Skin=new;</td>
+</tr>
+<tr>
+<td style="text-align:left">Content-Length</td>
+<td style="text-align:left">请求的内容长度</td>
+<td style="text-align:left">Content-Length: 348</td>
+</tr>
+<tr>
+<td style="text-align:left">Content-Type</td>
+<td style="text-align:left">请求的与实体对应的MIME信息</td>
+<td style="text-align:left">Content-Type: application/x-www-form-urlencoded</td>
+</tr>
+<tr>
+<td style="text-align:left">Date</td>
+<td style="text-align:left">请求发送的日期和时间</td>
+<td style="text-align:left">Date: Tue, 15 Nov 2010 08:12:31 GMT</td>
+</tr>
+<tr>
+<td style="text-align:left">Expect</td>
+<td style="text-align:left">请求的特定的服务器行为</td>
+<td style="text-align:left">Expect: 100-continue</td>
+</tr>
+<tr>
+<td style="text-align:left">From</td>
+<td style="text-align:left">发出请求的用户的Email</td>
+<td style="text-align:left">From: <a href="mailto:user@email.com">user@email.com</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Host</td>
+<td style="text-align:left">指定请求的服务器的域名和端口号</td>
+<td style="text-align:left">Host: <a href="https://www.zcmhi.com"target="_blank" rel="external nofollow noopener noreferrer">www.zcmhi.com</a></td>
+</tr>
+<tr>
+<td style="text-align:left">If-Match</td>
+<td style="text-align:left">只有请求内容与实体相匹配才有效</td>
+<td style="text-align:left">If-Match: “737060cd8c284d8af7ad3082f209582d”</td>
+</tr>
+<tr>
+<td style="text-align:left">If-Modified-Since</td>
+<td style="text-align:left">如果请求的部分在指定时间之后被修改则请求成功，未被修改则返回304代码</td>
+<td style="text-align:left">If-Modified-Since: Sat, 29 Oct 2010 19:43:31 GMT</td>
+</tr>
+<tr>
+<td style="text-align:left">If-None-Match</td>
+<td style="text-align:left">如果内容未改变返回304代码，参数为服务器先前发送的Etag，与服务器回应的Etag比较判断是否改变</td>
+<td style="text-align:left">If-None-Match: “737060cd8c284d8af7ad3082f209582d”</td>
+</tr>
+<tr>
+<td style="text-align:left">If-Range</td>
+<td style="text-align:left">如果实体未改变，服务器发送客户端丢失的部分，否则发送整个实体。参数也为Etag</td>
+<td style="text-align:left">If-Range: “737060cd8c284d8af7ad3082f209582d”</td>
+</tr>
+<tr>
+<td style="text-align:left">If-Unmodified-Since</td>
+<td style="text-align:left">只在实体在指定时间之后未被修改才请求成功</td>
+<td style="text-align:left">If-Unmodified-Since: Sat, 29 Oct 2010 19:43:31 GMT</td>
+</tr>
+<tr>
+<td style="text-align:left">Max-Forwards</td>
+<td style="text-align:left">限制信息通过代理和网关传送的时间</td>
+<td style="text-align:left">Max-Forwards: 10</td>
+</tr>
+<tr>
+<td style="text-align:left">Pragma</td>
+<td style="text-align:left">用来包含实现特定的指令</td>
+<td style="text-align:left">Pragma: no-cache</td>
+</tr>
+<tr>
+<td style="text-align:left">Proxy-Authorization</td>
+<td style="text-align:left">连接到代理的授权证书</td>
+<td style="text-align:left">Proxy-Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</td>
+</tr>
+<tr>
+<td style="text-align:left">Range</td>
+<td style="text-align:left">只请求实体的一部分，指定范围</td>
+<td style="text-align:left">Range: bytes=500-999</td>
+</tr>
+<tr>
+<td style="text-align:left">Referer</td>
+<td style="text-align:left">先前网页的地址，当前请求网页紧随其后,即来路</td>
+<td style="text-align:left">Referer: <a href="http://www.zcmhi.com/archives/71.html"target="_blank" rel="external nofollow noopener noreferrer">http://www.zcmhi.com/archives/71.html</a></td>
+</tr>
+<tr>
+<td style="text-align:left">TE</td>
+<td style="text-align:left">客户端愿意接受的传输编码，并通知服务器接受接受尾加头信息</td>
+<td style="text-align:left">TE: trailers,deflate;q=0.5</td>
+</tr>
+<tr>
+<td style="text-align:left">Upgrade</td>
+<td style="text-align:left">向服务器指定某种传输协议以便服务器进行转换（如果支持）</td>
+<td style="text-align:left">Upgrade: HTTP/2.0, SHTTP/1.3, IRC/6.9, RTA/x11</td>
+</tr>
+<tr>
+<td style="text-align:left">User-Agent</td>
+<td style="text-align:left">User-Agent的内容包含发出请求的用户信息，比如发起访问的是什么浏览器。</td>
+<td style="text-align:left">User-Agent: Mozilla/5.0 (Linux; X11)</td>
+</tr>
+<tr>
+<td style="text-align:left">Via</td>
+<td style="text-align:left">通知中间网关或代理服务器地址，通信协议</td>
+<td style="text-align:left">Via: 1.0 fred, 1.1 nowhere.com (Apache/1.1)</td>
+</tr>
+<tr>
+<td style="text-align:left">Warning</td>
+<td style="text-align:left">关于消息实体的警告信息</td>
+<td style="text-align:left">Warn: 199 Miscellaneous warning</td>
+</tr>
+</tbody>
+</table>
+<h3 id="响应报文的构成">响应报文的构成</h3>
+<p><strong>响应报文头部部分示例：</strong></p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/http3.png"
+    data-srcset="/images/http3.png, /images/http3.png 1.5x, /images/http3.png 2x"
+    data-sizes="auto"
+    alt="/images/http3.png"
+    title="/images/http3.png" width="2090" height="592"/></p>
+<h4 id="1-状态码">1. 状态码</h4>
+<p>当浏览者访问一个网页时，浏览者的浏览器会向网页所在服务器发出请求。当浏览器接收并显示网页前，此网页所在的服务器会返回一个包含HTTP状态码的信息头（server header）用以响应浏览器的请求。HTTP状态码的英文为HTTP Status Code。</p>
+<p>HTTP状态码由三个数字组成，第一个数字定义了状态码的类型，后两个数字表示具体的状态。HTTP状态码共分为5种类型：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">分类</th>
+<th style="text-align:left">分类描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1**</td>
+<td style="text-align:left">信息，服务器收到请求，需要请求者继续执行操作</td>
+</tr>
+<tr>
+<td style="text-align:left">2**</td>
+<td style="text-align:left">成功，操作被成功接收并处理</td>
+</tr>
+<tr>
+<td style="text-align:left">3**</td>
+<td style="text-align:left">重定向，需要进一步的操作以完成请求</td>
+</tr>
+<tr>
+<td style="text-align:left">4**</td>
+<td style="text-align:left">客户端错误，请求包含语法错误或无法完成请求</td>
+</tr>
+<tr>
+<td style="text-align:left">5**</td>
+<td style="text-align:left">服务器错误，服务器在处理请求的过程中发生了错误</td>
+</tr>
+</tbody>
+</table>
+<p>HTTP状态码列表:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">状态码</th>
+<th style="text-align:left">状态码英文名称</th>
+<th style="text-align:left">中文描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">100</td>
+<td style="text-align:left">Continue</td>
+<td style="text-align:left">继续。客户端应继续其请求</td>
+</tr>
+<tr>
+<td style="text-align:left">101</td>
+<td style="text-align:left">Switching Protocols</td>
+<td style="text-align:left">切换协议。服务器根据客户端的请求切换协议。只能切换到更高级的协议，例如，切换到HTTP的新版本协议</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">200</td>
+<td style="text-align:left">OK</td>
+<td style="text-align:left">请求成功。一般用于GET与POST请求</td>
+</tr>
+<tr>
+<td style="text-align:left">201</td>
+<td style="text-align:left">Created</td>
+<td style="text-align:left">已创建。成功请求并创建了新的资源</td>
+</tr>
+<tr>
+<td style="text-align:left">202</td>
+<td style="text-align:left">Accepted</td>
+<td style="text-align:left">已接受。已经接受请求，但未处理完成</td>
+</tr>
+<tr>
+<td style="text-align:left">203</td>
+<td style="text-align:left">Non-Authoritative Information</td>
+<td style="text-align:left">非授权信息。请求成功。但返回的meta信息不在原始的服务器，而是一个副本</td>
+</tr>
+<tr>
+<td style="text-align:left">204</td>
+<td style="text-align:left">No Content</td>
+<td style="text-align:left">无内容。服务器成功处理，但未返回内容。在未更新网页的情况下，可确保浏览器继续显示当前文档</td>
+</tr>
+<tr>
+<td style="text-align:left">205</td>
+<td style="text-align:left">Reset Content</td>
+<td style="text-align:left">重置内容。服务器处理成功，用户终端（例如：浏览器）应重置文档视图。可通过此返回码清除浏览器的表单域</td>
+</tr>
+<tr>
+<td style="text-align:left">206</td>
+<td style="text-align:left">Partial Content</td>
+<td style="text-align:left">部分内容。服务器成功处理了部分GET请求</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">300</td>
+<td style="text-align:left">Multiple Choices</td>
+<td style="text-align:left">多种选择。请求的资源可包括多个位置，相应可返回一个资源特征与地址的列表用于用户终端（例如：浏览器）选择</td>
+</tr>
+<tr>
+<td style="text-align:left">301</td>
+<td style="text-align:left">Moved Permanently</td>
+<td style="text-align:left">永久移动。请求的资源已被永久的移动到新URI，返回信息会包括新的URI，浏览器会自动定向到新URI。今后任何新的请求都应使用新的URI代替</td>
+</tr>
+<tr>
+<td style="text-align:left">302</td>
+<td style="text-align:left">Found</td>
+<td style="text-align:left">临时移动。与301类似。但资源只是临时被移动。客户端应继续使用原有URI</td>
+</tr>
+<tr>
+<td style="text-align:left">303</td>
+<td style="text-align:left">See Other</td>
+<td style="text-align:left">查看其它地址。与301类似。使用GET和POST请求查看</td>
+</tr>
+<tr>
+<td style="text-align:left">304</td>
+<td style="text-align:left">Not Modified</td>
+<td style="text-align:left">未修改。所请求的资源未修改，服务器返回此状态码时，不会返回任何资源。客户端通常会缓存访问过的资源，通过提供一个头信息指出客户端希望只返回在指定日期之后修改的资源</td>
+</tr>
+<tr>
+<td style="text-align:left">305</td>
+<td style="text-align:left">Use Proxy</td>
+<td style="text-align:left">使用代理。所请求的资源必须通过代理访问</td>
+</tr>
+<tr>
+<td style="text-align:left">306</td>
+<td style="text-align:left">Unused</td>
+<td style="text-align:left">已经被废弃的HTTP状态码</td>
+</tr>
+<tr>
+<td style="text-align:left">307</td>
+<td style="text-align:left">Temporary Redirect</td>
+<td style="text-align:left">临时重定向。与302类似。使用GET请求重定向</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">400</td>
+<td style="text-align:left">Bad Request</td>
+<td style="text-align:left">客户端请求的语法错误，服务器无法理解</td>
+</tr>
+<tr>
+<td style="text-align:left">401</td>
+<td style="text-align:left">Unauthorized</td>
+<td style="text-align:left">请求要求用户的身份认证</td>
+</tr>
+<tr>
+<td style="text-align:left">402</td>
+<td style="text-align:left">Payment Required</td>
+<td style="text-align:left">保留，将来使用</td>
+</tr>
+<tr>
+<td style="text-align:left">403</td>
+<td style="text-align:left">Forbidden</td>
+<td style="text-align:left">服务器理解请求客户端的请求，但是拒绝执行此请求</td>
+</tr>
+<tr>
+<td style="text-align:left">404</td>
+<td style="text-align:left">Not Found</td>
+<td style="text-align:left">服务器无法根据客户端的请求找到资源（网页）。通过此代码，网站设计人员可设置&quot;您所请求的资源无法找到&quot;的个性页面</td>
+</tr>
+<tr>
+<td style="text-align:left">405</td>
+<td style="text-align:left">Method Not Allowed</td>
+<td style="text-align:left">客户端请求中的方法被禁止</td>
+</tr>
+<tr>
+<td style="text-align:left">406</td>
+<td style="text-align:left">Not Acceptable</td>
+<td style="text-align:left">服务器无法根据客户端请求的内容特性完成请求</td>
+</tr>
+<tr>
+<td style="text-align:left">407</td>
+<td style="text-align:left">Proxy Authentication Required</td>
+<td style="text-align:left">请求要求代理的身份认证，与401类似，但请求者应当使用代理进行授权</td>
+</tr>
+<tr>
+<td style="text-align:left">408</td>
+<td style="text-align:left">Request Time-out</td>
+<td style="text-align:left">服务器等待客户端发送的请求时间过长，超时</td>
+</tr>
+<tr>
+<td style="text-align:left">409</td>
+<td style="text-align:left">Conflict</td>
+<td style="text-align:left">服务器完成客户端的 PUT 请求时可能返回此代码，服务器处理请求时发生了冲突</td>
+</tr>
+<tr>
+<td style="text-align:left">410</td>
+<td style="text-align:left">Gone</td>
+<td style="text-align:left">客户端请求的资源已经不存在。410不同于404，如果资源以前有现在被永久删除了可使用410代码，网站设计人员可通过301代码指定资源的新位置</td>
+</tr>
+<tr>
+<td style="text-align:left">411</td>
+<td style="text-align:left">Length Required</td>
+<td style="text-align:left">服务器无法处理客户端发送的不带Content-Length的请求信息</td>
+</tr>
+<tr>
+<td style="text-align:left">412</td>
+<td style="text-align:left">Precondition Failed</td>
+<td style="text-align:left">客户端请求信息的先决条件错误</td>
+</tr>
+<tr>
+<td style="text-align:left">413</td>
+<td style="text-align:left">Request Entity Too Large</td>
+<td style="text-align:left">由于请求的实体过大，服务器无法处理，因此拒绝请求。为防止客户端的连续请求，服务器可能会关闭连接。如果只是服务器暂时无法处理，则会包含一个Retry-After的响应信息</td>
+</tr>
+<tr>
+<td style="text-align:left">414</td>
+<td style="text-align:left">Request-URI Too Large</td>
+<td style="text-align:left">请求的URI过长（URI通常为网址），服务器无法处理</td>
+</tr>
+<tr>
+<td style="text-align:left">415</td>
+<td style="text-align:left">Unsupported Media Type</td>
+<td style="text-align:left">服务器无法处理请求附带的媒体格式</td>
+</tr>
+<tr>
+<td style="text-align:left">416</td>
+<td style="text-align:left">Requested range not satisfiable</td>
+<td style="text-align:left">客户端请求的范围无效</td>
+</tr>
+<tr>
+<td style="text-align:left">417</td>
+<td style="text-align:left">Expectation Failed</td>
+<td style="text-align:left">服务器无法满足Expect的请求头信息</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">500</td>
+<td style="text-align:left">Internal Server Error</td>
+<td style="text-align:left">服务器内部错误，无法完成请求</td>
+</tr>
+<tr>
+<td style="text-align:left">501</td>
+<td style="text-align:left">Not Implemented</td>
+<td style="text-align:left">服务器不支持请求的功能，无法完成请求</td>
+</tr>
+<tr>
+<td style="text-align:left">502</td>
+<td style="text-align:left">Bad Gateway</td>
+<td style="text-align:left">作为网关或者代理工作的服务器尝试执行请求时，从远程服务器接收到了一个无效的响应</td>
+</tr>
+<tr>
+<td style="text-align:left">503</td>
+<td style="text-align:left">Service Unavailable</td>
+<td style="text-align:left">由于超载或系统维护，服务器暂时的无法处理客户端的请求。延时的长度可包含在服务器的Retry-After头信息中</td>
+</tr>
+<tr>
+<td style="text-align:left">504</td>
+<td style="text-align:left">Gateway Time-out</td>
+<td style="text-align:left">充当网关或代理的服务器，未及时从远端服务器获取请求</td>
+</tr>
+<tr>
+<td style="text-align:left">505</td>
+<td style="text-align:left">HTTP Version not supported</td>
+<td style="text-align:left">服务器不支持请求的HTTP协议的版本，无法完成处理</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2-响应头">2. 响应头</h4>
+<p>HTTP响应头包含了网页的重要描述信息，比如网页的格式，网页的过期时间等。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">应答头</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Allow</td>
+<td style="text-align:left">服务器支持哪些请求方法（如GET、POST等）。</td>
+</tr>
+<tr>
+<td style="text-align:left">Content-Encoding</td>
+<td style="text-align:left">文档的编码（Encode）方法。只有在解码之后才可以得到Content-Type头指定的内容类型。利用gzip压缩文档能够显著地减少HTML文档的下载时间。Java的GZIPOutputStream可以很方便地进行gzip压缩，但只有Unix上的Netscape和Windows上的IE 4、IE 5才支持它。因此，Servlet应该通过查看Accept-Encoding头（即request.getHeader(&ldquo;Accept-Encoding&rdquo;)）检查浏览器是否支持gzip，为支持gzip的浏览器返回经gzip压缩的HTML页面，为其他浏览器返回普通页面。</td>
+</tr>
+<tr>
+<td style="text-align:left">Content-Length</td>
+<td style="text-align:left">表示内容长度。只有当浏览器使用持久HTTP连接时才需要这个数据。如果你想要利用持久连接的优势，可以把输出文档写入 ByteArrayOutputStream，完成后查看其大小，然后把该值放入Content-Length头，最后通过byteArrayStream.writeTo(response.getOutputStream()发送内容。</td>
+</tr>
+<tr>
+<td style="text-align:left">Content-Type</td>
+<td style="text-align:left">表示后面的文档属于什么MIME类型。Servlet默认为text/plain，但通常需要显式地指定为text/html。由于经常要设置Content-Type，因此HttpServletResponse提供了一个专用的方法setContentType。</td>
+</tr>
+<tr>
+<td style="text-align:left">Date</td>
+<td style="text-align:left">当前的GMT时间。你可以用setDateHeader来设置这个头以避免转换时间格式的麻烦。</td>
+</tr>
+<tr>
+<td style="text-align:left">Expires</td>
+<td style="text-align:left">应该在什么时候认为文档已经过期，从而不再缓存它？</td>
+</tr>
+<tr>
+<td style="text-align:left">Last-Modified</td>
+<td style="text-align:left">文档的最后改动时间。客户可以通过If-Modified-Since请求头提供一个日期，该请求将被视为一个条件GET，只有改动时间迟于指定时间的文档才会返回，否则返回一个304（Not Modified）状态。Last-Modified也可用setDateHeader方法来设置。</td>
+</tr>
+<tr>
+<td style="text-align:left">Location</td>
+<td style="text-align:left">表示客户应当到哪里去提取文档。Location通常不是直接设置的，而是通过HttpServletResponse的sendRedirect方法，该方法同时设置状态代码为302。</td>
+</tr>
+<tr>
+<td style="text-align:left">Refresh</td>
+<td style="text-align:left">表示浏览器应该在多少时间之后刷新文档，以秒计。除了刷新当前文档之外，你还可以通过setHeader(&ldquo;Refresh&rdquo;, &ldquo;5; URL=http://host/path&rdquo;)让浏览器读取指定的页面。注意这种功能通常是通过设置HTML页面HEAD区的＜META HTTP-EQUIV=&ldquo;Refresh&rdquo; CONTENT=&ldquo;5;URL=http://host/path&quot;＞实现，这是因为，自动刷新或重定向对于那些不能使用CGI或Servlet的HTML编写者十分重要。但是，对于Servlet来说，直接设置Refresh头更加方便。 注意Refresh的意义是&quot;N秒之后刷新本页面或访问指定页面&rdquo;，而不是&quot;每隔N秒刷新本页面或访问指定页面&quot;。因此，连续刷新要求每次都发送一个Refresh头，而发送204状态代码则可以阻止浏览器继续刷新，不管是使用Refresh头还是＜META HTTP-EQUIV=&ldquo;Refresh&rdquo; &hellip;＞。 注意Refresh头不属于HTTP 1.1正式规范的一部分，而是一个扩展，但Netscape和IE都支持它。</td>
+</tr>
+<tr>
+<td style="text-align:left">Server</td>
+<td style="text-align:left">服务器名字。Servlet一般不设置这个值，而是由Web服务器自己设置。</td>
+</tr>
+<tr>
+<td style="text-align:left">Set-Cookie</td>
+<td style="text-align:left">设置和页面关联的Cookie。Servlet不应使用response.setHeader(&ldquo;Set-Cookie&rdquo;, &hellip;)，而是应使用HttpServletResponse提供的专用方法addCookie。</td>
+</tr>
+<tr>
+<td style="text-align:left">WWW-Authenticate</td>
+<td style="text-align:left">客户应该在Authorization头中提供什么类型的授权信息？在包含401（Unauthorized）状态行的应答中这个头是必需的。例如，response.setHeader(&ldquo;WWW-Authenticate&rdquo;, &ldquo;BASIC realm=＼&ldquo;executives＼&rdquo;&quot;)。注意Servlet一般不进行这方面的处理，而是让Web服务器的专门机制来控制受密码保护页面的访问（例如.htaccess）。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="3-响应内容和content-type">3. 响应内容和content type</h4>
+<p>我们最常见的网页的内容格式为：</p>
+<ul>
+<li>HTML - 给人看的页面</li>
+<li>JSON - 数据格式，一般是API，给程序用的，比如手机APP</li>
+<li>XML - 也是数据格式</li>
+</ul>
+<p>其实除此之外，还有图片，样式表，JavaScript等。</p>
+<p>Content-Type就表示了网页的内容类型，它告诉浏览器文件类型，网页编码，帮助浏览器决定将以什么形式、什么编码读取这个文件。Content-Type 标头告诉客户端实际返回的内容的内容类型。</p>
+<p>常见的媒体格式类型如下：</p>
+<ul>
+<li>text/html ：HTML格式</li>
+<li>text/plain ：纯文本格式</li>
+<li>text/xml ：XML格式</li>
+<li>image/gif ：gif图片格式</li>
+<li>image/jpeg ：jpg图片格式</li>
+<li>image/png：png图片格式</li>
+</ul>
+<p>以application开头的媒体格式类型：</p>
+<ul>
+<li>application/xhtml+xml ：XHTML格式</li>
+<li>application/xml：XML数据格式</li>
+<li>application/atom+xml ：Atom XML聚合格式</li>
+<li>application/json：JSON数据格式</li>
+<li>application/pdf：pdf格式</li>
+<li>application/msword ：Word文档格式</li>
+<li>application/octet-stream ：二进制流数据（如常见的文件下载）</li>
+<li>application/x-www-form-urlencoded ：中默认的encType，form表单数据被编码为key/value格式发送到服务器（表单默认的提交数据的格式）</li>
+</ul>
+<p>另外一种常见的媒体格式是上传文件之时使用的：</p>
+<ul>
+<li>multipart/form-data ：需要在表单中进行文件上传时，就需要使用该格式</li>
+</ul>
+<p><strong>注：</strong> 以上关于HTTP部分的学习以及内容整理大多来自于<a href="https://www.bilibili.com/video/BV165411A7ef?from=search&amp;seid=4826439324478152295&amp;spm_id_from=333.337.0.0"target="_blank" rel="external nofollow noopener noreferrer">麦叔编程</a>。作为目的为初步了解入门http，了解其基本报文格式等，在看了一些视频后觉得这个视频讲的相对更清楚一些。</p>
+<h2 id="wireshark抓包http">Wireshark抓包HTTP</h2>
+<ol>
+<li>
+<p>打开Wireshark，选择相应网卡后点击左上角鲨鱼图标开始抓包</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/http4.png"
+    data-srcset="/images/http4.png, /images/http4.png 1.5x, /images/http4.png 2x"
+    data-sizes="auto"
+    alt="/images/http4.png"
+    title="/images/http4.png" width="1500" height="1156"/></p>
+</li>
+<li>
+<p>打开网页，浏览一下后回到Wireshark，便可发现已抓取很多数据包</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/http5.png"
+    data-srcset="/images/http5.png, /images/http5.png 1.5x, /images/http5.png 2x"
+    data-sizes="auto"
+    alt="/images/http5.png"
+    title="/images/http5.png" width="1486" height="286"/></p>
+</li>
+<li>
+<p>通过filter过滤，抓取GET数据包：<code>http.request.method==GET</code></p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/htpp6.png"
+    data-srcset="/images/htpp6.png, /images/htpp6.png 1.5x, /images/htpp6.png 2x"
+    data-sizes="auto"
+    alt="/images/htpp6.png"
+    title="/images/htpp6.png" width="1496" height="168"/></p>
+</li>
+<li>
+<p>观察info字段，找到GET数据包右键follow-&gt;HTTP Stream，追踪数据流，得到一次HTTP传输的所有数据包。</p>
+<p>截取部分：</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/http7.png"
+    data-srcset="/images/http7.png, /images/http7.png 1.5x, /images/http7.png 2x"
+    data-sizes="auto"
+    alt="/images/http7.png"
+    title="/images/http7.png" width="1166" height="766"/></p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/http8.png"
+    data-srcset="/images/http8.png, /images/http8.png 1.5x, /images/http8.png 2x"
+    data-sizes="auto"
+    alt="/images/http8.png"
+    title="/images/http8.png" width="1130" height="436"/></p>
+<p>​	通过这样的一次抓包，其实就可以很清楚的观察到一次请求过程中HTTP协议传输的具体情况，他的请求报文和响应报文就很直观，请求什么，内容形式，User-Agent，响应状态码，内容等都可以获取。上例中，可以发现第一次建立的这种请求是存在问题的，因为在其响应报文中给出的状态码是301，Moved Permanently，请求的资源已被永久的移动到新URI，返回信息会包括新的URI，浏览器会自动定向到新URI。</p>
+</li>
+</ol>
+<h3 id="总结">总结</h3>
+<p>​	对于用工具如Wireshark进行抓包分析当下只是第一次接触，属于是先熟悉了解一下这个过程，正好通过前面刚刚入门的http练手，来抓包分析http协议传输过程和报文格式内容等，未来还会根据具体学习需求进一步深化学习。</p></div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title=2022-01-03&#32;13:35:15>更新于 2022-01-03&nbsp;</span>
+      </div><div class="post-info-license">
+          <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span>
+        </div></div>
+    <div class="post-info-line">
+      <div class="post-info-md"></div>
+      <div class="post-info-share">
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/' class="post-tag">通信协议</a><a href='/tags/wireshark/' class="post-tag">Wireshark</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/posts/notes-to-share/" class="post-nav-item" rel="prev" title="Notes To Share"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Notes To Share</a>
+      <a href="/posts/warmup-writeup/" class="post-nav-item" rel="next" title="warmup Writeup">warmup Writeup<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2022 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="https://github.com/LaneGong"target="_blank" rel="external nofollow noopener noreferrer">Lane Gong</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div><div class="footer-line statistics"><span class="site-time" title='网站运行中 ...'><i class="fa-solid fa-heartbeat fa-fw animate-icon" aria-hidden="true"></i>&nbsp;<span class="run-times">网站运行中 ...</span></span></div><div class="footer-line ibruce">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/algoliasearch/algoliasearch-lite.umd.min.js" defer></script><script src="/lib/lazysizes/lazysizes.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script>window.config={"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":10},"comment":{"enable":false},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"algolia"},"siteTime":"2022-11-23T15:00:00+08:00"};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

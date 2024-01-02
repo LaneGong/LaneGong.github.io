@@ -1,1 +1,16 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>puzzle - 标签 - Lane-诶嘿! Welcome~~</title><link>http://lanegong.top/tags/puzzle/</link><description>puzzle - 标签 - Lane-诶嘿! Welcome~~</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>laneg2022@163.com (Lane Gong)</managingEditor><webMaster>laneg2022@163.com (Lane Gong)</webMaster><lastBuildDate>Mon, 17 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://lanegong.top/tags/puzzle/" rel="self" type="application/rss+xml"/><item><title>[2018|FGCS]Secure intelligent traffic light control using fog computing</title><link>http://lanegong.top/posts/secure_intelligent_traffic_light_control_using_fog_computing/</link><pubDate>Mon, 17 Jul 2023 00:00:00 +0000</pubDate><author>Lane Gong</author><guid>http://lanegong.top/posts/secure_intelligent_traffic_light_control_using_fog_computing/</guid><description>&lt;p>【论文笔记】随着车辆数量的快速增加，安全、高效的通行效率成为关注的重点问题，一批智能交通系统也快速发展。本篇论文聚焦于车联网中交通信号灯的控制，提出了基于雾计算的两套安全智能交通信号灯控制机制，其安全性分别依托于计算Diffie-Hellman难题和哈希碰撞难题的困难程度，并进一步分析两种机制之间的性能表现。本篇论文重点关注车辆、交通信号灯、可信机构三者之间的认证安全性实现和通信效率、复杂度等，对于具体信号灯调度算法不做详细讨论。&lt;/p></description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>puzzle - 标签 - Lane-诶嘿! Welcome~~</title>
+    <link>http://lanegong.top/tags/puzzle/</link>
+    <description>puzzle - 标签 - Lane-诶嘿! Welcome~~</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>laneg2022@163.com (Lane Gong)</managingEditor>
+      <webMaster>laneg2022@163.com (Lane Gong)</webMaster><lastBuildDate>Mon, 17 Jul 2023 00:00:00 &#43;0000</lastBuildDate><atom:link href="http://lanegong.top/tags/puzzle/" rel="self" type="application/rss+xml" /><item>
+  <title>[2018|FGCS]Secure intelligent traffic light control using fog computing</title>
+  <link>http://lanegong.top/posts/secure_intelligent_traffic_light_control_using_fog_computing/</link>
+  <pubDate>Mon, 17 Jul 2023 00:00:00 &#43;0000</pubDate>
+  <author>Lane Gong</author>
+  <guid>http://lanegong.top/posts/secure_intelligent_traffic_light_control_using_fog_computing/</guid>
+  <description><![CDATA[<p>【论文笔记】随着车辆数量的快速增加，安全、高效的通行效率成为关注的重点问题，一批智能交通系统也快速发展。本篇论文聚焦于车联网中交通信号灯的控制，提出了基于雾计算的两套安全智能交通信号灯控制机制，其安全性分别依托于计算Diffie-Hellman难题和哈希碰撞难题的困难程度，并进一步分析两种机制之间的性能表现。本篇论文重点关注车辆、交通信号灯、可信机构三者之间的认证安全性实现和通信效率、复杂度等，对于具体信号灯调度算法不做详细讨论。</p>]]></description>
+</item>
+</channel>
+</rss>

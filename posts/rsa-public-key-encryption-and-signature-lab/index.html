@@ -1,543 +1,1089 @@
-<!doctype html><html itemscope itemtype=http://schema.org/WebPage lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=2"><meta name=robots content="noodp"><title>RSA公钥加密和数字签名实验 - Lane-诶嘿! Welcome~~</title><meta name=author content="Lane Gong"><meta name=author-link content="https://github.com/LaneGong"><meta name=description content="SeedLab密码学RSA公钥加密和数字签名实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！"><meta name=keywords content="网络安全攻防实验,Cryptography"><meta itemprop=name content="RSA公钥加密和数字签名实验"><meta itemprop=description content="SeedLab密码学RSA公钥加密和数字签名实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！"><meta itemprop=datePublished content="2023-01-29T10:00:15+08:00"><meta itemprop=dateModified content="2023-01-29T10:00:15+08:00"><meta itemprop=wordCount content="3388"><meta itemprop=image content="http://lanegong.top/logo.png"><meta itemprop=keywords content="网络安全攻防实验,Cryptography,"><meta property="og:title" content="RSA公钥加密和数字签名实验"><meta property="og:description" content="SeedLab密码学RSA公钥加密和数字签名实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！"><meta property="og:type" content="article"><meta property="og:url" content="http://lanegong.top/posts/rsa-public-key-encryption-and-signature-lab/"><meta property="og:image" content="http://lanegong.top/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2023-01-29T10:00:15+08:00"><meta property="article:modified_time" content="2023-01-29T10:00:15+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://lanegong.top/logo.png"><meta name=twitter:title content="RSA公钥加密和数字签名实验"><meta name=twitter:description content="SeedLab密码学RSA公钥加密和数字签名实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！"><meta name=application-name content="FixIt"><meta name=apple-mobile-web-app-title content="FixIt"><meta name=theme-color data-light=#f8f8f8 data-dark=#252627 content="#f8f8f8"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=canonical href=http://lanegong.top/posts/rsa-public-key-encryption-and-signature-lab/><link rel=prev href=http://lanegong.top/posts/secret-key-encryption/><link rel=next href=http://lanegong.top/posts/firewall-exploration-lab/><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"RSA公钥加密和数字签名实验","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/lanegong.top\/posts\/rsa-public-key-encryption-and-signature-lab\/"},"genre":"posts","keywords":"网络安全攻防实验, Cryptography","wordcount":3388,"url":"http:\/\/lanegong.top\/posts\/rsa-public-key-encryption-and-signature-lab\/","datePublished":"2023-01-29T10:00:15+08:00","dateModified":"2023-01-29T10:00:15+08:00","publisher":{"@type":"Organization","name":"Lane","logo":{"@type":"ImageObject","url":"http:\/\/lanegong.top\/images\/avatar.jpeg","width":690,"height":684}},"author":{"@type":"Person","name":"Lane Gong"},"description":""}</script></head><body data-header-desktop=sticky data-header-mobile=auto><script>(window.localStorage?.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("data-theme","dark")</script><div class=wrapper><header class="desktop animate__faster" id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Lane-诶嘿! Welcome~~"><img class="lazyload logo" src=/svg/loading.min.svg data-src=/images/avatar.jpeg data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x" data-sizes=auto alt="Lane-诶嘿! Welcome~~" title="Lane-诶嘿! Welcome~~" width=690 height=684><span class=header-title-text>Lane の Blog</span></a><span class=header-subtitle></span></div><nav><ul class=menu><li class="menu-item has-children"><a class=menu-link href=/posts/ title=查看所有文章><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden=true></i> 归档</a><i class="dropdown-icon fa-solid fa-chevron-down" aria-hidden=true></i><ul class=sub-menu><li class=menu-item><a class=menu-link href=/categories/><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden=true></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden=true></i> 标签</a></li></ul></li><li class=menu-item><a class=menu-link href=/friends/ title=友情链接><i class="fa-solid fa-users fa-fw fa-sm" aria-hidden=true></i> 友链</a></li><li class=menu-item><a class=menu-link href=/fun/ title=正在开发中...><i class="fa-solid fa-fan fa-fw fa-sm" aria-hidden=true></i> 趣味</a></li><li class=menu-item><a class=menu-link href=/guides/ title=常用站点指南><i class="fa-solid fa-subway fa-fw fa-sm" aria-hidden=true></i> 站点导航</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id=search-desktop><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fa-solid fa-search fa-fw" aria-hidden=true></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fa-solid fa-times-circle fa-fw" aria-hidden=true></i></a>
-<span class="search-button search-loading" id=search-loading-desktop><i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw" aria-hidden=true></i></li></ul></nav></div></header><header class="mobile animate__faster" id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Lane-诶嘿! Welcome~~"><img class="lazyload logo" src=/svg/loading.min.svg data-src=/images/avatar.jpeg data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x" data-sizes=auto alt=/images/avatar.jpeg title=/images/avatar.jpeg width=690 height=684><span class=header-title-text>Lane の Blog</span></a><span class=header-subtitle></span></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><nav><ul class=menu id=menu-mobile><li class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fa-solid fa-search fa-fw" aria-hidden=true></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fa-solid fa-times-circle fa-fw" aria-hidden=true></i></a>
-<span class="search-button search-loading" id=search-loading-mobile><i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></li><li class=menu-item><span class=nested-item><a class=menu-link href=/posts/ title=查看所有文章><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden=true></i> 归档</a>
-<i class="dropdown-icon fa-solid fa-chevron-right" aria-hidden=true></i></span><ul class=sub-menu><li class=menu-item><a class=menu-link href=/categories/><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden=true></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden=true></i> 标签</a></li></ul></li><li class=menu-item><a class=menu-link href=/friends/ title=友情链接><i class="fa-solid fa-users fa-fw fa-sm" aria-hidden=true></i> 友链</a></li><li class=menu-item><a class=menu-link href=/fun/ title=正在开发中...><i class="fa-solid fa-fan fa-fw fa-sm" aria-hidden=true></i> 趣味</a></li><li class=menu-item><a class=menu-link href=/guides/ title=常用站点指南><i class="fa-solid fa-subway fa-fw fa-sm" aria-hidden=true></i> 站点导航</a></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw" aria-hidden=true></i></li></ul></nav></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=container data-page-style=normal><aside class=toc id=toc-auto><h2 class=toc-title>目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden=true></i></h2><div class=toc-content id=toc-content-auto></div></aside><aside class=aside-custom></aside><article class="page single"><div class=header><h1 class="single-title animate__animated animate__flipInX"><span>RSA公钥加密和数字签名实验</span></h1></div><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://github.com/LaneGong title=作者 target=_blank rel="external nofollow noopener noreferrer author" class=author><img class="lazyload avatar" src=/svg/loading.min.svg data-src=/images/avatar.jpeg data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x" data-sizes=auto alt="Lane Gong" title="Lane Gong" width=690 height=684>&nbsp;Lane Gong</a></span>
-<span class=post-category>收录于 <a href=/categories/seedlab/><i class="fa-regular fa-folder fa-fw" aria-hidden=true></i> SeedLab</a></span></div><div class=post-meta-line><span title="2023-01-29 10:00:15"><i class="fa-regular fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2023-01-29>2023-01-29</time></span>&nbsp;<span><i class="fa-solid fa-pencil-alt fa-fw" aria-hidden=true></i> 约 3388 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw" aria-hidden=true></i> 预计阅读 7 分钟</span>&nbsp;<span id=busuanzi_container_page_pv class="busuanzi_visitors comment-visitors" data-flag-title=RSA公钥加密和数字签名实验>
-<i class="fa-regular fa-eye fa-fw" aria-hidden=true></i>&nbsp;<span id=busuanzi_value_page_pv>-</span>&nbsp;次阅读
-</span>&nbsp;</div></div><div class="details toc" id=toc-static data-kept=false><div class="details-summary toc-title"><span>目录</span>
-<span><i class="details-icon fa-solid fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#preliminary>PRELIMINARY</a></li><li><a href=#task1-deriving-the-private-key>Task1: Deriving the Private Key</a></li><li><a href=#task-2-encrypting-a-message>Task 2: Encrypting a Message</a></li><li><a href=#task-3-decrypting-a-message>Task 3: Decrypting a Message</a></li><li><a href=#task-4-signing-a-message>Task 4: Signing a Message</a></li><li><a href=#task-5-verifying-a-signature>Task 5: Verifying a Signature</a></li></ul></nav></div></div><div class=content id=content><p>SeedLab密码学RSA公钥加密和数字签名实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！</p><blockquote><p>实验来源：<a href=https://github.com/seed-labs/seed-labs target=_blank rel="external nofollow noopener noreferrer">seed-labs</a></p><p>实验环境：SEEDUbuntu 20.04 VM</p><p>API文档：<a href=https://linux.die.net/man/3/bn target=_blank rel="external nofollow noopener noreferrer">Big Number APIs</a></p></blockquote><h2 id=preliminary>PRELIMINARY</h2><p>A Complete Example of BIGNUM APIs.</p><p>In this example, we initialize three BIGNUM variables, a, b, and n; we then compute a ∗ b and ($a^b mod n$).</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cm>/* bn_sample.c */</span>
-</span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;openssl/bn.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp>#define NBITS 256
-</span></span></span><span class=line><span class=cl><span class=cp></span><span class=kt>void</span> <span class=nf>printBN</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>msg</span><span class=p>,</span> <span class=n>BIGNUM</span> <span class=o>*</span> <span class=n>a</span><span class=p>)</span>
-</span></span><span class=line><span class=cl><span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=cm>/* Use BN_bn2hex(a) for hex string
-</span></span></span><span class=line><span class=cl><span class=cm>    * Use BN_bn2dec(a) for decimal string */</span>
-</span></span><span class=line><span class=cl>    <span class=kt>char</span> <span class=o>*</span> <span class=n>number_str</span> <span class=o>=</span> <span class=n>BN_bn2hex</span><span class=p>(</span><span class=n>a</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=n>printf</span><span class=p>(</span><span class=s>&#34;%s %s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>msg</span><span class=p>,</span> <span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=n>OPENSSL_free</span><span class=p>(</span><span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span> <span class=p>()</span>
-</span></span><span class=line><span class=cl><span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=n>BN_CTX</span> <span class=o>*</span><span class=n>ctx</span> <span class=o>=</span> <span class=n>BN_CTX_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>    <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>a</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>    <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>b</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>    <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>n</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>    <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>res</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>    <span class=c1>// Initialize a, b, n
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>BN_generate_prime_ex</span><span class=p>(</span><span class=n>a</span><span class=p>,</span> <span class=n>NBITS</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=n>BN_dec2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>b</span><span class=p>,</span> <span class=s>&#34;273489463796838501848592769467194369268&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=n>BN_rand</span><span class=p>(</span><span class=n>n</span><span class=p>,</span> <span class=n>NBITS</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=c1>// res = a*b
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>BN_mul</span><span class=p>(</span><span class=n>res</span><span class=p>,</span> <span class=n>a</span><span class=p>,</span> <span class=n>b</span><span class=p>,</span> <span class=n>ctx</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=n>printBN</span><span class=p>(</span><span class=s>&#34;a * b = &#34;</span><span class=p>,</span> <span class=n>res</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=c1>// res = aˆb mod n
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>BN_mod_exp</span><span class=p>(</span><span class=n>res</span><span class=p>,</span> <span class=n>a</span><span class=p>,</span> <span class=n>b</span><span class=p>,</span> <span class=n>n</span><span class=p>,</span> <span class=n>ctx</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=n>printBN</span><span class=p>(</span><span class=s>&#34;aˆc mod n = &#34;</span><span class=p>,</span> <span class=n>res</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>编译：<code>gcc -o example1 example1.c -lcrypto</code></p><p>运行：<code>./example1</code></p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230128183242973.png data-srcset="/images/image-20230128183242973.png, /images/image-20230128183242973.png 1.5x, /images/image-20230128183242973.png 2x" data-sizes=auto alt=image-20230128183242973 title=image-20230128183242973 width=1365 height=101></p><h2 id=task1-deriving-the-private-key>Task1: Deriving the Private Key</h2><p>Let p, q, and e be three prime numbers. Let n = p*q. We will use (e, n) as the public key. Please calculate the private key d. The hexadecimal values of p, q, and e are listed in the following. It should be noted that although p and q used in this task are quite large numbers, they are not large enough to be secure. We intentionally make them small for the sake of simplicity. In practice, these numbers should be at least 512 bits long (the one used here are only 128 bits).</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>p = F7E75FDC469067FFDC4E847C51F452DF
-</span></span><span class=line><span class=cl>q = E85CED54AF57E53E092113E62F436F4F
-</span></span><span class=line><span class=cl>e = 0D88C3
-</span></span></code></pre></td></tr></table></div></div><p><strong>推导RSA私钥：</strong></p><ol><li><p>计算N值</p><p>pesudo random number generator => p,q => large prime number
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>RSA公钥加密和数字签名实验 - Lane-诶嘿! Welcome~~</title><meta name="author" content="Lane Gong">
+<meta name="author-link" content="https://github.com/LaneGong">
+<meta name="description" content="SeedLab密码学RSA公钥加密和数字签名实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！" /><meta name="keywords" content='网络安全攻防实验, Cryptography' /><meta itemprop="name" content="RSA公钥加密和数字签名实验">
+<meta itemprop="description" content="SeedLab密码学RSA公钥加密和数字签名实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！"><meta itemprop="datePublished" content="2023-01-29T10:00:15+08:00" />
+<meta itemprop="dateModified" content="2023-01-29T10:00:15+08:00" />
+<meta itemprop="wordCount" content="3388"><meta itemprop="image" content="http://lanegong.top/logo.png"/>
+<meta itemprop="keywords" content="网络安全攻防实验,Cryptography," /><meta property="og:title" content="RSA公钥加密和数字签名实验" />
+<meta property="og:description" content="SeedLab密码学RSA公钥加密和数字签名实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://lanegong.top/posts/rsa-public-key-encryption-and-signature-lab/" /><meta property="og:image" content="http://lanegong.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-01-29T10:00:15+08:00" />
+<meta property="article:modified_time" content="2023-01-29T10:00:15+08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://lanegong.top/logo.png"/>
+
+<meta name="twitter:title" content="RSA公钥加密和数字签名实验"/>
+<meta name="twitter:description" content="SeedLab密码学RSA公钥加密和数字签名实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://lanegong.top/posts/rsa-public-key-encryption-and-signature-lab/" /><link rel="prev" href="http://lanegong.top/posts/secret-key-encryption/" /><link rel="next" href="http://lanegong.top/posts/firewall-exploration-lab/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "RSA公钥加密和数字签名实验",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "http:\/\/lanegong.top\/posts\/rsa-public-key-encryption-and-signature-lab\/"
+    },"genre": "posts","keywords": "网络安全攻防实验, Cryptography","wordcount":  3388 ,
+    "url": "http:\/\/lanegong.top\/posts\/rsa-public-key-encryption-and-signature-lab\/","datePublished": "2023-01-29T10:00:15+08:00","dateModified": "2023-01-29T10:00:15+08:00","publisher": {
+      "@type": "Organization",
+      "name": "Lane","logo": {
+          "@type": "ImageObject",
+          "url": "http:\/\/lanegong.top\/images\/avatar.jpeg",
+          "width":  690 ,
+          "height":  684 
+        }},"author": {
+        "@type": "Person",
+        "name": "Lane Gong"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="Lane-诶嘿! Welcome~~"><img
+    class="lazyload logo"
+    src="/svg/loading.min.svg"
+    data-src="/images/avatar.jpeg"
+    data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x"
+    data-sizes="auto"
+    alt="Lane-诶嘿! Welcome~~"
+    title="Lane-诶嘿! Welcome~~" width="690" height="684"/><span class="header-title-text">Lane の Blog</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item has-children">
+              <a
+                class="menu-link"
+                href="/posts/"
+                title="查看所有文章"
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a><i class="dropdown-icon fa-solid fa-chevron-down" aria-hidden="true"></i>
+                <ul class="sub-menu">
+                  <li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/categories/"
+                          
+                          
+                        ><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden="true"></i> 分类</a>
+                      </li><li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/tags/"
+                          
+                          
+                        ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a>
+                      </li></ul></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/fun/"
+                title="正在开发中..."
+                
+              ><i class="fa-solid fa-fan fa-fw fa-sm" aria-hidden="true"></i> 趣味</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/guides/"
+                title="常用站点指南"
+                
+              ><i class="fa-solid fa-subway fa-fw fa-sm" aria-hidden="true"></i> 站点导航</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容 ..." id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="Lane-诶嘿! Welcome~~"><img
+    class="lazyload logo"
+    src="/svg/loading.min.svg"
+    data-src="/images/avatar.jpeg"
+    data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x"
+    data-sizes="auto"
+    alt="/images/avatar.jpeg"
+    title="/images/avatar.jpeg" width="690" height="684"/><span class="header-title-text">Lane の Blog</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容 ..." id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><span class="nested-item">
+                  <a
+                    class="menu-link"
+                    href="/posts/"
+                    title="查看所有文章"
+                    
+                  ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a>
+                  <i class="dropdown-icon fa-solid fa-chevron-right" aria-hidden="true"></i>
+                </span>
+                <ul class="sub-menu">
+                  <li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/categories/"
+                          
+                          
+                        ><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden="true"></i> 分类</a>
+                      </li><li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/tags/"
+                          
+                          
+                        ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a>
+                      </li></ul></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/fun/"
+                  title="正在开发中..."
+                  
+                ><i class="fa-solid fa-fan fa-fw fa-sm" aria-hidden="true"></i> 趣味</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/guides/"
+                  title="常用站点指南"
+                  
+                ><i class="fa-solid fa-subway fa-fw fa-sm" aria-hidden="true"></i> 站点导航</a></li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container" data-page-style="normal"><aside class="toc" id="toc-auto"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside>
+
+  <aside class="aside-custom">
+    </aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX">
+        <span>RSA公钥加密和数字签名实验</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><a href="https://github.com/LaneGong" title="作者"target="_blank" rel="external nofollow noopener noreferrer author" class="author"><img
+    class="lazyload avatar"
+    src="/svg/loading.min.svg"
+    data-src="/images/avatar.jpeg"
+    data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x"
+    data-sizes="auto"
+    alt="Lane Gong"
+    title="Lane Gong" width="690" height="684"/>&nbsp;Lane Gong</a></span>
+          <span class="post-category">收录于 <a href="/categories/seedlab/"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> SeedLab</a></span></div>
+      <div class="post-meta-line"><span title=2023-01-29&#32;10:00:15><i class="fa-regular fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2023-01-29">2023-01-29</time></span>&nbsp;<span><i class="fa-solid fa-pencil-alt fa-fw" aria-hidden="true"></i> 约 3388 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw" aria-hidden="true"></i> 预计阅读 7 分钟</span>&nbsp;<span id="busuanzi_container_page_pv" class="busuanzi_visitors comment-visitors" data-flag-title="RSA公钥加密和数字签名实验">
+            <i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_page_pv">-</span>&nbsp;次阅读
+          </span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#preliminary">PRELIMINARY</a></li>
+    <li><a href="#task1-deriving-the-private-key">Task1: Deriving the Private Key</a></li>
+    <li><a href="#task-2-encrypting-a-message">Task 2: Encrypting a Message</a></li>
+    <li><a href="#task-3-decrypting-a-message">Task 3: Decrypting a Message</a></li>
+    <li><a href="#task-4-signing-a-message">Task 4: Signing a Message</a></li>
+    <li><a href="#task-5-verifying-a-signature">Task 5: Verifying a Signature</a></li>
+  </ul>
+</nav></div>
+      </div><div class="content" id="content"><p>SeedLab密码学RSA公钥加密和数字签名实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！</p>
+<blockquote>
+<p>实验来源：<a href="https://github.com/seed-labs/seed-labs"target="_blank" rel="external nofollow noopener noreferrer">seed-labs</a></p>
+<p>实验环境：SEEDUbuntu 20.04 VM</p>
+<p>API文档：<a href="https://linux.die.net/man/3/bn"target="_blank" rel="external nofollow noopener noreferrer">Big Number APIs</a></p>
+</blockquote>
+<h2 id="preliminary">PRELIMINARY</h2>
+<p>A Complete Example of BIGNUM APIs.</p>
+<p>In this example, we initialize three BIGNUM variables, a, b, and n; we then compute a ∗ b and ($a^b mod n$).</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* bn_sample.c */</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;openssl/bn.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define NBITS 256
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="kt">void</span> <span class="nf">printBN</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">BIGNUM</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* Use BN_bn2hex(a) for hex string
+</span></span></span><span class="line"><span class="cl"><span class="cm">    * Use BN_bn2dec(a) for decimal string */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="o">*</span> <span class="n">number_str</span> <span class="o">=</span> <span class="n">BN_bn2hex</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">OPENSSL_free</span><span class="p">(</span><span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BN_CTX</span> <span class="o">*</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">BN_CTX_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">n</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">res</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Initialize a, b, n
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">BN_generate_prime_ex</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">NBITS</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BN_dec2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="s">&#34;273489463796838501848592769467194369268&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BN_rand</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">NBITS</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// res = a*b
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">BN_mul</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ctx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">printBN</span><span class="p">(</span><span class="s">&#34;a * b = &#34;</span><span class="p">,</span> <span class="n">res</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// res = aˆb mod n
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">BN_mod_exp</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">ctx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">printBN</span><span class="p">(</span><span class="s">&#34;aˆc mod n = &#34;</span><span class="p">,</span> <span class="n">res</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>编译：<code>gcc -o example1 example1.c -lcrypto</code></p>
+<p>运行：<code>./example1</code></p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230128183242973.png"
+    data-srcset="/images/image-20230128183242973.png, /images/image-20230128183242973.png 1.5x, /images/image-20230128183242973.png 2x"
+    data-sizes="auto"
+    alt="image-20230128183242973"
+    title="image-20230128183242973" width="1365" height="101"/></p>
+<h2 id="task1-deriving-the-private-key">Task1: Deriving the Private Key</h2>
+<p>Let p, q, and e be three prime numbers. Let n = p*q. We will use (e, n) as the public key. Please calculate the private key d. The hexadecimal values of p, q, and e are listed in the following. It should be noted that although p and q used in this task are quite large numbers, they are not large enough to be secure. We intentionally make them small for the sake of simplicity. In practice, these numbers should be at least 512 bits long (the one used here are only 128 bits).</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">p = F7E75FDC469067FFDC4E847C51F452DF
+</span></span><span class="line"><span class="cl">q = E85CED54AF57E53E092113E62F436F4F
+</span></span><span class="line"><span class="cl">e = 0D88C3
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>推导RSA私钥：</strong></p>
+<ol>
+<li>
+<p>计算N值</p>
+<p>pesudo random number generator =&gt; p,q =&gt; large prime number
 $$
 N=p\times q
-$$</p></li><li><p>求L
+$$</p>
+</li>
+<li>
+<p>求L
 $$
 L=lcm(p-1,q-1)
-$$</p></li><li><p>求E
+$$</p>
+</li>
+<li>
+<p>求E
 $$
 1&lt;E&lt;L
-$$</p><p>$$
+$$</p>
+<p>$$
 gcd(E,L)=1
-$$</p></li><li><p>求D
+$$</p>
+</li>
+<li>
+<p>求D
 $$
 1&lt;D&lt;L
-$$</p><p>$$
+$$</p>
+<p>$$
 E\times D\mod L =1
-$$</p></li></ol><p><strong>根据已给p,q,e值，利用下述c语言代码计算私钥值：</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span><span class=lnt>34
-</span><span class=lnt>35
-</span><span class=lnt>36
-</span><span class=lnt>37
-</span><span class=lnt>38
-</span><span class=lnt>39
-</span><span class=lnt>40
-</span><span class=lnt>41
-</span><span class=lnt>42
-</span><span class=lnt>43
-</span><span class=lnt>44
-</span><span class=lnt>45
-</span><span class=lnt>46
-</span><span class=lnt>47
-</span><span class=lnt>48
-</span><span class=lnt>49
-</span><span class=lnt>50
-</span><span class=lnt>51
-</span><span class=lnt>52
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;openssl/bn.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp></span>
-</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>printBN</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>msg</span><span class=p>,</span> <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>a</span><span class=p>){</span><span class=c1>//输出大数
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=cm>/*Use BN_bn2hex(a) for hex string
-</span></span></span><span class=line><span class=cl><span class=cm>	 *Use BN_bn2dec(a) for decimal string*/</span>
-</span></span><span class=line><span class=cl>	<span class=kt>char</span> <span class=o>*</span><span class=n>number_str</span> <span class=o>=</span> <span class=n>BN_bn2hex</span><span class=p>(</span><span class=n>a</span><span class=p>);</span><span class=c1>//BN =&gt; hex string
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>printf</span><span class=p>(</span><span class=s>&#34;%s %s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>msg</span><span class=p>,</span> <span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>OPENSSL_free</span><span class=p>(</span><span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>printKEYS</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>msg</span><span class=p>,</span> <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>a</span><span class=p>,</span> <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>b</span><span class=p>){</span><span class=c1>//输出完整公/私钥
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kt>char</span> <span class=o>*</span><span class=n>number_str1</span> <span class=o>=</span> <span class=n>BN_bn2hex</span><span class=p>(</span><span class=n>a</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=kt>char</span> <span class=o>*</span><span class=n>number_str2</span> <span class=o>=</span> <span class=n>BN_bn2hex</span><span class=p>(</span><span class=n>b</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>printf</span><span class=p>(</span><span class=s>&#34;%s: (%s,%s)</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>msg</span><span class=p>,</span> <span class=n>number_str1</span><span class=p>,</span> <span class=n>number_str2</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>OPENSSL_free</span><span class=p>(</span><span class=n>number_str1</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>OPENSSL_free</span><span class=p>(</span><span class=n>number_str2</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span> <span class=p>(){</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_CTX</span> <span class=o>*</span><span class=n>ctx</span> <span class=o>=</span> <span class=n>BN_CTX_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>p</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>q</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>n</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>e</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>d</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>l</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>p_one</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>q_one</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>  <span class=c1>//16进制字符串转换成大数BN
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>p</span><span class=p>,</span> <span class=s>&#34;F7E75FDC469067FFDC4E847C51F452DF&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>q</span><span class=p>,</span> <span class=s>&#34;E85CED54AF57E53E092113E62F436F4F&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>e</span><span class=p>,</span> <span class=s>&#34;0D88C3&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_mul</span><span class=p>(</span><span class=n>n</span><span class=p>,</span> <span class=n>p</span><span class=p>,</span> <span class=n>q</span><span class=p>,</span> <span class=n>ctx</span><span class=p>);</span><span class=c1>//计算n，n=p*q
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>printBN</span><span class=p>(</span><span class=s>&#34;n = p*q = &#34;</span><span class=p>,</span> <span class=n>n</span><span class=p>);</span><span class=c1>//输出n
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_sub</span><span class=p>(</span><span class=n>p_one</span><span class=p>,</span><span class=n>p</span><span class=p>,</span><span class=n>BN_value_one</span><span class=p>());</span><span class=c1>//计算p-1
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_sub</span><span class=p>(</span><span class=n>q_one</span><span class=p>,</span><span class=n>q</span><span class=p>,</span><span class=n>BN_value_one</span><span class=p>());</span><span class=c1>//计算q-1
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_mul</span><span class=p>(</span><span class=n>l</span><span class=p>,</span><span class=n>p_one</span><span class=p>,</span><span class=n>q_one</span><span class=p>,</span><span class=n>ctx</span><span class=p>);</span><span class=c1>//计算l，l=lcm(p-1,q-1)
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_mod_inverse</span><span class=p>(</span><span class=n>d</span><span class=p>,</span><span class=n>e</span><span class=p>,</span><span class=n>l</span><span class=p>,</span><span class=n>ctx</span><span class=p>);</span><span class=c1>//计算d，e * d mod l = 1
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>printBN</span><span class=p>(</span><span class=s>&#34;d = &#34;</span><span class=p>,</span><span class=n>d</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>printKEYS</span><span class=p>(</span><span class=s>&#34;PUBLIC KEY&#34;</span><span class=p>,</span><span class=n>e</span><span class=p>,</span><span class=n>n</span><span class=p>);</span><span class=c1>//输出公钥
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>printKEYS</span><span class=p>(</span><span class=s>&#34;PRIVATE KEY&#34;</span><span class=p>,</span><span class=n>d</span><span class=p>,</span><span class=n>n</span><span class=p>);</span><span class=c1>//输出私钥
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>p</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>q</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>n</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>e</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>d</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>l</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>p_one</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>q_one</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>编译运行：</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230128230050970.png data-srcset="/images/image-20230128230050970.png, /images/image-20230128230050970.png 1.5x, /images/image-20230128230050970.png 2x" data-sizes=auto alt=image-20230128230050970 title=image-20230128230050970 width=1381 height=181></p><p>d值为：3587A24598E5F2A21DB007D89D18CC50ABA5075BA19A33890FE7C28A9B496AEB</p><p>私钥: (3587A24598E5F2A21DB007D89D18CC50ABA5075BA19A33890FE7C28A9B496AEB,E103ABD94892E3E74AFD724BF28E78366D9676BCCC70118BD0AA1968DBB143D1)</p><h2 id=task-2-encrypting-a-message>Task 2: Encrypting a Message</h2><p>Let (e, n) be the public key. Please encrypt the message &ldquo;A top secret!&rdquo; (the quotations are not included). We need to convert this ASCII string to a hex string, and then convert the hex string to a BIGNUM using the hex-to-bn API BN hex2bn(). The following python command can be used to convert a plain ASCII string to a hex string.</p><ol><li><p>将明文转换成16进制字符串：<code>python3 -c 'print("A top secret!".encode("utf-8").hex())'</code></p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129090610412.png data-srcset="/images/image-20230129090610412.png, /images/image-20230129090610412.png 1.5x, /images/image-20230129090610412.png 2x" data-sizes=auto alt=image-20230129090610412 title=image-20230129090610412 width=1299 height=52></p><p>16进制字符串：4120746f702073656372657421</p></li><li><p>使用c语言代码完成加密：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>n = DCBFFE3E51F62E09CE7032E2677A78946A849DC4CDDE3A4D0CB81629242FB1A5
-</span></span><span class=line><span class=cl>e = 010001 (this hex value equals to decimal 65537)
-</span></span><span class=line><span class=cl>M = A top secret!
-</span></span><span class=line><span class=cl>d = 74D806F9F3A62BAE331FFE3F0A68AFE35B3D2E4794148AACBC26AA381CD7D30D
-</span></span></code></pre></td></tr></table></div></div><p>加密过程：
+$$</p>
+</li>
+</ol>
+<p><strong>根据已给p,q,e值，利用下述c语言代码计算私钥值：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;openssl/bn.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">printBN</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">a</span><span class="p">){</span><span class="c1">//输出大数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="cm">/*Use BN_bn2hex(a) for hex string
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 *Use BN_bn2dec(a) for decimal string*/</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="o">*</span><span class="n">number_str</span> <span class="o">=</span> <span class="n">BN_bn2hex</span><span class="p">(</span><span class="n">a</span><span class="p">);</span><span class="c1">//BN =&gt; hex string
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">OPENSSL_free</span><span class="p">(</span><span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">printKEYS</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">b</span><span class="p">){</span><span class="c1">//输出完整公/私钥
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">char</span> <span class="o">*</span><span class="n">number_str1</span> <span class="o">=</span> <span class="n">BN_bn2hex</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="o">*</span><span class="n">number_str2</span> <span class="o">=</span> <span class="n">BN_bn2hex</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s: (%s,%s)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">number_str1</span><span class="p">,</span> <span class="n">number_str2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">OPENSSL_free</span><span class="p">(</span><span class="n">number_str1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">OPENSSL_free</span><span class="p">(</span><span class="n">number_str2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span> <span class="p">(){</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_CTX</span> <span class="o">*</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">BN_CTX_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">q</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">n</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">e</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">d</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">l</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">p_one</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">q_one</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">//16进制字符串转换成大数BN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="p">,</span> <span class="s">&#34;F7E75FDC469067FFDC4E847C51F452DF&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">q</span><span class="p">,</span> <span class="s">&#34;E85CED54AF57E53E092113E62F436F4F&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e</span><span class="p">,</span> <span class="s">&#34;0D88C3&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_mul</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">ctx</span><span class="p">);</span><span class="c1">//计算n，n=p*q
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">printBN</span><span class="p">(</span><span class="s">&#34;n = p*q = &#34;</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span><span class="c1">//输出n
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_sub</span><span class="p">(</span><span class="n">p_one</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">BN_value_one</span><span class="p">());</span><span class="c1">//计算p-1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_sub</span><span class="p">(</span><span class="n">q_one</span><span class="p">,</span><span class="n">q</span><span class="p">,</span><span class="n">BN_value_one</span><span class="p">());</span><span class="c1">//计算q-1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_mul</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">p_one</span><span class="p">,</span><span class="n">q_one</span><span class="p">,</span><span class="n">ctx</span><span class="p">);</span><span class="c1">//计算l，l=lcm(p-1,q-1)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_mod_inverse</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">ctx</span><span class="p">);</span><span class="c1">//计算d，e * d mod l = 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">printBN</span><span class="p">(</span><span class="s">&#34;d = &#34;</span><span class="p">,</span><span class="n">d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printKEYS</span><span class="p">(</span><span class="s">&#34;PUBLIC KEY&#34;</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">n</span><span class="p">);</span><span class="c1">//输出公钥
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">printKEYS</span><span class="p">(</span><span class="s">&#34;PRIVATE KEY&#34;</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">n</span><span class="p">);</span><span class="c1">//输出私钥
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">p_one</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">q_one</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>编译运行：</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230128230050970.png"
+    data-srcset="/images/image-20230128230050970.png, /images/image-20230128230050970.png 1.5x, /images/image-20230128230050970.png 2x"
+    data-sizes="auto"
+    alt="image-20230128230050970"
+    title="image-20230128230050970" width="1381" height="181"/></p>
+<p>d值为：3587A24598E5F2A21DB007D89D18CC50ABA5075BA19A33890FE7C28A9B496AEB</p>
+<p>私钥: (3587A24598E5F2A21DB007D89D18CC50ABA5075BA19A33890FE7C28A9B496AEB,E103ABD94892E3E74AFD724BF28E78366D9676BCCC70118BD0AA1968DBB143D1)</p>
+<h2 id="task-2-encrypting-a-message">Task 2: Encrypting a Message</h2>
+<p>Let (e, n) be the public key. Please encrypt the message &ldquo;A top secret!&rdquo; (the quotations are not included). We need to convert this ASCII string to a hex string, and then convert the hex string to a BIGNUM using the hex-to-bn API BN hex2bn(). The following python command can be used to convert a plain ASCII string to a hex string.</p>
+<ol>
+<li>
+<p>将明文转换成16进制字符串：<code>python3 -c 'print(&quot;A top secret!&quot;.encode(&quot;utf-8&quot;).hex())'</code></p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129090610412.png"
+    data-srcset="/images/image-20230129090610412.png, /images/image-20230129090610412.png 1.5x, /images/image-20230129090610412.png 2x"
+    data-sizes="auto"
+    alt="image-20230129090610412"
+    title="image-20230129090610412" width="1299" height="52"/></p>
+<p>16进制字符串：4120746f702073656372657421</p>
+</li>
+<li>
+<p>使用c语言代码完成加密：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">n = DCBFFE3E51F62E09CE7032E2677A78946A849DC4CDDE3A4D0CB81629242FB1A5
+</span></span><span class="line"><span class="cl">e = 010001 (this hex value equals to decimal 65537)
+</span></span><span class="line"><span class="cl">M = A top secret!
+</span></span><span class="line"><span class="cl">d = 74D806F9F3A62BAE331FFE3F0A68AFE35B3D2E4794148AACBC26AA381CD7D30D
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>加密过程：
 $$
 ciphertext = plaintext^E \mod N
-$$</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span><span class=lnt>34
-</span><span class=lnt>35
-</span><span class=lnt>36
-</span><span class=lnt>37
-</span><span class=lnt>38
-</span><span class=lnt>39
-</span><span class=lnt>40
-</span><span class=lnt>41
-</span><span class=lnt>42
-</span><span class=lnt>43
-</span><span class=lnt>44
-</span><span class=lnt>45
-</span><span class=lnt>46
-</span><span class=lnt>47
-</span><span class=lnt>48
-</span><span class=lnt>49
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;openssl/bn.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp></span>
-</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>printBN</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>msg</span><span class=p>,</span> <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>a</span><span class=p>){</span><span class=c1>//输出大数
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=cm>/*Use BN_bn2hex(a) for hex string
-</span></span></span><span class=line><span class=cl><span class=cm>	 *Use BN_bn2dec(a) for decimal string*/</span>
-</span></span><span class=line><span class=cl>	<span class=kt>char</span> <span class=o>*</span><span class=n>number_str</span> <span class=o>=</span> <span class=n>BN_bn2hex</span><span class=p>(</span><span class=n>a</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>printf</span><span class=p>(</span><span class=s>&#34;%s %s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>msg</span><span class=p>,</span> <span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>OPENSSL_free</span><span class=p>(</span><span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span> <span class=p>(){</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_CTX</span> <span class=o>*</span><span class=n>ctx</span> <span class=o>=</span> <span class=n>BN_CTX_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>n</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>e</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>d</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>m</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>ciphertext</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>	<span class=c1>//BIGNUM *plaintext = BN_new();
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>//16进制字符串转换成大数BN
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>n</span><span class=p>,</span> <span class=s>&#34;DCBFFE3E51F62E09CE7032E2677A78946A849DC4CDDE3A4D0CB81629242FB1A5&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>e</span><span class=p>,</span> <span class=s>&#34;010001&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>d</span><span class=p>,</span> <span class=s>&#34;74D806F9F3A62BAE331FFE3F0A68AFE35B3D2E4794148AACBC26AA381CD7D30D&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>m</span><span class=p>,</span> <span class=s>&#34;4120746f702073656372657421&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_mod_exp</span><span class=p>(</span><span class=n>ciphertext</span><span class=p>,</span><span class=n>m</span><span class=p>,</span><span class=n>e</span><span class=p>,</span><span class=n>n</span><span class=p>,</span><span class=n>ctx</span><span class=p>);</span><span class=c1>//加密，密文=明文的e次方 mod n
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>printBN</span><span class=p>(</span><span class=s>&#34;ciphertext = &#34;</span><span class=p>,</span><span class=n>ciphertext</span><span class=p>);</span><span class=c1>//输出密文
-</span></span></span><span class=line><span class=cl><span class=c1></span>
-</span></span><span class=line><span class=cl>  <span class=cm>/*
-</span></span></span><span class=line><span class=cl><span class=cm>  //解密部分
-</span></span></span><span class=line><span class=cl><span class=cm>	BN_mod_exp(plaintext,ciphertext,d,n,ctx);//解密，明文=密文的d次方 mod n
-</span></span></span><span class=line><span class=cl><span class=cm>	printBN(&#34;plaintext =&#34;,plaintext);//输出解密出的明文
-</span></span></span><span class=line><span class=cl><span class=cm>	if (!BN_cmp(m,plaintext)){//验证比较解密出的明文和原消息的一致性
-</span></span></span><span class=line><span class=cl><span class=cm>		printf(&#34;Successful Verification!\n&#34;);	
-</span></span></span><span class=line><span class=cl><span class=cm>	}else{
-</span></span></span><span class=line><span class=cl><span class=cm>		printf(&#34;Verification Failed.\n&#34;);
-</span></span></span><span class=line><span class=cl><span class=cm>	}
-</span></span></span><span class=line><span class=cl><span class=cm>	*/</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>n</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>e</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>d</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>m</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>ciphertext</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>	<span class=c1>//BN_clear_free(plaintext);
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div></li><li><p>编译运行：</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129091857888.png data-srcset="/images/image-20230129091857888.png, /images/image-20230129091857888.png 1.5x, /images/image-20230129091857888.png 2x" data-sizes=auto alt=image-20230129091857888 title=image-20230129091857888 width=1247 height=79></p><p>加密结果为：6FB078DA550B2650832661E14F4F8D2CFAEF475A0DF3A75CACDC5DE5CFC5FADC</p></li><li><p>利用d验证加密结果</p><p>解密过程：
+$$</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;openssl/bn.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">printBN</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">a</span><span class="p">){</span><span class="c1">//输出大数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="cm">/*Use BN_bn2hex(a) for hex string
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 *Use BN_bn2dec(a) for decimal string*/</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="o">*</span><span class="n">number_str</span> <span class="o">=</span> <span class="n">BN_bn2hex</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">OPENSSL_free</span><span class="p">(</span><span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span> <span class="p">(){</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_CTX</span> <span class="o">*</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">BN_CTX_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">n</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">e</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">d</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">m</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">ciphertext</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">//BIGNUM *plaintext = BN_new();
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">//16进制字符串转换成大数BN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">n</span><span class="p">,</span> <span class="s">&#34;DCBFFE3E51F62E09CE7032E2677A78946A849DC4CDDE3A4D0CB81629242FB1A5&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e</span><span class="p">,</span> <span class="s">&#34;010001&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d</span><span class="p">,</span> <span class="s">&#34;74D806F9F3A62BAE331FFE3F0A68AFE35B3D2E4794148AACBC26AA381CD7D30D&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">,</span> <span class="s">&#34;4120746f702073656372657421&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_mod_exp</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">ctx</span><span class="p">);</span><span class="c1">//加密，密文=明文的e次方 mod n
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">printBN</span><span class="p">(</span><span class="s">&#34;ciphertext = &#34;</span><span class="p">,</span><span class="n">ciphertext</span><span class="p">);</span><span class="c1">//输出密文
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">  //解密部分
+</span></span></span><span class="line"><span class="cl"><span class="cm">	BN_mod_exp(plaintext,ciphertext,d,n,ctx);//解密，明文=密文的d次方 mod n
+</span></span></span><span class="line"><span class="cl"><span class="cm">	printBN(&#34;plaintext =&#34;,plaintext);//输出解密出的明文
+</span></span></span><span class="line"><span class="cl"><span class="cm">	if (!BN_cmp(m,plaintext)){//验证比较解密出的明文和原消息的一致性
+</span></span></span><span class="line"><span class="cl"><span class="cm">		printf(&#34;Successful Verification!\n&#34;);	
+</span></span></span><span class="line"><span class="cl"><span class="cm">	}else{
+</span></span></span><span class="line"><span class="cl"><span class="cm">		printf(&#34;Verification Failed.\n&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="cm">	}
+</span></span></span><span class="line"><span class="cl"><span class="cm">	*/</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">//BN_clear_free(plaintext);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>编译运行：</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129091857888.png"
+    data-srcset="/images/image-20230129091857888.png, /images/image-20230129091857888.png 1.5x, /images/image-20230129091857888.png 2x"
+    data-sizes="auto"
+    alt="image-20230129091857888"
+    title="image-20230129091857888" width="1247" height="79"/></p>
+<p>加密结果为：6FB078DA550B2650832661E14F4F8D2CFAEF475A0DF3A75CACDC5DE5CFC5FADC</p>
+</li>
+<li>
+<p>利用d验证加密结果</p>
+<p>解密过程：
 $$
 plaintext = ciphertext^D \mod N
 $$
-代码为上述解密部分，编译运行结果如下：</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129093112360.png data-srcset="/images/image-20230129093112360.png, /images/image-20230129093112360.png 1.5x, /images/image-20230129093112360.png 2x" data-sizes=auto alt=image-20230129093112360 title=image-20230129093112360 width=1228 height=102></p><p>可以发现解密出来的16进制明文字符串和原先第一步中所转换的是一致的，即验证通过！</p></li></ol><h2 id=task-3-decrypting-a-message>Task 3: Decrypting a Message</h2><p>The public/private keys used in this task are the same as the ones used in Task 2. Please decrypt the following ciphertext C, and convert it back to a plain ASCII string.</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>C = 8C0F971DF2F3672B28811407E2DABBE1DA0FEBBBDFC7DCB67396567EA1E2493F
-</span></span></code></pre></td></tr></table></div></div><p>思路同任务2中解密过程，代码如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;openssl/bn.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp></span>
-</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>printBN</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>msg</span><span class=p>,</span> <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>a</span><span class=p>){</span><span class=c1>//输出大数
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=cm>/*Use BN_bn2hex(a) for hex string
-</span></span></span><span class=line><span class=cl><span class=cm>	 *Use BN_bn2dec(a) for decimal string*/</span>
-</span></span><span class=line><span class=cl>	<span class=kt>char</span> <span class=o>*</span><span class=n>number_str</span> <span class=o>=</span> <span class=n>BN_bn2hex</span><span class=p>(</span><span class=n>a</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>printf</span><span class=p>(</span><span class=s>&#34;%s(Hex)=%s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>msg</span><span class=p>,</span> <span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>OPENSSL_free</span><span class=p>(</span><span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span> <span class=p>(){</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_CTX</span> <span class=o>*</span><span class=n>ctx</span> <span class=o>=</span> <span class=n>BN_CTX_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>n</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>e</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>d</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>ciphertext</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>plaintext</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>  <span class=c1>//16进制字符串转换成大数BN
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>n</span><span class=p>,</span> <span class=s>&#34;DCBFFE3E51F62E09CE7032E2677A78946A849DC4CDDE3A4D0CB81629242FB1A5&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>e</span><span class=p>,</span> <span class=s>&#34;010001&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>d</span><span class=p>,</span> <span class=s>&#34;74D806F9F3A62BAE331FFE3F0A68AFE35B3D2E4794148AACBC26AA381CD7D30D&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>ciphertext</span><span class=p>,</span> <span class=s>&#34;8C0F971DF2F3672B28811407E2DABBE1DA0FEBBBDFC7DCB67396567EA1E2493F&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_mod_exp</span><span class=p>(</span><span class=n>plaintext</span><span class=p>,</span><span class=n>ciphertext</span><span class=p>,</span><span class=n>d</span><span class=p>,</span><span class=n>n</span><span class=p>,</span><span class=n>ctx</span><span class=p>);</span><span class=c1>//解密，明文=密文的d次方 mod n
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>printBN</span><span class=p>(</span><span class=s>&#34;plaintext&#34;</span><span class=p>,</span><span class=n>plaintext</span><span class=p>);</span><span class=c1>//输出解密后的明文(16进制)
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>n</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>e</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>d</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>ciphertext</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>plaintext</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>编译运行：</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129094858925.png data-srcset="/images/image-20230129094858925.png, /images/image-20230129094858925.png 1.5x, /images/image-20230129094858925.png 2x" data-sizes=auto alt=image-20230129094858925 title=image-20230129094858925 width=1264 height=76></p><p>明文16进制字符串：50617373776F72642069732064656573</p><p>16进制字符串转ASCII明文字符串：<code>python3 -c 'print(bytes.fromhex("50617373776F72642069732064656573").decode("ascii"))'</code></p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129100510030.png data-srcset="/images/image-20230129100510030.png, /images/image-20230129100510030.png 1.5x, /images/image-20230129100510030.png 2x" data-sizes=auto alt=image-20230129100510030 title=image-20230129100510030 width=1376 height=79></p><p>消息解密结果：Password is dees</p><h2 id=task-4-signing-a-message>Task 4: Signing a Message</h2><p>The public/private keys used in this task are the same as the ones used in Task 2. Please generate a signature for the following message (please directly sign this message, instead of signing its hash value):</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>M = I owe you $2000.
-</span></span></code></pre></td></tr></table></div></div><p><strong>用私钥对消息进行签名：</strong></p><ol><li><p>将消息转换成16进制字符串</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129140528051.png data-srcset="/images/image-20230129140528051.png, /images/image-20230129140528051.png 1.5x, /images/image-20230129140528051.png 2x" data-sizes=auto alt=image-20230129140528051 title=image-20230129140528051 width=1299 height=52></p></li><li><p>利用如下代码签名：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;openssl/bn.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp></span>
-</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>printBN</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>msg</span><span class=p>,</span> <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>a</span><span class=p>){</span><span class=c1>//输出大数
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=cm>/*Use BN_bn2hex(a) for hex string
-</span></span></span><span class=line><span class=cl><span class=cm>	 *Use BN_bn2dec(a) for decimal string*/</span>
-</span></span><span class=line><span class=cl>	<span class=kt>char</span> <span class=o>*</span><span class=n>number_str</span> <span class=o>=</span> <span class=n>BN_bn2hex</span><span class=p>(</span><span class=n>a</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>printf</span><span class=p>(</span><span class=s>&#34;%s(Hex)=%s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>msg</span><span class=p>,</span> <span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>OPENSSL_free</span><span class=p>(</span><span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span> <span class=p>(){</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_CTX</span> <span class=o>*</span><span class=n>ctx</span> <span class=o>=</span> <span class=n>BN_CTX_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>n</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>e</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>d</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>signature</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>plaintext</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>  <span class=c1>//16进制字符串转换成大数BN，Initialize BN
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>n</span><span class=p>,</span> <span class=s>&#34;DCBFFE3E51F62E09CE7032E2677A78946A849DC4CDDE3A4D0CB81629242FB1A5&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>e</span><span class=p>,</span> <span class=s>&#34;010001&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>d</span><span class=p>,</span> <span class=s>&#34;74D806F9F3A62BAE331FFE3F0A68AFE35B3D2E4794148AACBC26AA381CD7D30D&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>plaintext</span><span class=p>,</span> <span class=s>&#34;49206f776520796f752024323030302e&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_mod_exp</span><span class=p>(</span><span class=n>signature</span><span class=p>,</span><span class=n>plaintext</span><span class=p>,</span><span class=n>d</span><span class=p>,</span><span class=n>n</span><span class=p>,</span><span class=n>ctx</span><span class=p>);</span><span class=c1>//签名，用私钥对消息进行加密，signature=plaintext的d次方 mod n
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>printBN</span><span class=p>(</span><span class=s>&#34;signature&#34;</span><span class=p>,</span><span class=n>signature</span><span class=p>);</span><span class=c1>//输出数字签名
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>n</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>e</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>d</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>signature</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>plaintext</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div></li><li><p>编译运行</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129140951702.png data-srcset="/images/image-20230129140951702.png, /images/image-20230129140951702.png 1.5x, /images/image-20230129140951702.png 2x" data-sizes=auto alt=image-20230129140951702 title=image-20230129140951702 width=1106 height=77></p><p>该消息的数字签名为：55A4E7F17F04CCFE2766E1EB32ADDBA890BBE92A6FBE2D785ED6E73CCB35E4CB</p></li><li><p>修改消息，$2000 => $3000，重新重复上述步骤进行签名，结果如下：</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129141334414.png data-srcset="/images/image-20230129141334414.png, /images/image-20230129141334414.png 1.5x, /images/image-20230129141334414.png 2x" data-sizes=auto alt=image-20230129141334414 title=image-20230129141334414 width=1281 height=132></p><p>该消息的数字签名为：BCC20FB7568E5D48E434C387C06A6025E90D29D848AF9C3EBAC0135D99305822</p><p>比较2个数字签名可以发现：虽然只对消息做了slight change且密钥对相同，但是签名出来的结果(密文)是完全不一样的！</p></li></ol><h2 id=task-5-verifying-a-signature>Task 5: Verifying a Signature</h2><p>Bob receives a message M = &ldquo;Launch a missile.&rdquo; from Alice, with her signature S. We know that Alice’s public key is (e, n). Please verify whether the signature is indeed Alice’s or not. The public key and signature (hexadecimal) are listed in the following:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>M = Launch a missile.
-</span></span><span class=line><span class=cl>S = 643D6F34902D9C7EC90CB0B2BCA36C47FA37165C0005CAB026C0542CBDB6802F
-</span></span><span class=line><span class=cl>e = 010001 (this hex value equals to decimal 65537)
-</span></span><span class=line><span class=cl>n = AE1CD4DC432798D933779FBD46C6E1247F0CF1233595113AA51B450F18116115
-</span></span></code></pre></td></tr></table></div></div><ol><li><p>将消息转换成16进制字符串</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129144917717.png data-srcset="/images/image-20230129144917717.png, /images/image-20230129144917717.png 1.5x, /images/image-20230129144917717.png 2x" data-sizes=auto alt=image-20230129144917717 title=image-20230129144917717 width=1281 height=55></p></li><li><p>利用如下C代码进行签名验证，公钥验证：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span><span class=lnt>34
-</span><span class=lnt>35
-</span><span class=lnt>36
-</span><span class=lnt>37
-</span><span class=lnt>38
-</span><span class=lnt>39
-</span><span class=lnt>40
-</span><span class=lnt>41
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;openssl/bn.h&gt;</span><span class=cp>
-</span></span></span><span class=line><span class=cl><span class=cp></span>
-</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>printBN</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>msg</span><span class=p>,</span> <span class=n>BIGNUM</span> <span class=o>*</span><span class=n>a</span><span class=p>){</span><span class=c1>//输出大数
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=cm>/*Use BN_bn2hex(a) for hex string
-</span></span></span><span class=line><span class=cl><span class=cm>	 *Use BN_bn2dec(a) for decimal string*/</span>
-</span></span><span class=line><span class=cl>	<span class=kt>char</span> <span class=o>*</span><span class=n>number_str</span> <span class=o>=</span> <span class=n>BN_bn2hex</span><span class=p>(</span><span class=n>a</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>printf</span><span class=p>(</span><span class=s>&#34;%s(Hex)=%s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>msg</span><span class=p>,</span> <span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>OPENSSL_free</span><span class=p>(</span><span class=n>number_str</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span> <span class=p>(){</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_CTX</span> <span class=o>*</span><span class=n>ctx</span> <span class=o>=</span> <span class=n>BN_CTX_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>n</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>e</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>m</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>signature</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>	<span class=n>BIGNUM</span> <span class=o>*</span><span class=n>verification</span> <span class=o>=</span> <span class=n>BN_new</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>  <span class=c1>//16进制字符串转换成大数BN，Initialize BN
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>n</span><span class=p>,</span> <span class=s>&#34;AE1CD4DC432798D933779FBD46C6E1247F0CF1233595113AA51B450F18116115&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>e</span><span class=p>,</span> <span class=s>&#34;010001&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>m</span><span class=p>,</span> <span class=s>&#34;4c61756e63682061206d697373696c652e&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_hex2bn</span><span class=p>(</span><span class=o>&amp;</span><span class=n>signature</span><span class=p>,</span> <span class=s>&#34;643D6F34902D9C7EC90CB0B2BCA36C47FA37165C0005CAB026C0542CBDB6802F&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>	<span class=n>BN_mod_exp</span><span class=p>(</span><span class=n>verification</span><span class=p>,</span><span class=n>signature</span><span class=p>,</span><span class=n>e</span><span class=p>,</span><span class=n>n</span><span class=p>,</span><span class=n>ctx</span><span class=p>);</span><span class=c1>//验证签名，用公钥验证(解密)签名，verification=signature的e次方 mod n
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=n>printBN</span><span class=p>(</span><span class=s>&#34;verification&#34;</span><span class=p>,</span><span class=n>verification</span><span class=p>);</span><span class=c1>//输出验证后的消息verification
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>//验证签名的正确性
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=k>if</span><span class=p>(</span><span class=o>!</span><span class=n>BN_cmp</span><span class=p>(</span><span class=n>m</span><span class=p>,</span><span class=n>verification</span><span class=p>)){</span><span class=c1>//比较verification和直接发送的消息m，如果两者一致则签名验证成功
-</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=n>printf</span><span class=p>(</span><span class=s>&#34;Successful Verification!</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=p>}</span><span class=k>else</span><span class=p>{</span>
-</span></span><span class=line><span class=cl>		<span class=n>printf</span><span class=p>(</span><span class=s>&#34;Verification Failed.</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>n</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>e</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>m</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>signature</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=n>BN_clear_free</span><span class=p>(</span><span class=n>verification</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div></li><li><p>编译运行：</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129145711959.png data-srcset="/images/image-20230129145711959.png, /images/image-20230129145711959.png 1.5x, /images/image-20230129145711959.png 2x" data-sizes=auto alt=image-20230129145711959 title=image-20230129145711959 width=1281 height=104></p><p>通过公钥验证(解密)签名和直接发送的消息M进行比较可以发现二者是一致的，签名验证成功！</p></li></ol><p>Suppose that the signature above is corrupted, such that the last byte of the signature changes from 2F to 3F, i.e, there is only one bit of change. Please repeat this task, and describe what will happen to the verification process.</p><p>代码在signature处略作修改重复上述过程，验证签名：
-<img class=lazyload src=/svg/loading.min.svg data-src=/images/image-20230129150407483.png data-srcset="/images/image-20230129150407483.png, /images/image-20230129150407483.png 1.5x, /images/image-20230129150407483.png 2x" data-sizes=auto alt=image-20230129150407483 title=image-20230129150407483 width=1281 height=104></p><p>可以发现签名仅发生了一个bit的改变，签名的验证则不会通过，公钥验证出来的结果和正确结果是天差地别的，一致性不满足，不是正确的签名。</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span title="2023-01-29 10:00:15">更新于 2023-01-29&nbsp;</span></div><div class=post-info-license><span><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fa-solid fa-tags fa-fw me-1" aria-hidden=true></i><a href=/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E6%94%BB%E9%98%B2%E5%AE%9E%E9%AA%8C/ class=post-tag>网络安全攻防实验</a><a href=/tags/cryptography/ class=post-tag>Cryptography</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/secret-key-encryption/ class=post-nav-item rel=prev title=对称加密实验><i class="fa-solid fa-angle-left fa-fw" aria-hidden=true></i>对称加密实验</a>
-<a href=/posts/firewall-exploration-lab/ class=post-nav-item rel=next title=Linux防火墙实验>Linux防火墙实验<i class="fa-solid fa-angle-right fa-fw" aria-hidden=true></i></a></div></div></article></main><footer class=footer><div class=footer-container><div class="footer-line copyright" itemscope itemtype=http://schema.org/CreativeWork><i class="fa-regular fa-copyright fa-fw" aria-hidden=true></i>
-<span itemprop=copyrightYear>2022 - 2023</span><span class=author itemprop=copyrightHolder>
-<a href=https://github.com/LaneGong target=_blank rel="external nofollow noopener noreferrer">Lane Gong</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div><div class="footer-line statistics"><span class=site-time title="网站运行中 ..."><i class="fa-solid fa-heartbeat fa-fw animate-icon" aria-hidden=true></i>&nbsp;<span class=run-times>网站运行中 ...</span></span></div><div class="footer-line ibruce"><span id=busuanzi_container_site_uv title=总访客数><i class="fa-regular fa-user fa-fw" aria-hidden=true></i>&nbsp;<span id=busuanzi_value_site_uv><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden=true></i></span></span><span id=busuanzi_container_site_pv class=footer-divider title=总访问量><i class="fa-regular fa-eye fa-fw" aria-hidden=true></i>&nbsp;<span id=busuanzi_value_site_pv><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden=true></i></span></span></div><div class="footer-line beian"><span class="icp footer-divider"><a href=https://beian.miit.gov.cn/ target=_blank>沪ICP备2022033527号-1</a></span></div></div></footer></div><div class=widgets><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role=button aria-label=回到顶部><i class="fa-solid fa-arrow-up fa-fw" aria-hidden=true></i><span class=variant-numeric>0%</span></div></div><div id=mask></div><div class=reading-progress-bar style=left:0;top:0></div><noscript><div class=noscript-warning>FixIt 主题在启用 JavaScript 的情况下效果最佳。</div></noscript></div><link rel=stylesheet href=/lib/katex/katex.min.css><link rel=stylesheet href=/lib/cookieconsent/cookieconsent.min.css><script src=/lib/autocomplete/autocomplete.min.js defer></script><script src=/lib/algoliasearch/algoliasearch-lite.umd.min.js defer></script><script src=/lib/lazysizes/lazysizes.min.js async defer></script><script src=/lib/katex/katex.min.js defer></script><script src=/lib/katex/auto-render.min.js defer></script><script src=/lib/katex/copy-tex.min.js defer></script><script src=/lib/katex/mhchem.min.js defer></script><script src=/lib/cookieconsent/cookieconsent.min.js defer></script><script src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async defer></script><script>window.config={code:{copyTitle:"复制到剪贴板",editLockTitle:"锁定可编辑代码块",editUnLockTitle:"解锁可编辑代码块",editable:!0,maxShownLines:10},comment:{enable:!1},cookieconsent:{content:{dismiss:"同意",link:"了解更多",message:"本网站使用 Cookies 来改善您的浏览体验。"},enable:!0,palette:{button:{background:"#f0f0f0"},popup:{background:"#1aa3ff"}},theme:"edgeless"},math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!0,left:"\\begin{equation}",right:"\\end{equation}"},{display:!0,left:"\\begin{equation*}",right:"\\end{equation*}"},{display:!0,left:"\\begin{align}",right:"\\end{align}"},{display:!0,left:"\\begin{align*}",right:"\\end{align*}"},{display:!0,left:"\\begin{alignat}",right:"\\end{alignat}"},{display:!0,left:"\\begin{alignat*}",right:"\\end{alignat*}"},{display:!0,left:"\\begin{gather}",right:"\\end{gather}"},{display:!0,left:"\\begin{CD}",right:"\\end{CD}"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{algoliaAppID:"",algoliaIndex:"",algoliaSearchKey:"",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:30,type:"algolia"},siteTime:"2022-11-23T15:00:00+08:00"}</script><script src=/js/theme.min.js defer></script></body></html>
+代码为上述解密部分，编译运行结果如下：</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129093112360.png"
+    data-srcset="/images/image-20230129093112360.png, /images/image-20230129093112360.png 1.5x, /images/image-20230129093112360.png 2x"
+    data-sizes="auto"
+    alt="image-20230129093112360"
+    title="image-20230129093112360" width="1228" height="102"/></p>
+<p>可以发现解密出来的16进制明文字符串和原先第一步中所转换的是一致的，即验证通过！</p>
+</li>
+</ol>
+<h2 id="task-3-decrypting-a-message">Task 3: Decrypting a Message</h2>
+<p>The public/private keys used in this task are the same as the ones used in Task 2. Please decrypt the following ciphertext C, and convert it back to a plain ASCII string.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">C = 8C0F971DF2F3672B28811407E2DABBE1DA0FEBBBDFC7DCB67396567EA1E2493F
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>思路同任务2中解密过程，代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;openssl/bn.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">printBN</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">a</span><span class="p">){</span><span class="c1">//输出大数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="cm">/*Use BN_bn2hex(a) for hex string
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 *Use BN_bn2dec(a) for decimal string*/</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="o">*</span><span class="n">number_str</span> <span class="o">=</span> <span class="n">BN_bn2hex</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s(Hex)=%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">OPENSSL_free</span><span class="p">(</span><span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span> <span class="p">(){</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_CTX</span> <span class="o">*</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">BN_CTX_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">n</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">e</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">d</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">ciphertext</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">plaintext</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">//16进制字符串转换成大数BN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">n</span><span class="p">,</span> <span class="s">&#34;DCBFFE3E51F62E09CE7032E2677A78946A849DC4CDDE3A4D0CB81629242FB1A5&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e</span><span class="p">,</span> <span class="s">&#34;010001&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d</span><span class="p">,</span> <span class="s">&#34;74D806F9F3A62BAE331FFE3F0A68AFE35B3D2E4794148AACBC26AA381CD7D30D&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ciphertext</span><span class="p">,</span> <span class="s">&#34;8C0F971DF2F3672B28811407E2DABBE1DA0FEBBBDFC7DCB67396567EA1E2493F&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_mod_exp</span><span class="p">(</span><span class="n">plaintext</span><span class="p">,</span><span class="n">ciphertext</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">ctx</span><span class="p">);</span><span class="c1">//解密，明文=密文的d次方 mod n
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">printBN</span><span class="p">(</span><span class="s">&#34;plaintext&#34;</span><span class="p">,</span><span class="n">plaintext</span><span class="p">);</span><span class="c1">//输出解密后的明文(16进制)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">plaintext</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>编译运行：</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129094858925.png"
+    data-srcset="/images/image-20230129094858925.png, /images/image-20230129094858925.png 1.5x, /images/image-20230129094858925.png 2x"
+    data-sizes="auto"
+    alt="image-20230129094858925"
+    title="image-20230129094858925" width="1264" height="76"/></p>
+<p>明文16进制字符串：50617373776F72642069732064656573</p>
+<p>16进制字符串转ASCII明文字符串：<code>python3 -c 'print(bytes.fromhex(&quot;50617373776F72642069732064656573&quot;).decode(&quot;ascii&quot;))'</code></p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129100510030.png"
+    data-srcset="/images/image-20230129100510030.png, /images/image-20230129100510030.png 1.5x, /images/image-20230129100510030.png 2x"
+    data-sizes="auto"
+    alt="image-20230129100510030"
+    title="image-20230129100510030" width="1376" height="79"/></p>
+<p>消息解密结果：Password is dees</p>
+<h2 id="task-4-signing-a-message">Task 4: Signing a Message</h2>
+<p>The public/private keys used in this task are the same as the ones used in Task 2. Please generate a signature for the following message (please directly sign this message, instead of signing its hash value):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">M = I owe you $2000.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>用私钥对消息进行签名：</strong></p>
+<ol>
+<li>
+<p>将消息转换成16进制字符串</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129140528051.png"
+    data-srcset="/images/image-20230129140528051.png, /images/image-20230129140528051.png 1.5x, /images/image-20230129140528051.png 2x"
+    data-sizes="auto"
+    alt="image-20230129140528051"
+    title="image-20230129140528051" width="1299" height="52"/></p>
+</li>
+<li>
+<p>利用如下代码签名：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;openssl/bn.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">printBN</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">a</span><span class="p">){</span><span class="c1">//输出大数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="cm">/*Use BN_bn2hex(a) for hex string
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 *Use BN_bn2dec(a) for decimal string*/</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="o">*</span><span class="n">number_str</span> <span class="o">=</span> <span class="n">BN_bn2hex</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s(Hex)=%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">OPENSSL_free</span><span class="p">(</span><span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span> <span class="p">(){</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_CTX</span> <span class="o">*</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">BN_CTX_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">n</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">e</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">d</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">signature</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">plaintext</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">//16进制字符串转换成大数BN，Initialize BN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">n</span><span class="p">,</span> <span class="s">&#34;DCBFFE3E51F62E09CE7032E2677A78946A849DC4CDDE3A4D0CB81629242FB1A5&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e</span><span class="p">,</span> <span class="s">&#34;010001&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d</span><span class="p">,</span> <span class="s">&#34;74D806F9F3A62BAE331FFE3F0A68AFE35B3D2E4794148AACBC26AA381CD7D30D&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">plaintext</span><span class="p">,</span> <span class="s">&#34;49206f776520796f752024323030302e&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_mod_exp</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span><span class="n">plaintext</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">ctx</span><span class="p">);</span><span class="c1">//签名，用私钥对消息进行加密，signature=plaintext的d次方 mod n
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">printBN</span><span class="p">(</span><span class="s">&#34;signature&#34;</span><span class="p">,</span><span class="n">signature</span><span class="p">);</span><span class="c1">//输出数字签名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">signature</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">plaintext</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>编译运行</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129140951702.png"
+    data-srcset="/images/image-20230129140951702.png, /images/image-20230129140951702.png 1.5x, /images/image-20230129140951702.png 2x"
+    data-sizes="auto"
+    alt="image-20230129140951702"
+    title="image-20230129140951702" width="1106" height="77"/></p>
+<p>该消息的数字签名为：55A4E7F17F04CCFE2766E1EB32ADDBA890BBE92A6FBE2D785ED6E73CCB35E4CB</p>
+</li>
+<li>
+<p>修改消息，$2000 =&gt; $3000，重新重复上述步骤进行签名，结果如下：</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129141334414.png"
+    data-srcset="/images/image-20230129141334414.png, /images/image-20230129141334414.png 1.5x, /images/image-20230129141334414.png 2x"
+    data-sizes="auto"
+    alt="image-20230129141334414"
+    title="image-20230129141334414" width="1281" height="132"/></p>
+<p>该消息的数字签名为：BCC20FB7568E5D48E434C387C06A6025E90D29D848AF9C3EBAC0135D99305822</p>
+<p>比较2个数字签名可以发现：虽然只对消息做了slight change且密钥对相同，但是签名出来的结果(密文)是完全不一样的！</p>
+</li>
+</ol>
+<h2 id="task-5-verifying-a-signature">Task 5: Verifying a Signature</h2>
+<p>Bob receives a message M = &ldquo;Launch a missile.&rdquo; from Alice, with her signature S. We know that Alice’s public key is (e, n). Please verify whether the signature is indeed Alice’s or not. The public key and signature (hexadecimal) are listed in the following:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">M = Launch a missile.
+</span></span><span class="line"><span class="cl">S = 643D6F34902D9C7EC90CB0B2BCA36C47FA37165C0005CAB026C0542CBDB6802F
+</span></span><span class="line"><span class="cl">e = 010001 (this hex value equals to decimal 65537)
+</span></span><span class="line"><span class="cl">n = AE1CD4DC432798D933779FBD46C6E1247F0CF1233595113AA51B450F18116115
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>
+<p>将消息转换成16进制字符串</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129144917717.png"
+    data-srcset="/images/image-20230129144917717.png, /images/image-20230129144917717.png 1.5x, /images/image-20230129144917717.png 2x"
+    data-sizes="auto"
+    alt="image-20230129144917717"
+    title="image-20230129144917717" width="1281" height="55"/></p>
+</li>
+<li>
+<p>利用如下C代码进行签名验证，公钥验证：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;openssl/bn.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">printBN</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">BIGNUM</span> <span class="o">*</span><span class="n">a</span><span class="p">){</span><span class="c1">//输出大数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="cm">/*Use BN_bn2hex(a) for hex string
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 *Use BN_bn2dec(a) for decimal string*/</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="o">*</span><span class="n">number_str</span> <span class="o">=</span> <span class="n">BN_bn2hex</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s(Hex)=%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">OPENSSL_free</span><span class="p">(</span><span class="n">number_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span> <span class="p">(){</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_CTX</span> <span class="o">*</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">BN_CTX_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">n</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">e</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">m</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">signature</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BIGNUM</span> <span class="o">*</span><span class="n">verification</span> <span class="o">=</span> <span class="n">BN_new</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">//16进制字符串转换成大数BN，Initialize BN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">n</span><span class="p">,</span> <span class="s">&#34;AE1CD4DC432798D933779FBD46C6E1247F0CF1233595113AA51B450F18116115&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e</span><span class="p">,</span> <span class="s">&#34;010001&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">,</span> <span class="s">&#34;4c61756e63682061206d697373696c652e&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_hex2bn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">signature</span><span class="p">,</span> <span class="s">&#34;643D6F34902D9C7EC90CB0B2BCA36C47FA37165C0005CAB026C0542CBDB6802F&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">BN_mod_exp</span><span class="p">(</span><span class="n">verification</span><span class="p">,</span><span class="n">signature</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">ctx</span><span class="p">);</span><span class="c1">//验证签名，用公钥验证(解密)签名，verification=signature的e次方 mod n
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">printBN</span><span class="p">(</span><span class="s">&#34;verification&#34;</span><span class="p">,</span><span class="n">verification</span><span class="p">);</span><span class="c1">//输出验证后的消息verification
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">//验证签名的正确性
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">BN_cmp</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">verification</span><span class="p">)){</span><span class="c1">//比较verification和直接发送的消息m，如果两者一致则签名验证成功
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;Successful Verification!</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;Verification Failed.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">signature</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">BN_clear_free</span><span class="p">(</span><span class="n">verification</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>编译运行：</p>
+<p><img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129145711959.png"
+    data-srcset="/images/image-20230129145711959.png, /images/image-20230129145711959.png 1.5x, /images/image-20230129145711959.png 2x"
+    data-sizes="auto"
+    alt="image-20230129145711959"
+    title="image-20230129145711959" width="1281" height="104"/></p>
+<p>通过公钥验证(解密)签名和直接发送的消息M进行比较可以发现二者是一致的，签名验证成功！</p>
+</li>
+</ol>
+<p>Suppose that the signature above is corrupted, such that the last byte of the signature changes from 2F to 3F, i.e, there is only one bit of change. Please repeat this task, and describe what will happen to the verification process.</p>
+<p>代码在signature处略作修改重复上述过程，验证签名：
+<img
+    class="lazyload"
+    src="/svg/loading.min.svg"
+    data-src="/images/image-20230129150407483.png"
+    data-srcset="/images/image-20230129150407483.png, /images/image-20230129150407483.png 1.5x, /images/image-20230129150407483.png 2x"
+    data-sizes="auto"
+    alt="image-20230129150407483"
+    title="image-20230129150407483" width="1281" height="104"/></p>
+<p>可以发现签名仅发生了一个bit的改变，签名的验证则不会通过，公钥验证出来的结果和正确结果是天差地别的，一致性不满足，不是正确的签名。</p></div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title=2023-01-29&#32;10:00:15>更新于 2023-01-29&nbsp;</span>
+      </div><div class="post-info-license">
+          <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span>
+        </div></div>
+    <div class="post-info-line">
+      <div class="post-info-md"></div>
+      <div class="post-info-share">
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E6%94%BB%E9%98%B2%E5%AE%9E%E9%AA%8C/' class="post-tag">网络安全攻防实验</a><a href='/tags/cryptography/' class="post-tag">Cryptography</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/posts/secret-key-encryption/" class="post-nav-item" rel="prev" title="对称加密实验"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>对称加密实验</a>
+      <a href="/posts/firewall-exploration-lab/" class="post-nav-item" rel="next" title="Linux防火墙实验">Linux防火墙实验<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2022 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="https://github.com/LaneGong"target="_blank" rel="external nofollow noopener noreferrer">Lane Gong</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div><div class="footer-line statistics"><span class="site-time" title='网站运行中 ...'><i class="fa-solid fa-heartbeat fa-fw animate-icon" aria-hidden="true"></i>&nbsp;<span class="run-times">网站运行中 ...</span></span></div><div class="footer-line ibruce">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/algoliasearch/algoliasearch-lite.umd.min.js" defer></script><script src="/lib/lazysizes/lazysizes.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script>window.config={"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":10},"comment":{"enable":false},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"algolia"},"siteTime":"2022-11-23T15:00:00+08:00"};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
