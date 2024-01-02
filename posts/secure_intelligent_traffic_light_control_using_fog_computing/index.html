@@ -10,23 +10,23 @@
 <meta name="description" content="【论文笔记】随着车辆数量的快速增加，安全、高效的通行效率成为关注的重点问题，一批智能交通系统也快速发展。本篇论文聚焦于车联网中交通信号灯的控制，提出了基于雾计算的两套安全智能交通信号灯控制机制，其安全性分别依托于计算Diffie-Hellman难题和哈希碰撞难题的困难程度，并进一步分析两种机制之间的性能表现。本篇论文重点关注车辆、交通信号灯、可信机构三者之间的认证安全性实现和通信效率、复杂度等，对于具体信号灯调度算法不做详细讨论。" /><meta name="keywords" content='ITS, Traffic light control, LBE, puzzle' /><meta itemprop="name" content="[2018|FGCS]Secure intelligent traffic light control using fog computing">
 <meta itemprop="description" content="【论文笔记】随着车辆数量的快速增加，安全、高效的通行效率成为关注的重点问题，一批智能交通系统也快速发展。本篇论文聚焦于车联网中交通信号灯的控制，提出了基于雾计算的两套安全智能交通信号灯控制机制，其安全性分别依托于计算Diffie-Hellman难题和哈希碰撞难题的困难程度，并进一步分析两种机制之间的性能表现。本篇论文重点关注车辆、交通信号灯、可信机构三者之间的认证安全性实现和通信效率、复杂度等，对于具体信号灯调度算法不做详细讨论。"><meta itemprop="datePublished" content="2023-07-17T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2023-07-17T00:00:00+00:00" />
-<meta itemprop="wordCount" content="4923"><meta itemprop="image" content="http://lanegong.top/logo.png"/>
+<meta itemprop="wordCount" content="4923"><meta itemprop="image" content="https://lanegong.github.io/logo.png"/>
 <meta itemprop="keywords" content="ITS,Traffic light control,LBE,puzzle," /><meta property="og:title" content="[2018|FGCS]Secure intelligent traffic light control using fog computing" />
 <meta property="og:description" content="【论文笔记】随着车辆数量的快速增加，安全、高效的通行效率成为关注的重点问题，一批智能交通系统也快速发展。本篇论文聚焦于车联网中交通信号灯的控制，提出了基于雾计算的两套安全智能交通信号灯控制机制，其安全性分别依托于计算Diffie-Hellman难题和哈希碰撞难题的困难程度，并进一步分析两种机制之间的性能表现。本篇论文重点关注车辆、交通信号灯、可信机构三者之间的认证安全性实现和通信效率、复杂度等，对于具体信号灯调度算法不做详细讨论。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://lanegong.top/posts/secure_intelligent_traffic_light_control_using_fog_computing/" /><meta property="og:image" content="http://lanegong.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://lanegong.github.io/posts/secure_intelligent_traffic_light_control_using_fog_computing/" /><meta property="og:image" content="https://lanegong.github.io/logo.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-07-17T00:00:00+00:00" />
 <meta property="article:modified_time" content="2023-07-17T00:00:00+00:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://lanegong.top/logo.png"/>
+<meta name="twitter:image" content="https://lanegong.github.io/logo.png"/>
 
 <meta name="twitter:title" content="[2018|FGCS]Secure intelligent traffic light control using fog computing"/>
 <meta name="twitter:description" content="【论文笔记】随着车辆数量的快速增加，安全、高效的通行效率成为关注的重点问题，一批智能交通系统也快速发展。本篇论文聚焦于车联网中交通信号灯的控制，提出了基于雾计算的两套安全智能交通信号灯控制机制，其安全性分别依托于计算Diffie-Hellman难题和哈希碰撞难题的困难程度，并进一步分析两种机制之间的性能表现。本篇论文重点关注车辆、交通信号灯、可信机构三者之间的认证安全性实现和通信效率、复杂度等，对于具体信号灯调度算法不做详细讨论。"/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://lanegong.top/posts/secure_intelligent_traffic_light_control_using_fog_computing/" /><link rel="prev" href="http://lanegong.top/posts/firewall-exploration-lab/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="https://lanegong.github.io/posts/secure_intelligent_traffic_light_control_using_fog_computing/" /><link rel="prev" href="https://lanegong.github.io/posts/firewall-exploration-lab/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
@@ -34,13 +34,13 @@
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "http:\/\/lanegong.top\/posts\/secure_intelligent_traffic_light_control_using_fog_computing\/"
+      "@id": "https:\/\/lanegong.github.io\/posts\/secure_intelligent_traffic_light_control_using_fog_computing\/"
     },"genre": "posts","keywords": "ITS, Traffic light control, LBE, puzzle","wordcount":  4923 ,
-    "url": "http:\/\/lanegong.top\/posts\/secure_intelligent_traffic_light_control_using_fog_computing\/","datePublished": "2023-07-17T00:00:00+00:00","dateModified": "2023-07-17T00:00:00+00:00","publisher": {
+    "url": "https:\/\/lanegong.github.io\/posts\/secure_intelligent_traffic_light_control_using_fog_computing\/","datePublished": "2023-07-17T00:00:00+00:00","dateModified": "2023-07-17T00:00:00+00:00","publisher": {
       "@type": "Organization",
       "name": "Lane","logo": {
           "@type": "ImageObject",
-          "url": "http:\/\/lanegong.top\/images\/avatar.jpeg",
+          "url": "https:\/\/lanegong.github.io\/images\/avatar.jpeg",
           "width":  690 ,
           "height":  684 
         }},"author": {

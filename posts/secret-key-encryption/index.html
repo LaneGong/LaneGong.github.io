@@ -10,23 +10,23 @@
 <meta name="description" content="SeedLab密码学对称加密实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！" /><meta name="keywords" content='网络安全攻防实验, Cryptography' /><meta itemprop="name" content="对称加密实验">
 <meta itemprop="description" content="SeedLab密码学对称加密实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！"><meta itemprop="datePublished" content="2022-12-30T10:00:15+08:00" />
 <meta itemprop="dateModified" content="2022-12-30T10:00:15+08:00" />
-<meta itemprop="wordCount" content="10861"><meta itemprop="image" content="http://lanegong.top/logo.png"/>
+<meta itemprop="wordCount" content="10861"><meta itemprop="image" content="https://lanegong.github.io/logo.png"/>
 <meta itemprop="keywords" content="网络安全攻防实验,Cryptography," /><meta property="og:title" content="对称加密实验" />
 <meta property="og:description" content="SeedLab密码学对称加密实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://lanegong.top/posts/secret-key-encryption/" /><meta property="og:image" content="http://lanegong.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://lanegong.github.io/posts/secret-key-encryption/" /><meta property="og:image" content="https://lanegong.github.io/logo.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-12-30T10:00:15+08:00" />
 <meta property="article:modified_time" content="2022-12-30T10:00:15+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://lanegong.top/logo.png"/>
+<meta name="twitter:image" content="https://lanegong.github.io/logo.png"/>
 
 <meta name="twitter:title" content="对称加密实验"/>
 <meta name="twitter:description" content="SeedLab密码学对称加密实验过程记录整理，还有待进一步补充，存疑之处欢迎指正和探讨！"/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="http://lanegong.top/posts/secret-key-encryption/" /><link rel="prev" href="http://lanegong.top/posts/tcp-ip-attack/" /><link rel="next" href="http://lanegong.top/posts/rsa-public-key-encryption-and-signature-lab/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="https://lanegong.github.io/posts/secret-key-encryption/" /><link rel="prev" href="https://lanegong.github.io/posts/tcp-ip-attack/" /><link rel="next" href="https://lanegong.github.io/posts/rsa-public-key-encryption-and-signature-lab/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
@@ -34,13 +34,13 @@
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "http:\/\/lanegong.top\/posts\/secret-key-encryption\/"
+      "@id": "https:\/\/lanegong.github.io\/posts\/secret-key-encryption\/"
     },"genre": "posts","keywords": "网络安全攻防实验, Cryptography","wordcount":  10861 ,
-    "url": "http:\/\/lanegong.top\/posts\/secret-key-encryption\/","datePublished": "2022-12-30T10:00:15+08:00","dateModified": "2022-12-30T10:00:15+08:00","publisher": {
+    "url": "https:\/\/lanegong.github.io\/posts\/secret-key-encryption\/","datePublished": "2022-12-30T10:00:15+08:00","dateModified": "2022-12-30T10:00:15+08:00","publisher": {
       "@type": "Organization",
       "name": "Lane","logo": {
           "@type": "ImageObject",
-          "url": "http:\/\/lanegong.top\/images\/avatar.jpeg",
+          "url": "https:\/\/lanegong.github.io\/images\/avatar.jpeg",
           "width":  690 ,
           "height":  684 
         }},"author": {
