@@ -4,9 +4,17 @@
     <link>https://lanegong.github.io/</link>
     <description>Strive to be an excellent white hat!</description>
     <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>laneg2022@163.com (Lane Gong)</managingEditor>
-      <webMaster>laneg2022@163.com (Lane Gong)</webMaster><lastBuildDate>Mon, 17 Jul 2023 00:00:00 &#43;0000</lastBuildDate>
+      <webMaster>laneg2022@163.com (Lane Gong)</webMaster><lastBuildDate>Tue, 20 Feb 2024 13:35:15 &#43;0800</lastBuildDate>
       <atom:link href="https://lanegong.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+  <title>01背包问题</title>
+  <link>https://lanegong.github.io/posts/01backpackproblem/</link>
+  <pubDate>Tue, 20 Feb 2024 13:35:15 &#43;0800</pubDate>
+  <author>Lane Gong</author>
+  <guid>https://lanegong.github.io/posts/01backpackproblem/</guid>
+  <description><![CDATA[<p>20240220算法入门👉🏻<a href="https://www.acwing.com/"target="_blank" rel="external nofollow noopener noreferrer">AcWing</a></p>]]></description>
+</item>
+<item>
   <title>[2018|FGCS]Secure intelligent traffic light control using fog computing</title>
   <link>https://lanegong.github.io/posts/secure_intelligent_traffic_light_control_using_fog_computing/</link>
   <pubDate>Mon, 17 Jul 2023 00:00:00 &#43;0000</pubDate>

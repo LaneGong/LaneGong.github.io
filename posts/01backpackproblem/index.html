@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>01背包问题 - Lane-诶嘿! Welcome~~</title><meta name="author" content="Lane Gong">
+<meta name="author-link" content="https://github.com/LaneGong">
+<meta name="description" content="20240220算法入门👉🏻AcWing" /><meta name="keywords" content='C&#43;&#43;, 背包问题' /><meta itemprop="name" content="01背包问题">
+<meta itemprop="description" content="20240220算法入门👉🏻AcWing"><meta itemprop="datePublished" content="2024-02-20T13:35:15+08:00" />
+<meta itemprop="dateModified" content="2024-02-20T13:35:15+08:00" />
+<meta itemprop="wordCount" content="1168"><meta itemprop="image" content="https://lanegong.github.io/logo.png"/>
+<meta itemprop="keywords" content="C&#43;&#43;,背包问题," /><meta property="og:title" content="01背包问题" />
+<meta property="og:description" content="20240220算法入门👉🏻AcWing" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lanegong.github.io/posts/01backpackproblem/" /><meta property="og:image" content="https://lanegong.github.io/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-02-20T13:35:15+08:00" />
+<meta property="article:modified_time" content="2024-02-20T13:35:15+08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://lanegong.github.io/logo.png"/>
+
+<meta name="twitter:title" content="01背包问题"/>
+<meta name="twitter:description" content="20240220算法入门👉🏻AcWing"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="https://lanegong.github.io/posts/01backpackproblem/" /><link rel="prev" href="https://lanegong.github.io/posts/secure_intelligent_traffic_light_control_using_fog_computing/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "01背包问题",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/lanegong.github.io\/posts\/01backpackproblem\/"
+    },"genre": "posts","keywords": "C\u002b\u002b, 背包问题","wordcount":  1168 ,
+    "url": "https:\/\/lanegong.github.io\/posts\/01backpackproblem\/","datePublished": "2024-02-20T13:35:15+08:00","dateModified": "2024-02-20T13:35:15+08:00","publisher": {
+      "@type": "Organization",
+      "name": "Lane","logo": {
+          "@type": "ImageObject",
+          "url": "https:\/\/lanegong.github.io\/images\/avatar.jpeg",
+          "width":  690 ,
+          "height":  684 
+        }},"author": {
+        "@type": "Person",
+        "name": "Lane Gong"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="Lane-诶嘿! Welcome~~"><img
+    class="lazyload logo"
+    src="/svg/loading.min.svg"
+    data-src="/images/avatar.jpeg"
+    data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x"
+    data-sizes="auto"
+    alt="Lane-诶嘿! Welcome~~"
+    title="Lane-诶嘿! Welcome~~" width="690" height="684"/><span class="header-title-text">Lane の Blog</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item has-children">
+              <a
+                class="menu-link"
+                href="/posts/"
+                title="查看所有文章"
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a><i class="dropdown-icon fa-solid fa-chevron-down" aria-hidden="true"></i>
+                <ul class="sub-menu">
+                  <li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/categories/"
+                          
+                          
+                        ><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden="true"></i> 分类</a>
+                      </li><li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/tags/"
+                          
+                          
+                        ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a>
+                      </li></ul></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/fun/"
+                title="正在开发中..."
+                
+              ><i class="fa-solid fa-fan fa-fw fa-sm" aria-hidden="true"></i> 趣味</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/guides/"
+                title="常用站点指南"
+                
+              ><i class="fa-solid fa-subway fa-fw fa-sm" aria-hidden="true"></i> 站点导航</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容 ..." id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="Lane-诶嘿! Welcome~~"><img
+    class="lazyload logo"
+    src="/svg/loading.min.svg"
+    data-src="/images/avatar.jpeg"
+    data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x"
+    data-sizes="auto"
+    alt="/images/avatar.jpeg"
+    title="/images/avatar.jpeg" width="690" height="684"/><span class="header-title-text">Lane の Blog</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容 ..." id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><span class="nested-item">
+                  <a
+                    class="menu-link"
+                    href="/posts/"
+                    title="查看所有文章"
+                    
+                  ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a>
+                  <i class="dropdown-icon fa-solid fa-chevron-right" aria-hidden="true"></i>
+                </span>
+                <ul class="sub-menu">
+                  <li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/categories/"
+                          
+                          
+                        ><i class="fa-solid fa-th fa-fw fa-sm" aria-hidden="true"></i> 分类</a>
+                      </li><li
+                        class="menu-item"
+                      >
+                        <a
+                          class="menu-link"
+                          href="/tags/"
+                          
+                          
+                        ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a>
+                      </li></ul></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/fun/"
+                  title="正在开发中..."
+                  
+                ><i class="fa-solid fa-fan fa-fw fa-sm" aria-hidden="true"></i> 趣味</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/guides/"
+                  title="常用站点指南"
+                  
+                ><i class="fa-solid fa-subway fa-fw fa-sm" aria-hidden="true"></i> 站点导航</a></li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container" data-page-style="normal"><aside class="toc" id="toc-auto"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside>
+
+  <aside class="aside-custom">
+    </aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX">
+        <span>01背包问题</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><a href="https://github.com/LaneGong" title="作者"target="_blank" rel="external nofollow noopener noreferrer author" class="author"><img
+    class="lazyload avatar"
+    src="/svg/loading.min.svg"
+    data-src="/images/avatar.jpeg"
+    data-srcset="/images/avatar.jpeg, /images/avatar.jpeg 1.5x, /images/avatar.jpeg 2x"
+    data-sizes="auto"
+    alt="Lane Gong"
+    title="Lane Gong" width="690" height="684"/>&nbsp;Lane Gong</a></span>
+          <span class="post-category">收录于 <a href="/categories/%E7%AE%97%E6%B3%95%E7%A0%94%E4%B9%A0/"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> 算法研习</a></span></div>
+      <div class="post-meta-line"><span title=2024-02-20&#32;13:35:15><i class="fa-regular fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-02-20">2024-02-20</time></span>&nbsp;<span><i class="fa-solid fa-pencil-alt fa-fw" aria-hidden="true"></i> 约 1168 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw" aria-hidden="true"></i> 预计阅读 3 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#问题描述">问题描述</a></li>
+    <li><a href="#代码详解">代码详解</a></li>
+  </ul>
+</nav></div>
+      </div><div class="content" id="content"><p>20240220算法入门👉🏻<a href="https://www.acwing.com/"target="_blank" rel="external nofollow noopener noreferrer">AcWing</a></p>
+<h2 id="问题描述">问题描述</h2>
+<p>有n件物品和一个最大容积为V的背包。第i件物品的体积是v[i]，得到的价值是w[i] 。<strong>每件物品只能用一次</strong>，求解将哪些物品装入背包里物品价值总和最大。</p>
+<h2 id="代码详解">代码详解</h2>
+<p>学习参考：<a href="https://www.acwing.com/solution/content/4515/"target="_blank" rel="external nofollow noopener noreferrer">AcWing 2. 01背包问题(看这篇就完事)  </a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-C++" data-lang="C++"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//01背包特点：每件物品只能使用一次。
+</span></span></span><span class="line"><span class="cl"><span class="c1">//求解将哪些物品装入背包，可使这些物品的总体积不超过背包容量，且总价值最大，输出最大价值。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">const</span> <span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">;</span><span class="c1">//n件物品，背包容量是V
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="n">v</span><span class="p">[</span><span class="n">N</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="n">N</span><span class="p">];</span><span class="c1">//第i件物品体积v[i]，价值w[i]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="n">dp</span><span class="p">[</span><span class="n">N</span><span class="p">][</span><span class="n">N</span><span class="p">];</span><span class="c1">//默认初始值为0/全局变量默认为0
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">//初始化
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span> <span class="o">&gt;&gt;</span> <span class="n">V</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">//动态规划
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">V</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">			<span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span><span class="p">(</span><span class="n">j</span> <span class="o">&gt;=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">				<span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">+</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">dp</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">V</span><span class="p">]</span> <span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>想要解释这段代码的思路，核心就是理解其动态规划状态转移方程：
+$$
+dp[i][j] = max(dp[i-1][j], dp[i-1][j-v[i]]+w[i]);
+$$
+dp数组示例(3件物品，容量最大为4)：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">容量0(j=0)</th>
+<th style="text-align:center">容量1(j=1)</th>
+<th style="text-align:center">容量2(j=2)</th>
+<th style="text-align:center">容量3(j=3)</th>
+<th style="text-align:center">容量4(j=4)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">不选择物品(i=0)</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">物品1(i=1)</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">物品2(i=2)</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">物品3(i=3)</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+<p>该二维数组每一项值dp[i][j]均表示在从下标[0,i]的物品里符合要求的任取后放进容量为j的背包下最大的价值总和。换句话理解就是表格中的每一项都是当前情况下的最优解(最大价值)。</p>
+<p>值得强调的是在构建二维数组时要考虑i=0和j=0的情况，即什么都不选和背包容量为0，方便状态转移方程进行递推，易得第一行和第一列值均为0。</p>
+<p>接下来就是<strong>按行</strong>依次进行递推，考虑每格的值就两种情况：</p>
+<ol>
+<li>
+<p>不放入物品i，就相当于和之前情况无变化，即此情况下最优与上面一格相同(dp[i-1][j])。</p>
+</li>
+<li>
+<p>放入物品i，需先考虑能否放入(主要比较容积，不能放入的话回到情况1)，能放入的话无非就是比较放入后的价值和不放入的价值哪个更大，即状态转移方程中max(dp[i-1][j],xxxx)部分可以理解了，现在就是如何计算放入当前物品后的最优价值。</p>
+<p>因为我要放入该物品i，则还剩下的背包空间为j-v[i]，则要找到背包空间为j-v[i]下的不含物品i的最优价值即dp[i-1][j-v[i]]，再加上物品i的价值即为所求，状态转移方程dp[i-1][j-v[i]]+w[i]部分由此而来。</p>
+</li>
+</ol>
+<p>由此完成所有递推，dp[n][V]即为最终的最大价值。</p>
+<blockquote>
+<p>👉🏻学习参考链接中有提到优化版，不多赘述，其思路主要是原方案下只用到了当前行(i)和前一行(i-1)，因此将二维简化到了一维，将每一次大循环后所得到的dp[N]理解为原先二维中的某一行即可 。原先二维可以理解为把每一步物品选择后的最优价值都进行了存储，优化版本则放弃了存储的冗余，每一步递推都在原数组上直接进行并覆盖。</p>
+</blockquote></div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title=2024-02-20&#32;13:35:15>更新于 2024-02-20&nbsp;</span>
+      </div><div class="post-info-license">
+          <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span>
+        </div></div>
+    <div class="post-info-line">
+      <div class="post-info-md"></div>
+      <div class="post-info-share">
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/c&#43;&#43;/' class="post-tag">C&#43;&#43;</a><a href='/tags/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/' class="post-tag">背包问题</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/posts/secure_intelligent_traffic_light_control_using_fog_computing/" class="post-nav-item" rel="prev" title="[2018|FGCS]Secure intelligent traffic light control using fog computing"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>[2018|FGCS]Secure intelligent traffic light control using fog computing</a></div>
+</div>
+</article></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2022 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="https://github.com/LaneGong"target="_blank" rel="external nofollow noopener noreferrer">Lane Gong</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div><div class="footer-line statistics"><span class="site-time" title='网站运行中 ...'><i class="fa-solid fa-heartbeat fa-fw animate-icon" aria-hidden="true"></i>&nbsp;<span class="run-times">网站运行中 ...</span></span></div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/algoliasearch/algoliasearch-lite.umd.min.js" defer></script><script src="/lib/lazysizes/lazysizes.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script>window.config={"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":10},"comment":{"enable":false},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"algolia"},"siteTime":"2022-11-23T15:00:00+08:00"};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

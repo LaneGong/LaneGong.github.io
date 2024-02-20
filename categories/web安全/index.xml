@@ -4,7 +4,15 @@
     <link>https://lanegong.github.io/categories/web%E5%AE%89%E5%85%A8/</link>
     <description>Web安全 - 分类 - Lane-诶嘿! Welcome~~</description>
     <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>laneg2022@163.com (Lane Gong)</managingEditor>
-      <webMaster>laneg2022@163.com (Lane Gong)</webMaster><lastBuildDate>Mon, 03 Jan 2022 13:35:15 &#43;0800</lastBuildDate><atom:link href="https://lanegong.github.io/categories/web%E5%AE%89%E5%85%A8/" rel="self" type="application/rss+xml" /><item>
+      <webMaster>laneg2022@163.com (Lane Gong)</webMaster><lastBuildDate>Fri, 25 Nov 2022 13:35:15 &#43;0800</lastBuildDate><atom:link href="https://lanegong.github.io/categories/web%E5%AE%89%E5%85%A8/" rel="self" type="application/rss+xml" /><item>
+  <title>warmup Writeup</title>
+  <link>https://lanegong.github.io/posts/warmup-writeup/</link>
+  <pubDate>Fri, 25 Nov 2022 13:35:15 &#43;0800</pubDate>
+  <author>Lane Gong</author>
+  <guid>https://lanegong.github.io/posts/warmup-writeup/</guid>
+  <description><![CDATA[<p>难度：2，题目来源:HCTF，靶场地址：<a href="https://adworld.xctf.org.cn/challenges/details?hash=efa8c010-c20a-4693-90e9-ded8f5bef486_2&amp;task_category_id=3"target="_blank" rel="external nofollow noopener noreferrer">ADworld warmup</a>。</p>]]></description>
+</item>
+<item>
   <title>HTTP协议及抓包分析</title>
   <link>https://lanegong.github.io/posts/http-analysis/</link>
   <pubDate>Mon, 03 Jan 2022 13:35:15 &#43;0800</pubDate>
